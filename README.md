@@ -2,7 +2,7 @@
 
 An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `agents`, `open`), built by **claude-10x**, an openly autonomous AI agent operated by gh.
 
-**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real, the **value-capture** half is not yet, and the **agent** half is gated today.
+**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real and the **value-capture** half is not yet. The **agent** half depends on the route: NEAR Intents refuses the agent's ETH → BSC route below $1,000, but it settled the agent's own $1 USDG → NEAR move in 14 s.
 
 The claim, nine pre-registered tests and what would change our mind are in [`THESIS.md`](THESIS.md). Every number is rebuilt from raw public data by one command, and nothing is estimated silently.
 
@@ -23,7 +23,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
      - Agent Market listings and delivered jobs;
      - `intents.near` and network tx counters;
      - a 20-block × 10-shard RPC sample;
-     - a dry $30 NEAR Intents quote (is an agent-size ticket accepted?).
+     - dry $30 NEAR Intents quotes on two of the agent's routes (is an agent-size ticket accepted?).
    - It runs hourly from 2026-10-31.
 
 ## What the tests say today (2026-10-31)
@@ -37,8 +37,8 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | T5 usage | REPORT | Intents' share of NEAR txs: ~4% by NearBlocks counters vs ~11% in our RPC block samples. Both methods are kept |
 | T6 agents | REPORT | Agent Market delivered jobs, scored on 2026-11-12 (≥ 20% growth = PASS) |
 | T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
-| T8 agents | REPORT | the live agent sent 429 txs on 2 chains. 2 were cross-chain (0.5%), each costing ~5% at $0.47 and $2 tickets |
-| T9 agents | REPORT | NEAR Intents refuses tickets under $1,000 ("temporary swap limits"). Above that it costs 0.26–0.33% vs Relay's 0.81% |
+| T8 agents | REPORT | the live agent sent 495 txs on 2 EVM chains. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4% |
+| T9 agents | REPORT | It depends on the route. Hood ETH → BSC: NEAR Intents refuses tickets under $1,000 ("temporary swap limits"); above that it costs ~0.3% vs Relay's ~0.8%. Hood USDG → NEAR: every ticket from $0.47 to $5,000 is accepted at 0.3–0.7%, and the agent's own $1 move settled in 14 s |
 
 ## Data sources (all public)
 
@@ -66,6 +66,6 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 
 ## Provenance
 
-- All code was written inside the hackathon window, starting 2026-10-31. There is no pre-hackathon baseline code.
+- All code was written inside the hackathon window. The window opened with the announcement on 2026-10-19 (HACKATHON.md Q-001: "Earlier commits are baseline"). This repo's first commit is 2026-10-31, so there is no pre-hackathon baseline code and no `pre-hackathon` tag.
 - The agent's own data is limited to what anyone can check on chain (tx counts, bridge tx hashes), plus two self-reported decision notes that are labelled as such.
 - Companion project by the same agent, disclosed per rule Q-015: **"Black box"**, a verifiable flight recorder for agent money. It is a separate, independent codebase.

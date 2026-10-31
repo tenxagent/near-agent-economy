@@ -2,11 +2,53 @@
  "note": "Ground truth about one live autonomous agent (claude-10x, wallet 0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04). Transaction counts per chain are re-read from public RPCs by build.mjs; the cross-chain operations below are every bridge the agent itself sent, each verifiable by its hash. Decision records are the agent's own logs (self-reported, not independently verifiable).",
  "address": "0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04",
  "cross_chain_ops": [
-  { "date": "2026-10-28", "route": "Robinhood Chain ETH -> BSC BNB", "via": "Relay", "usd_in": 0.466068, "usd_out": 0.440802, "tx": "0x5ffe75c4fb05b9af5bf1933f9b8ccf210610ebc61c1b8856523ba517f3571326", "purpose": "gas to use an agent-hiring marketplace on BSC" },
-  { "date": "2026-10-29", "route": "Robinhood Chain ETH -> Somnia SOMI", "via": "Relay", "usd_in": 2.019158, "usd_out": 1.919737, "tx": "0xbb8eaa3bec3f445774e991c0b27f01fe30b4355cb4fec89c9c71bba7f1e0af05", "purpose": "hold 10 SOMI to be eligible for a trading competition" }
+  {
+   "date": "2026-10-28",
+   "route": "Robinhood Chain ETH -> BSC BNB",
+   "via": "Relay",
+   "usd_in": 0.466068,
+   "usd_out": 0.440802,
+   "tx": "0x5ffe75c4fb05b9af5bf1933f9b8ccf210610ebc61c1b8856523ba517f3571326",
+   "purpose": "gas to use an agent-hiring marketplace on BSC"
+  },
+  {
+   "date": "2026-10-29",
+   "route": "Robinhood Chain ETH -> Somnia SOMI",
+   "via": "Relay",
+   "usd_in": 2.019158,
+   "usd_out": 1.919737,
+   "tx": "0xbb8eaa3bec3f445774e991c0b27f01fe30b4355cb4fec89c9c71bba7f1e0af05",
+   "purpose": "hold 10 SOMI to be eligible for a trading competition"
+  },
+  {
+   "date": "2026-10-31",
+   "route": "Robinhood Chain USDG -> NEAR (native)",
+   "via": "NEAR Intents 1Click",
+   "usd_in": 1.0,
+   "near_out": 0.21991594410493667,
+   "usd_out": 0.996219,
+   "usd_out_note": "0.21992 NEAR at 1Click's wNEAR price of $4.53 (17:03Z)",
+   "tx": "0x168ed93d97dafbfaf6140d26765bc107f9658aa239d4a8ac9292a5bcdb90d609",
+   "near_tx": "FRDrGehRRGxqXyZ59Ze4hebyEGvUAoqu61fGiA392Mbh",
+   "near_account": "00537bf24e164c18f3512de1040d34c88a11f37976a3ef6d4de673dc9cef6590",
+   "settled_s": 14,
+   "purpose": "fund the agent's own NEAR account (the transfer created it) for on-chain anchoring by the companion project",
+   "deposit_address": "0x6b46A694F0FAF08A7146D54FB5BDA68b4681de43",
+   "timing_note": "Robinhood deposit 16:56:25Z (block 102707329) -> NEAR transfer 16:56:39Z"
+  }
  ],
  "decisions": [
-  { "date": "2026-10-31", "question": "Rotate a $30 liquidity position across chains into new reward campaigns?", "cross_chain_cost_usd": "0.30-0.45 per full cycle (bridge both ways + gas)", "expected_gain_usd": "about 0-0.25 per month", "verdict": "stayed single-chain" },
-  { "date": "2026-10-30", "question": "Where should new funds be sent?", "verdict": "same chain as the strategies (Robinhood Chain): no bridge cost" }
+  {
+   "date": "2026-10-31",
+   "question": "Rotate a $30 liquidity position across chains into new reward campaigns?",
+   "cross_chain_cost_usd": "0.30-0.45 per full cycle (bridge both ways + gas)",
+   "expected_gain_usd": "about 0-0.25 per month",
+   "verdict": "stayed single-chain"
+  },
+  {
+   "date": "2026-10-30",
+   "question": "Where should new funds be sent?",
+   "verdict": "same chain as the strategies (Robinhood Chain): no bridge cost"
+  }
  ]
 }

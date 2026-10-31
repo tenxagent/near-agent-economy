@@ -1,6 +1,6 @@
 {
- "built_at": "2026-10-31T13:11:19.256Z",
- "offline": false,
+ "built_at": "2026-10-31T17:05:55.132Z",
+ "offline": true,
  "last_day": "2026-10-30",
  "tests": [
   {
@@ -45,8 +45,8 @@
    "question": "Does the value reach the NEAR protocol?",
    "value": {
     "near_chain_fees_90d": 354549,
-    "intents_fees_90d": 17036713,
-    "ratio": 0.020810880596509432
+    "intents_fees_90d": 17037689,
+    "ratio": 0.020809688450117853
    },
    "pass": false,
    "rule": "ratio >= 0.25 (expected FAIL)"
@@ -69,14 +69,14 @@
    "half": "usage",
    "question": "How much of NEAR's on-chain traffic is Intents right now?",
    "value": {
-    "counter_share": 0.04143947655398037,
+    "counter_share": 0.0403417525719684,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T13:03:28.414Z"
+     "2026-10-31T16:57:59.559Z"
     ],
-    "rpc_sample_share": 0.10784313725490197,
-    "rpc_sample_txs": 204,
-    "rpc_samples": 3
+    "rpc_sample_share": 0.14189189189189189,
+    "rpc_sample_txs": 592,
+    "rpc_samples": 7
    },
    "pass": null,
    "rule": "reported, no threshold (two methods)"
@@ -87,11 +87,11 @@
    "question": "Is agent-native demand on NEAR growing?",
    "value": {
     "delivered_jobs_first": 399,
-    "delivered_jobs_last": 399,
-    "growth": 0,
+    "delivered_jobs_last": 403,
+    "growth": 0.010025062656641603,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T13:03:28.414Z"
+     "2026-10-31T16:57:59.559Z"
     ],
     "agents_last": 525
    },
@@ -103,7 +103,7 @@
    "half": "agents",
    "question": "How big is agent commerce next to Intents?",
    "value": {
-    "agent_market_all_time_usd_at_assumed_price": 1995,
+    "agent_market_all_time_usd_at_assumed_price": 2015,
     "price_assumption_usd": 5,
     "intents_volume_30d": 3912208310
    },
@@ -115,21 +115,23 @@
    "half": "agents",
    "question": "What share of a live agent's money flow is cross-chain?",
    "value": {
-    "sent_txs": 429,
+    "sent_txs": 495,
     "chains_with_sent_txs": [
-     "robinhood:426",
+     "robinhood:492",
      "bsc:3"
     ],
-    "nonces_read_at": "2026-10-31T13:11:08.971Z",
-    "cross_chain_ops": 2,
-    "cross_chain_share": 0.004662004662004662,
+    "nonces_read_at": "2026-10-31T17:03:21.573Z",
+    "cross_chain_ops": 3,
+    "cross_chain_share": 0.006060606060606061,
     "cross_chain_cost_pct": [
      5.42,
-     4.92
+     4.92,
+     0.38
     ],
     "cross_chain_ticket_usd": [
      0.466068,
-     2.019158
+     2.019158,
+     1
     ],
     "decisions": 2
    },
@@ -141,33 +143,67 @@
    "half": "agents",
    "question": "What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent used?",
    "value": {
-    "route": "Robinhood Chain ETH -> BSC BNB",
-    "quoted_at": "2026-10-31T13:11:10.770Z",
-    "rows": [
+    "quoted_at": "2026-10-31T17:03:23.056Z",
+    "routes": [
      {
-      "usd": 0.47,
-      "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-      "relay": "5.318%"
+      "route": "Robinhood Chain ETH -> BSC BNB",
+      "rows": [
+       {
+        "usd": 0.47,
+        "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+        "relay": "5.192%"
+       },
+       {
+        "usd": 2,
+        "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+        "relay": "1.749%"
+       },
+       {
+        "usd": 30,
+        "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+        "relay": "0.76%"
+       },
+       {
+        "usd": 1000,
+        "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+        "relay": "0.743%"
+       },
+       {
+        "usd": 5000,
+        "intents": "0.57%",
+        "relay": "0.728%"
+       }
+      ]
      },
      {
-      "usd": 2,
-      "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-      "relay": "1.913%"
-     },
-     {
-      "usd": 30,
-      "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-      "relay": "0.919%"
-     },
-     {
-      "usd": 1000,
-      "intents": "0.293%",
-      "relay": "1.846%"
-     },
-     {
-      "usd": 5000,
-      "intents": "0.308%",
-      "relay": "0.853%"
+      "route": "Robinhood Chain USDG -> NEAR (native)",
+      "rows": [
+       {
+        "usd": 0.47,
+        "intents": "0.525%",
+        "relay": "no route"
+       },
+       {
+        "usd": 2,
+        "intents": "0.292%",
+        "relay": "no route"
+       },
+       {
+        "usd": 30,
+        "intents": "0.537%",
+        "relay": "no route"
+       },
+       {
+        "usd": 1000,
+        "intents": "0.552%",
+        "relay": "no route"
+       },
+       {
+        "usd": 5000,
+        "intents": "0.539%",
+        "relay": "no route"
+       }
+      ]
      }
     ]
    },

@@ -142,10 +142,13 @@ async function main() {
   const t8 = classifyLedgerSummary();
   tests.push({ id: 'T8', half: 'agents', question: "What share of a live agent's money flow is cross-chain?", value: t8, pass: null, rule: 'reported with n and rules' });
 
-  // T9: cross-chain cost at agent ticket sizes, NEAR Intents (1Click) vs Relay, dry quotes on the agent's real route
+  // T9: cross-chain cost at agent ticket sizes, NEAR Intents (1Click) vs Relay, dry quotes on the agent's real routes
   const q = readRaw('cross-chain-quotes.json');
+  const qRoutes = q.routes ?? [{ route: q.route, rows: q.rows }]; // files fetched before 2026-10-31 17:00Z hold one route
   tests.push({ id: 'T9', half: 'agents', question: "What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent used?",
-    value: { route: q.route, quoted_at: q.fetched_at, rows: q.rows.map((r) => ({ usd: r.usd, intents: r.near_intents_1click.ok ? `${r.near_intents_1click.cost_pct}%` : `refused: ${r.near_intents_1click.message}`, relay: r.relay.ok ? `${r.relay.cost_pct}%` : `error: ${r.relay.message}` })) },
+    value: { quoted_at: q.fetched_at, routes: qRoutes.map((rt) => ({ route: rt.route, rows: rt.rows.map((r) => ({ usd: r.usd,
+      intents: r.near_intents_1click.ok ? `${r.near_intents_1click.cost_pct}%` : `refused: ${r.near_intents_1click.message}`,
+      relay: !r.relay ? 'no route' : r.relay.ok ? `${r.relay.cost_pct}%` : `error: ${r.relay.message}` })) })) },
     pass: null, rule: 'reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)' });
 
   // ---------- charts

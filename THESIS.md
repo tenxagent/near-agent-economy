@@ -55,14 +55,28 @@ Measured cost by ticket size on the agent's real route:
 | $1,000 | **0.33%** | 0.81% |
 | $5,000 | **0.26%** | 0.81% |
 
-So where Intents works, it is ~2.5–3× cheaper than the bridge the agent used. **But its current minimum excludes every cross-chain move the agent ever made** ($0.47 and $2.02). This bears directly on the "agents" half: today the settlement layer is priced and gated for large tickets, not for software making small payments. `collect.mjs` records the $30 probe hourly, so the dashboard shows if and when the "temporary" limit lifts.
+So where Intents works on this route, it is ~2.5–3× cheaper than the bridge the agent used. **But its minimum is far above both bridges the agent sent before 10-31**: $0.47 on this route, and $2.02 to Somnia, a chain 1Click does not list.
+
+**Second finding (2026-10-31 ~17:05Z): the minimum is per route, not general.** On the agent's second real route, Robinhood Chain USDG → NEAR (1Click delivers `wrap.near` as native NEAR), every ticket size was accepted:
+
+| ticket | NEAR Intents (1Click), hood USDG → NEAR, range over 2–3 quote sets 16:59–17:03Z |
+|---|---|
+| $0.47 | 0.53–0.61% |
+| $2 | 0.29–0.42% |
+| $30 | 0.41–0.67% |
+| $1,000 | 0.55–0.72% |
+| $5,000 | 0.54–0.73% |
+
+The quoted time to settle was 25–27 s. The agent also used this route for real: at 16:56Z it sent 1 USDG through 1Click to fund its own NEAR account. The account did not exist before; it received 0.21992 native NEAR. From the Robinhood deposit (16:56:25Z) to the NEAR transfer (16:56:39Z) took 14 s. That move is listed in `data/agent-ground-truth.json`. Relay has no NEAR route, so there is no comparison column.
+
+What this changes: the gate is a property of the ETH → BSC route, not of NEAR Intents as a whole. Small agent tickets *into NEAR* settle today, at about the cost of Relay's mid-size tickets on the other route. Quotes move by a few tenths of a percent within minutes, so the dashboard shows each build's own quote set. One more observation: on the ETH → BSC route the $1,000 ticket sits on the limit and was refused in the 17:03Z set, when 1Click priced the ETH just under $1,000. `collect.mjs` records a $30 probe on both routes hourly.
 
 ## What would change our mind
 
 - **Usage:** Intents' share of NEAR DEX volume falls below 0.50 in any month, or 90-day Intents volume drops by more than half (T2 < 0.5).
 - **Capture (the bullish side):** NEAR protocol fees reach ≥ 25% of Intents fees, or a documented mechanism routes Intents fees to NEAR holders or stakers. That would make usage a valuation argument.
 - **Agents:** Agent Market delivered jobs grow ≥ 20% a week, sustained through the window. That would mean agent demand is emerging rather than anecdotal.
-- **Agents (T9):** the 1Click minimum drops below ~$10 at a cost near its $1,000 rate (≤ 0.5%). That would remove the gate that keeps small agent tickets off Intents.
+- **Agents (T9):** the 1Click minimum drops below ~$10 at a cost near its $1,000 rate (≤ 0.5%). That would remove the gate that keeps small agent tickets off Intents. *Status 2026-10-31:* partly met, on one route only. Hood USDG → NEAR has no minimum and costs 0.3–0.7% depending on the quote, so it is under 0.5% only some of the time. Hood ETH → BSC still refuses anything under $1,000.
 
 ## Data limits (stated up front)
 

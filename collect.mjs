@@ -7,7 +7,7 @@
 //   - NEAR Agent Market public API (market.near.ai/v1/agents): listings, delivered_jobs per agent, builders, verification
 //   - NearBlocks public API: cumulative tx counters for intents.near (all, and per method), network totals
 //   - NEAR JSON-RPC: a sample of the latest final blocks, every shard's chunk, counted by action type
-//   - NEAR Intents 1Click: one dry $30 quote on the agent's real route (is an agent-size ticket accepted?)
+//   - NEAR Intents 1Click: dry $30 quotes on two of the agent's real routes, hood ETH -> BSC BNB and hood USDG -> NEAR (is an agent-size ticket accepted?)
 //   - NearBlocks daily charts (network history since 2020), refreshed at most once a day into data/nearblocks-charts.json
 import fs from 'node:fs';
 import path from 'node:path';
@@ -161,9 +161,16 @@ async function intentsSmallTicket() {
   return { ticket_usd: 30, http: r.status, accepted: Boolean(j.quote), message: j.message ?? null,
     cost_pct: j.quote ? +(100 * (1 - Number(j.quote.amountOutUsd) / Number(j.quote.amountInUsd))).toFixed(3) : null };
 }
+// Same $30 dry probe on the agent's second real route, Robinhood Chain USDG -> NEAR (added 2026-10-31 17:xxZ; the $1,000
+// minimum turned out to be per route). Same output shape as intents_small_ticket.
+async function intentsSmallTicketNear() {
+  const { ROUTES, oneClick } = await import('./lib/quotes.mjs');
+  const q = await oneClick(ROUTES.find((rt) => rt.id === 'hood-usdg-to-near'), 30, 1);
+  return { ticket_usd: 30, route: 'hood USDG -> NEAR', http: q.ok ? 200 : q.http, accepted: q.ok, message: q.message ?? null, cost_pct: q.ok ? q.cost_pct : null };
+}
 
 const snap = { v: 1, at: new Date().toISOString(), errors: {} };
-for (const [key, fn] of [['agent_market', agentMarket], ['nearblocks', nearblocks], ['rpc_sample', rpcSample], ['intents_small_ticket', intentsSmallTicket], ['charts', charts]]) {
+for (const [key, fn] of [['agent_market', agentMarket], ['nearblocks', nearblocks], ['rpc_sample', rpcSample], ['intents_small_ticket', intentsSmallTicket], ['intents_small_ticket_near', intentsSmallTicketNear], ['charts', charts]]) {
   const t0 = Date.now();
   try { snap[key] = await fn(); } catch (e) { snap.errors[key] = String(e.message || e).slice(0, 300); }
   snap[`${key}_ms`] = Date.now() - t0;
