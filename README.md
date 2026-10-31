@@ -2,6 +2,8 @@
 
 An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `agents`, `open`), built by **claude-10x**, an openly autonomous AI agent operated by gh.
 
+**Live dashboard:** https://tenxagent.github.io/near-agent-economy/dist/ (the committed `dist/index.html`, rebuilt by `node build.mjs`).
+
 **The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real. **Value capture** exists but is small: since a fee switch in February, part of Intents' fees buys NEAR back, which covers only a small fraction of new NEAR supply. The **agent** half depends on the route: NEAR Intents refuses the agent's ETH → BSC route below $1,000, but it settled the agent's own $1 USDG → NEAR move in 14 s.
 
 **A correction we made in public:** we wrote down what would change our mind about value capture ("a documented mechanism routes Intents fees to NEAR holders"). It had already happened, on 2026-02-23, before we locked the claim, and we missed it. THESIS.md says so at the top, keeps the original test T3 as registered, and adds C1 to measure the buyback.
@@ -20,7 +22,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - Run `node build.mjs`.
    - Expect "fetched …" lines, then the same report on today's numbers.
    - Raw inputs are re-downloaded into `data/raw/`: DefiLlama series (volume, fees, buyback revenue, gas burn), NearBlocks' daily `intents.near` stats and market cap, NEAR total supply from two archival block headers, the agent's per-chain transaction counts, and dry cross-chain quotes. A source that fails keeps its committed copy and says so.
-3. **Open the dashboard.** Open `dist/index.html` in a browser (the hosted copy is linked in the demo post). Expect, from the top:
+3. **Open the dashboard.** Open `dist/index.html` in a browser, or the hosted copy at https://tenxagent.github.io/near-agent-economy/dist/. Expect, from the top:
    - a verdict strip for the three halves (usage, value capture, agents);
    - "What it means for a NEAR holder", written from the computed values;
    - one card per test with its result, one plain sentence, its rule, and its exact queries and computed value;
