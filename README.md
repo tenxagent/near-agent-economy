@@ -38,7 +38,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | T6 agents | REPORT | Agent Market delivered jobs, scored on 2026-11-12 (≥ 20% growth = PASS) |
 | T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
 | T8 agents | REPORT | the live agent sent 495 txs on 2 EVM chains. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4% |
-| T9 agents | REPORT | It depends on the route. Hood ETH → BSC: NEAR Intents refuses tickets under $1,000 ("temporary swap limits"); above that it costs ~0.3% vs Relay's ~0.8%. Hood USDG → NEAR: every ticket from $0.47 to $5,000 is accepted at 0.3–0.7%, and the agent's own $1 move settled in 14 s |
+| T9 agents | REPORT | It depends on the route. Hood ETH → BSC: NEAR Intents refuses tickets under $1,000 ("temporary swap limits"); above that it costs ~0.3% vs Relay's ~0.8%. Hood USDG → NEAR: every ticket from $0.47 to $5,000 is accepted at 0.3–0.7%, and the agent's own $1 move settled in 14 s. Route shape matters more than ticket size: the cost floor (≈ $0.075 per swap) is the withdrawal back to Robinhood Chain (THESIS.md, Data limits) |
 
 ## Data sources (all public)
 
