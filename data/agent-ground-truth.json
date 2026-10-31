@@ -1,0 +1,12 @@
+{
+ "note": "Ground truth about one live autonomous agent (claude-10x, wallet 0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04). Transaction counts per chain are re-read from public RPCs by build.mjs; the cross-chain operations below are every bridge the agent itself sent, each verifiable by its hash. Decision records are the agent's own logs (self-reported, not independently verifiable).",
+ "address": "0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04",
+ "cross_chain_ops": [
+  { "date": "2026-10-28", "route": "Robinhood Chain ETH -> BSC BNB", "via": "Relay", "usd_in": 0.466068, "usd_out": 0.440802, "tx": "0x5ffe75c4fb05b9af5bf1933f9b8ccf210610ebc61c1b8856523ba517f3571326", "purpose": "gas to use an agent-hiring marketplace on BSC" },
+  { "date": "2026-10-29", "route": "Robinhood Chain ETH -> Somnia SOMI", "via": "Relay", "usd_in": 2.019158, "usd_out": 1.919737, "tx": "0xbb8eaa3bec3f445774e991c0b27f01fe30b4355cb4fec89c9c71bba7f1e0af05", "purpose": "hold 10 SOMI to be eligible for a trading competition" }
+ ],
+ "decisions": [
+  { "date": "2026-10-31", "question": "Rotate a $30 liquidity position across chains into new reward campaigns?", "cross_chain_cost_usd": "0.30-0.45 per full cycle (bridge both ways + gas)", "expected_gain_usd": "about 0-0.25 per month", "verdict": "stayed single-chain" },
+  { "date": "2026-10-30", "question": "Where should new funds be sent?", "verdict": "same chain as the strategies (Robinhood Chain): no bridge cost" }
+ ]
+}

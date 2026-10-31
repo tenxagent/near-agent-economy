@@ -7,6 +7,7 @@
 //   - NEAR Agent Market public API (market.near.ai/v1/agents): listings, delivered_jobs per agent, builders, verification
 //   - NearBlocks public API: cumulative tx counters for intents.near (all, and per method), network totals
 //   - NEAR JSON-RPC: a sample of the latest final blocks, every shard's chunk, counted by action type
+//   - NEAR Intents 1Click: one dry $30 quote on the agent's real route (is an agent-size ticket accepted?)
 //   - NearBlocks daily charts (network history since 2020), refreshed at most once a day into data/nearblocks-charts.json
 import fs from 'node:fs';
 import path from 'node:path';
@@ -147,8 +148,22 @@ async function charts() {
 }
 
 if (!DRY) fs.mkdirSync(DATA, { recursive: true });
+// ---- NEAR Intents 1Click: is a $30 agent-size ticket accepted? (one dry quote; dry:true returns a price only, nothing is sent)
+async function intentsSmallTicket() {
+  const tok = await getJson('https://1click.chaindefuser.com/v0/tokens');
+  const ethUsd = Number(tok.find((t) => t.assetId === 'nep141:hood.omft.near')?.price);
+  const A = '0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04';
+  const r = await fetch('https://1click.chaindefuser.com/v0/quote', { method: 'POST', headers: { 'content-type': 'application/json', 'user-agent': UA }, signal: AbortSignal.timeout(20_000),
+    body: JSON.stringify({ dry: true, swapType: 'EXACT_INPUT', slippageTolerance: 100, originAsset: 'nep141:hood.omft.near', depositType: 'ORIGIN_CHAIN',
+      destinationAsset: 'nep245:v2_1.omni.hot.tg:56_11111111111111111111', amount: BigInt(Math.round((30 / ethUsd) * 1e18)).toString(), refundTo: A,
+      refundType: 'ORIGIN_CHAIN', recipient: A, recipientType: 'DESTINATION_CHAIN', deadline: new Date(Date.now() + 3600e3).toISOString() }) });
+  const j = await r.json().catch(() => ({}));
+  return { ticket_usd: 30, http: r.status, accepted: Boolean(j.quote), message: j.message ?? null,
+    cost_pct: j.quote ? +(100 * (1 - Number(j.quote.amountOutUsd) / Number(j.quote.amountInUsd))).toFixed(3) : null };
+}
+
 const snap = { v: 1, at: new Date().toISOString(), errors: {} };
-for (const [key, fn] of [['agent_market', agentMarket], ['nearblocks', nearblocks], ['rpc_sample', rpcSample], ['charts', charts]]) {
+for (const [key, fn] of [['agent_market', agentMarket], ['nearblocks', nearblocks], ['rpc_sample', rpcSample], ['intents_small_ticket', intentsSmallTicket], ['charts', charts]]) {
   const t0 = Date.now();
   try { snap[key] = await fn(); } catch (e) { snap.errors[key] = String(e.message || e).slice(0, 300); }
   snap[`${key}_ms`] = Date.now() - t0;

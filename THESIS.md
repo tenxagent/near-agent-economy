@@ -36,13 +36,33 @@ The rebuild pipeline computes each test from raw data and prints PASS/FAIL. The 
 | T5 | How much of NEAR's on-chain traffic is Intents right now? | Δ `intents.near` tx counter ÷ Δ network tx counter between hourly snapshots (NearBlocks), cross-checked against txs with receiver `intents.near` in hourly RPC block samples (`collect.mjs`) | reported, no threshold. The two methods already disagree (~4% vs ~20% on 10-31) and the pipeline reports both | usage |
 | T6 | Is agent-native demand on NEAR growing? | NEAR AI Agent Market: delivered jobs and live listings in hourly snapshots 2026-10-31 → 2026-11-12; listing growth by `created_at` since July | delivered jobs grow ≥ 20% over the window | agents |
 | T7 | How big is agent commerce next to Intents? | Agent Market delivered jobs × a stated price assumption vs Intents volume over the same days | reported as an order of magnitude; no threshold | agents |
-| T8 | What share of a live agent's money flow is cross-chain? | claude-10x's own on-chain actions (its public ledger plus explorer data), classified as single-chain vs cross-chain/multi-chain. Small n, one agent: ground truth, not a sample | reported as a share, with n and the classification rules | agents |
+| T8 | What share of a live agent's money flow is cross-chain? | claude-10x's own wallet: sent-transaction counts per chain, re-read from public RPCs (anyone can check them with `eth_getTransactionCount`), plus every bridge it sent, each listed with its tx hash in `data/agent-ground-truth.json`. One agent, so this is ground truth, not a sample | reported as a share, with n and per-bridge cost | agents |
+| T9 | What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent actually used? | Dry price quotes on the agent's own real route (Robinhood Chain ETH → BSC BNB) at $0.47 / $2 / $30 / $1,000 / $5,000: NEAR Intents 1Click (`dry: true`) vs Relay. Re-quoted on every online build and recorded hourly by `collect.mjs` | reported, **not scored**. Added on 2026-10-31 ~13:45Z, after the first probe had already shown the result, so it can't be a fair pre-registered test | agents |
+
+## Findings added after the lock (disclosed)
+
+**T9's first probe (2026-10-31 13:10Z) returned this for every ticket under $1,000:**
+
+> `HTTP 400 "Temporary swap limits: minimum swap amount is $1,000"`
+
+Measured cost by ticket size on the agent's real route:
+
+| ticket | NEAR Intents (1Click) | Relay |
+|---|---|---|
+| $0.47 | refused | 5.3% |
+| $2 | refused | 1.8% |
+| $30 | refused | 0.87% |
+| $1,000 | **0.33%** | 0.81% |
+| $5,000 | **0.26%** | 0.81% |
+
+So where Intents works, it is ~2.5–3× cheaper than the bridge the agent used. **But its current minimum excludes every cross-chain move the agent ever made** ($0.47 and $2.02). This bears directly on the "agents" half: today the settlement layer is priced and gated for large tickets, not for software making small payments. `collect.mjs` records the $30 probe hourly, so the dashboard shows if and when the "temporary" limit lifts.
 
 ## What would change our mind
 
 - **Usage:** Intents' share of NEAR DEX volume falls below 0.50 in any month, or 90-day Intents volume drops by more than half (T2 < 0.5).
 - **Capture (the bullish side):** NEAR protocol fees reach ≥ 25% of Intents fees, or a documented mechanism routes Intents fees to NEAR holders or stakers. That would make usage a valuation argument.
 - **Agents:** Agent Market delivered jobs grow ≥ 20% a week, sustained through the window. That would mean agent demand is emerging rather than anecdotal.
+- **Agents (T9):** the 1Click minimum drops below ~$10 at a cost near its $1,000 rate (≤ 0.5%). That would remove the gate that keeps small agent tickets off Intents.
 
 ## Data limits (stated up front)
 

@@ -1,0 +1,184 @@
+{
+ "built_at": "2026-10-31T13:11:19.256Z",
+ "offline": false,
+ "last_day": "2026-10-30",
+ "tests": [
+  {
+   "id": "T1",
+   "half": "usage",
+   "question": "Did NEAR usage shift from counts to settled value?",
+   "value": {
+    "intents_share_of_near_dex_volume_6m": 0.8152401243135086,
+    "months": [
+     "2026-04",
+     "2026-05",
+     "2026-06",
+     "2026-07",
+     "2026-08",
+     "2026-09"
+    ],
+    "txns_per_day_change": -0.8884226260726352,
+    "active_accounts_change": -0.9286824513983325,
+    "intents_volume_multiple": 749.840742294964,
+    "from": "2025-01",
+    "to": "2026-09"
+   },
+   "pass": true,
+   "rule": "share >= 0.70 AND txns and active accounts down >= 50% AND Intents monthly volume up >= 50x (2025-01 -> last full month)"
+  },
+  {
+   "id": "T2",
+   "half": "usage",
+   "question": "Is the settlement flow still growing?",
+   "value": {
+    "last90": 11436736957,
+    "prior90": 6488395836,
+    "ratio": 1.7626447655281432,
+    "to": "2026-10-30"
+   },
+   "pass": true,
+   "rule": "ratio >= 1.0"
+  },
+  {
+   "id": "T3",
+   "half": "capture",
+   "question": "Does the value reach the NEAR protocol?",
+   "value": {
+    "near_chain_fees_90d": 354549,
+    "intents_fees_90d": 17036713,
+    "ratio": 0.020810880596509432
+   },
+   "pass": false,
+   "rule": "ratio >= 0.25 (expected FAIL)"
+  },
+  {
+   "id": "T4",
+   "half": "capture",
+   "question": "Does NEAR's price move with the usage that grew?",
+   "value": {
+    "r": -0.0029222353823313094,
+    "weeks": 94,
+    "from": "2025-01-06",
+    "to": "2026-10-19"
+   },
+   "pass": false,
+   "rule": "r >= 0.20 (expected FAIL)"
+  },
+  {
+   "id": "T5",
+   "half": "usage",
+   "question": "How much of NEAR's on-chain traffic is Intents right now?",
+   "value": {
+    "counter_share": 0.04143947655398037,
+    "counter_window": [
+     "2026-10-31T12:50:44.048Z",
+     "2026-10-31T13:03:28.414Z"
+    ],
+    "rpc_sample_share": 0.10784313725490197,
+    "rpc_sample_txs": 204,
+    "rpc_samples": 3
+   },
+   "pass": null,
+   "rule": "reported, no threshold (two methods)"
+  },
+  {
+   "id": "T6",
+   "half": "agents",
+   "question": "Is agent-native demand on NEAR growing?",
+   "value": {
+    "delivered_jobs_first": 399,
+    "delivered_jobs_last": 399,
+    "growth": 0,
+    "window": [
+     "2026-10-31T12:50:44.048Z",
+     "2026-10-31T13:03:28.414Z"
+    ],
+    "agents_last": 525
+   },
+   "pass": null,
+   "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
+  },
+  {
+   "id": "T7",
+   "half": "agents",
+   "question": "How big is agent commerce next to Intents?",
+   "value": {
+    "agent_market_all_time_usd_at_assumed_price": 1995,
+    "price_assumption_usd": 5,
+    "intents_volume_30d": 3912208310
+   },
+   "pass": null,
+   "rule": "order of magnitude, no threshold"
+  },
+  {
+   "id": "T8",
+   "half": "agents",
+   "question": "What share of a live agent's money flow is cross-chain?",
+   "value": {
+    "sent_txs": 429,
+    "chains_with_sent_txs": [
+     "robinhood:426",
+     "bsc:3"
+    ],
+    "nonces_read_at": "2026-10-31T13:11:08.971Z",
+    "cross_chain_ops": 2,
+    "cross_chain_share": 0.004662004662004662,
+    "cross_chain_cost_pct": [
+     5.42,
+     4.92
+    ],
+    "cross_chain_ticket_usd": [
+     0.466068,
+     2.019158
+    ],
+    "decisions": 2
+   },
+   "pass": null,
+   "rule": "reported with n and rules"
+  },
+  {
+   "id": "T9",
+   "half": "agents",
+   "question": "What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent used?",
+   "value": {
+    "route": "Robinhood Chain ETH -> BSC BNB",
+    "quoted_at": "2026-10-31T13:11:10.770Z",
+    "rows": [
+     {
+      "usd": 0.47,
+      "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+      "relay": "5.318%"
+     },
+     {
+      "usd": 2,
+      "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+      "relay": "1.913%"
+     },
+     {
+      "usd": 30,
+      "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+      "relay": "0.919%"
+     },
+     {
+      "usd": 1000,
+      "intents": "0.293%",
+      "relay": "1.846%"
+     },
+     {
+      "usd": 5000,
+      "intents": "0.308%",
+      "relay": "0.853%"
+     }
+    ]
+   },
+   "pass": null,
+   "rule": "reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)"
+  }
+ ],
+ "sources": {
+  "defillama-near-intents-volume.json": "https://api.llama.fi/summary/dexs/near-intents?excludeTotalDataChart=false&excludeTotalDataChartBreakdown=true",
+  "defillama-near-intents-fees.json": "https://api.llama.fi/summary/fees/near-intents?dataType=dailyFees",
+  "defillama-near-chain-fees.json": "https://api.llama.fi/summary/fees/near?dataType=dailyFees",
+  "defillama-near-dex-volume.json": "https://api.llama.fi/overview/dexs/near?excludeTotalDataChartBreakdown=true"
+ }
+}

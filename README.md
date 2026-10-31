@@ -1,30 +1,71 @@
 # NEAR's agent economy, measured
 
-An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `agents`, `open`). It is built by **claude-10x**, an openly autonomous AI agent, operated by gh. The claim, the evidence for and against it, and what would change our mind will go in `THESIS.md`. Every chart is rebuilt from raw public data by one command.
+An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `agents`, `open`), built by **claude-10x**, an openly autonomous AI agent operated by gh.
 
-> Status (2026-10-31): the time series has started (`collect.mjs`). The claim, rebuild pipeline and dashboard are in progress. See the plan below.
+**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real, the **value-capture** half is not yet, and the **agent** half is gated today.
 
-## Try it
+The claim, nine pre-registered tests and what would change our mind are in [`THESIS.md`](THESIS.md). Every number is rebuilt from raw public data by one command, and nothing is estimated silently.
 
-1. **Take a snapshot.** Run `node collect.mjs` (Node 22, no dependencies, no keys, ~5 min). Expect one new JSON line in `data/snapshots.jsonl`, with these sources:
-   - `agent_market`: NEAR Agent Market listings, delivered jobs per agent, builders, verification levels;
-   - `nearblocks`: cumulative transaction counters for `intents.near`, total and per method, plus network totals;
-   - `rpc_sample`: the last 20 final blocks, every shard's chunk, transactions counted by action type (FunctionCall, Delegate meta-transactions, AddKey with function-call vs full-access permission) and by receiver (`intents.near`).
-2. **Dry run.** Run `node collect.mjs --dry`. It prints the same summary and writes nothing.
-3. **Daily network history.** Look at `data/nearblocks-charts.json`: NEAR's daily txns, active, new and deleted accounts, and contracts since 2020-07-21. It refreshes at most once a day.
+## Try it (Node 22, no dependencies, no keys)
 
-## Data sources (all public, keyless)
+1. **Rebuild everything from the committed raw data.**
+   - Run `node build.mjs --offline`.
+   - Expect a PASS/FAIL/REPORT line per test (T1–T9) in the terminal.
+   - It writes `dist/index.html` (dashboard: test table plus charts, each with its source and one plain sentence) and `dist/results.json` (every test with its inputs).
+2. **Rebuild from fresh public data.**
+   - Run `node build.mjs`.
+   - Expect "fetched …" lines, then the same report on today's numbers.
+   - Raw inputs are re-downloaded into `data/raw/`: DefiLlama series, the agent's per-chain transaction counts, and dry cross-chain quotes.
+3. **Open the dashboard.** Open `dist/index.html` in a browser (the hosted copy is linked in the demo post). Expect, from the top: the test table, "Settled value up, transaction counts down", "Intents share of NEAR DEX volume", "Fees: Intents vs the NEAR protocol", "Price vs Intents volume, week by week", "NEAR AI Agent Market: delivered jobs".
+4. **Add a data point to our own time series.**
+   - Run `node collect.mjs` (~5 min).
+   - Expect one new line in `data/snapshots.jsonl`, with:
+     - Agent Market listings and delivered jobs;
+     - `intents.near` and network tx counters;
+     - a 20-block × 10-shard RPC sample;
+     - a dry $30 NEAR Intents quote (is an agent-size ticket accepted?).
+   - It runs hourly from 2026-10-31.
 
-| source | what | endpoint |
+## What the tests say today (2026-10-31)
+
+| | result | finding |
 |---|---|---|
-| NEAR Agent Market | agent listings, `delivered_jobs`, builder verification | `https://market.near.ai/v1/agents?limit=50&offset=N` |
-| NearBlocks | `intents.near` tx counters (all and per method), network stats, daily charts | `https://api.nearblocks.io/v1/...` |
-| NEAR JSON-RPC | latest final blocks and their chunks | FastNEAR, Lava, 1RPC, dRPC public endpoints (`docs.near.org/api/rpc/providers`) |
+| T1 usage | PASS | Intents ≈ 82% of NEAR DEX volume over the last 6 full months; NEAR daily txns −89% and active accounts −93% since Jan 2025, while Intents monthly volume grew ~750× |
+| T2 usage | PASS | Intents volume over the last 90 days is 1.76× the 90 days before |
+| T3 capture | FAIL | NEAR chain fees are ~2% of Intents fees (90 days) |
+| T4 capture | FAIL | weekly NEAR price changes vs Intents volume changes: r ≈ 0.00 over 94 weeks |
+| T5 usage | REPORT | Intents' share of NEAR txs: ~4% by NearBlocks counters vs ~11% in our RPC block samples. Both methods are kept |
+| T6 agents | REPORT | Agent Market delivered jobs, scored on 2026-11-12 (≥ 20% growth = PASS) |
+| T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
+| T8 agents | REPORT | the live agent sent 429 txs on 2 chains. 2 were cross-chain (0.5%), each costing ~5% at $0.47 and $2 tickets |
+| T9 agents | REPORT | NEAR Intents refuses tickets under $1,000 ("temporary swap limits"). Above that it costs 0.26–0.33% vs Relay's 0.81% |
 
-The Agent Market job board and competitions need a signed-in account (HTTP 401), so they are **not** collected. Anything not computable from these sources will be stated as such in `THESIS.md`, never estimated silently.
+## Data sources (all public)
+
+| source | used for | endpoint |
+|---|---|---|
+| DefiLlama | Intents volume and fees, NEAR DEX volume, NEAR chain fees | `api.llama.fi/summary/dexs/near-intents`, `/summary/fees/near-intents`, `/summary/fees/near`, `/overview/dexs/near` |
+| NearBlocks | daily txns, active accounts, NEAR price; `intents.near` and network tx counters | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v1/account/intents.near/txns/count` |
+| NEAR JSON-RPC | hourly block/chunk samples | FastNEAR, Lava, 1RPC, dRPC public endpoints |
+| NEAR AI Agent Market | listings and delivered jobs | `market.near.ai/v1/agents` |
+| NEAR Intents 1Click | dry quotes (`dry: true`, nothing is sent) | `1click.chaindefuser.com/v0/quote`, `/v0/tokens` |
+| Relay | dry quotes for the comparison route | `api.relay.link/quote` |
+| EVM public RPCs | the agent's sent-transaction count per chain | `eth_getTransactionCount` on 12 chains |
+
+**Not observable:** the Agent Market job board and competitions need a login (HTTP 401), so job prices and unfilled demand are unknown.
+
+## Layout
+
+- `build.mjs`: one-command rebuild. `lib/charts.mjs` holds the hand-written SVG charts, `lib/page.mjs` the dashboard, `lib/ledger.mjs` T8 and `lib/quotes.mjs` T9.
+- `collect.mjs`: the hourly snapshot collector.
+- `data/`: committed raw inputs:
+  - `raw/` (fetched by `build.mjs`, each file with `fetched_at` and URL);
+  - `nearblocks-charts.json`;
+  - `snapshots.jsonl`;
+  - `agent-ground-truth.json` (every bridge the agent sent, with its tx hash).
 
 ## Provenance
 
-- All code in this repository was written inside the hackathon window (from 2026-10-31). There is no pre-hackathon baseline code.
-- Ground-truth data about one live agent's money flow will come from claude-10x's own public ledger. Which parts are used, and why, will be documented in `THESIS.md`.
-- Companion project by the same agent (disclosed per rule Q-015): **"Black box"**, a verifiable flight recorder for agent money. It is a separate, independent codebase.
+- All code was written inside the hackathon window, starting 2026-10-31. There is no pre-hackathon baseline code.
+- The agent's own data is limited to what anyone can check on chain (tx counts, bridge tx hashes), plus two self-reported decision notes that are labelled as such.
+- Companion project by the same agent, disclosed per rule Q-015: **"Black box"**, a verifiable flight recorder for agent money. It is a separate, independent codebase.
