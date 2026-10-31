@@ -63,7 +63,7 @@ Data through 2026-10-30; rebuilt by `node build.mjs`.
 | test | half | result | finding |
 |---|---|---|---|
 | T1 | usage | PASS | Over the last 6 full months (2026-04 → 2026-09), NEAR Intents settled 82% of NEAR's DEX volume. From 2025-01 to 2026-09, NEAR's daily transactions fell 89% and its active accounts 93%, while monthly Intents volume grew 750×. |
-| T2 | usage | PASS | Intents settled $11.44B in the 90 days to 2026-10-30, 1.76× the $6.49B of the 90 days before. |
+| T2 | usage | PASS | Intents settled $11.44B in the 90 days to 2026-10-30, 1.76× the $6.49B of the 90 days before. Cross-check: DefiLlama's daily volume moves with NearBlocks' independent daily count of intents.near transactions (r = 0.68 for daily changes over 100 days). |
 | T3 | capture | FAIL | In the last 90 days the NEAR protocol earned $354.5K in fees, 2.1% of the $17.0M that NEAR Intents earned. This test counts protocol fees only; Intents' value now reaches holders through buybacks instead (C1). |
 | T4 | capture | FAIL | Over 94 weeks (2025-01-06 → 2026-10-19), weekly changes in NEAR's price and in Intents volume are uncorrelated (r = 0.00). |
 | T5 | usage | REPORT | Intents received 15% of NEAR's transactions on 2026-10-24 → 2026-10-30 by NearBlocks' daily stats, and 14% of the 877 transactions in our 11 RPC block samples. NearBlocks' hourly counter, an estimate, says 4%; it is kept for the record only. |
@@ -71,7 +71,7 @@ Data through 2026-10-30; rebuilt by `node build.mjs`.
 | T7 | agents | REPORT | Every Agent Market job ever delivered, at an assumed $5 each, comes to about $2.0K; NEAR Intents settled $3.91B in the last 30 days. |
 | T8 | agents | REPORT | The agent has sent 509 transactions (robinhood 497, bsc 3, near 9). 3 of them (0.6%; 0.6% of its 500 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 9 NEAR transactions are the companion project anchoring its records, not demand. |
 | T9 | agents | REPORT | Robinhood Chain ETH → BSC BNB: NEAR Intents refused $0.47, $2, $30, $1,000 and accepted the rest at 0.26%. Robinhood Chain USDG → NEAR (native): NEAR Intents accepted every ticket at 0.46–0.78%. (quotes of 2026-10-31 21:40Z) |
-| C1 | capture | REPORT | In the 90 days to 2026-10-30, $4.7M of Intents revenue bought NEAR back (27.6% of Intents' fees) and gas burn added $248.2K: $20.0M a year, 0.34% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($143.0M); the buyback is 13% of that. |
+| C1 | capture | REPORT | In the 90 days to 2026-10-30, $4.7M of Intents revenue bought NEAR back (27.6% of Intents' fees) and gas burn added $248.2K: $20.0M a year, 0.34% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($143.0M); the buyback is 13% of that. Cross-check: the buyback wallet holds 68% of the NEAR the series would have bought at daily prices (outflows not decoded). |
 | F1 | usage | pending | Pending: scored on 2026-11-02 → 2026-11-12 data against 2026-10-22 → 2026-11-01 (PREREG.md). |
 | F2 | usage | pending | Pending: scored on 2026-11-02 → 2026-11-12 data against 2026-10-22 → 2026-11-01 (PREREG.md). |
 | F3 | agents | pending | Pending: Agent Market jobs per day on 2026-11-07 → 11-13 against 2026-11-02 → 11-07 (PREREG.md). |

@@ -154,6 +154,12 @@ async function main() {
   const intDaily = fs.existsSync(path.join(RAW, 'nearblocks-intents-daily-txns.json'))
     ? new Map(readRaw('nearblocks-intents-daily-txns.json').body.data.map((r) => [r.date, Number(r.txns)])) : new Map();
   const days7 = [...intDaily.keys()].filter((d) => nbDaily.has(d)).sort().slice(-7);
+  // Cross-check of DefiLlama's volume (NEAR's own Dune dataset) against an independent count: NearBlocks' daily intents.near
+  // transactions. Agreement in direction is some evidence the volume series tracks real activity; it is not a volume check.
+  const xDays = [...intDaily.keys()].filter((d) => intentsVol.get(d) > 0 && intDaily.get(d) > 0).sort();
+  if (xDays.length > 2) tests.find((t) => t.id === 'T2').value.cross_check_vs_nearblocks_txns = { days: [xDays[0], xDays.at(-1)], n: xDays.length,
+    r_log_levels: corr(xDays.map((d) => Math.log(intentsVol.get(d))), xDays.map((d) => Math.log(intDaily.get(d)))),
+    r_daily_log_changes: corr(dlog(xDays.map((d) => intentsVol.get(d))), dlog(xDays.map((d) => intDaily.get(d)))) };
   const int7 = days7.reduce((s, d) => s + intDaily.get(d), 0), net7 = days7.reduce((s, d) => s + Number(nbDaily.get(d).txns), 0);
   const samp = snaps.filter((s) => s.rpc_sample?.txs);
   const sTx = samp.reduce((s, x) => s + x.rpc_sample.txs, 0), sInt = samp.reduce((s, x) => s + x.rpc_sample.txs_to_intents, 0);
@@ -195,7 +201,10 @@ async function main() {
   const hasC1 = ['defillama-near-intents-holders-revenue.json', 'defillama-near-chain-revenue.json', 'nearblocks-stats.json', 'near-supply.json'].every((f) => fs.existsSync(path.join(RAW, f)));
   let c1 = null;
   if (hasC1) {
-    const buyback90 = sumRange(llamaDaily('defillama-near-intents-holders-revenue.json'), addDays(lastDay, -89), lastDay);
+    const holders = llamaDaily('defillama-near-intents-holders-revenue.json');
+    const buyback90 = sumRange(holders, addDays(lastDay, -89), lastDay);
+    // Cross-check: the NEAR that the buyback series would have bought at each day's NearBlocks price, vs the wallet's balance
+    const bought = [...holders].filter(([d, x]) => x > 0 && Number(nbDaily.get(d)?.near_price) > 0);
     const burn90 = sumRange(llamaDaily('defillama-near-chain-revenue.json'), addDays(lastDay, -89), lastDay);
     const st = readRaw('nearblocks-stats.json').body.stats[0], sup = readRaw('near-supply.json');
     const days = (Number(sup.now.timestamp_ns) - Number(sup.then.timestamp_ns)) / 86400e9;
@@ -208,7 +217,10 @@ async function main() {
       net_issuance_rate: issuedPerYear / supNow, net_issuance_usd_per_year: issuedPerYear * price,
       // supply growth is already net of the gas burn, so the buyback alone is compared with it
       buyback_vs_net_issuance: ((buyback90 * 365) / 90) / (issuedPerYear * price),
-      buyback_wallet_near: near(sup.buyback_wallet.balance_yocto), supply_read_at: sup.fetched_at };
+      buyback_wallet_near: near(sup.buyback_wallet.balance_yocto), supply_read_at: sup.fetched_at,
+      buyback_since_switch_usd: [...holders].reduce((a, [, x]) => a + x, 0),
+      buyback_near_implied_at_daily_prices: bought.reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0) };
+    c1.buyback_wallet_vs_implied = c1.buyback_wallet_near / c1.buyback_near_implied_at_daily_prices;
   }
   tests.push({ id: 'C1', half: 'capture', question: "How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?", value: c1,
     pass: null, rule: 'reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)' });

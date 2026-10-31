@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-31T21:48:27.259Z",
+ "built_at": "2026-10-31T22:00:32.783Z",
  "offline": true,
  "last_day": "2026-10-30",
  "conclusion": [
@@ -41,7 +41,16 @@
     "last90": 11436736957,
     "prior90": 6488395836,
     "ratio": 1.7626447655281432,
-    "to": "2026-10-30"
+    "to": "2026-10-30",
+    "cross_check_vs_nearblocks_txns": {
+     "days": [
+      "2026-07-23",
+      "2026-10-30"
+     ],
+     "n": 100,
+     "r_log_levels": 0.7266897080634367,
+     "r_daily_log_changes": 0.6828218863028397
+    }
    },
    "pass": true,
    "rule": "ratio >= 1.0"
@@ -256,7 +265,10 @@
     "net_issuance_usd_per_year": 143012080.07880023,
     "buyback_vs_net_issuance": 0.13311917225266845,
     "buyback_wallet_near": 2144502.842527,
-    "supply_read_at": "2026-10-31T21:40:38.320Z"
+    "supply_read_at": "2026-10-31T21:40:38.320Z",
+    "buyback_since_switch_usd": 7470792.05,
+    "buyback_near_implied_at_daily_prices": 3144532.4959958517,
+    "buyback_wallet_vs_implied": 0.6819782734819061
    },
    "pass": null,
    "rule": "reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)"
