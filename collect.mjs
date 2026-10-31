@@ -91,6 +91,10 @@ async function nearblocks() {
   await sleep(2500);
   const c = await getJson(`https://api.nearblocks.io/v1/account/${INTENTS}/txns/count`);
   out.intents_txns_total = Number(c.txns?.[0]?.count ?? NaN);
+  // txns/count counts receipt rows (refunds included: 8 rows for 4 txs on the agent's own account); txns-only counts transactions
+  await sleep(2500);
+  try { const t = await getJson(`https://api.nearblocks.io/v1/account/${INTENTS}/txns-only/count`); out.intents_txns_only_total = Number(t.txns?.[0]?.count ?? NaN); }
+  catch (e) { out.intents_txns_only_total = null; }
   out.intents_methods = {};
   for (const m of INTENT_METHODS) {
     await sleep(2500);
@@ -179,5 +183,5 @@ if (!Object.keys(snap.errors).length) delete snap.errors;
 if (!DRY) { fs.mkdirSync(DATA, { recursive: true }); fs.appendFileSync(OUT, JSON.stringify(snap) + '\n'); }
 const am = snap.agent_market || {}, nb = snap.nearblocks || {}, rs = snap.rpc_sample || {};
 console.log(JSON.stringify({ at: snap.at, written: !DRY, agents: am.agents, delivered_jobs_total: am.delivered_jobs_total,
-  intents_txns_total: nb.intents_txns_total, sample: { blocks: rs.blocks, txs: rs.txs, to_intents: rs.txs_to_intents, fck_adds: rs.add_key_function_call },
+  intents_txns_total: nb.intents_txns_total, intents_txns_only_total: nb.intents_txns_only_total, sample: { blocks: rs.blocks, txs: rs.txs, to_intents: rs.txs_to_intents, fck_adds: rs.add_key_function_call },
   charts: snap.charts, errors: snap.errors || null }));

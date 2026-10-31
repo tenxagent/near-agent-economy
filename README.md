@@ -37,7 +37,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | T5 usage | REPORT | Intents' share of NEAR txs: ~4% by NearBlocks counters vs ~11% in our RPC block samples. Both methods are kept |
 | T6 agents | REPORT | Agent Market delivered jobs, scored on 2026-11-12 (≥ 20% growth = PASS) |
 | T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
-| T8 agents | REPORT | the live agent sent 495 txs on 2 EVM chains. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4% |
+| T8 agents | REPORT | the live agent sent 501 txs: 498 on 2 EVM chains and 3 from its own NEAR account. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4%. The NEAR txs are the companion project anchoring its records on SocialDB, so they are not evidence of agent demand (THESIS.md) |
 | T9 agents | REPORT | It depends on the route. Hood ETH → BSC: NEAR Intents refuses tickets under $1,000 ("temporary swap limits"); above that it costs ~0.3% vs Relay's ~0.8%. Hood USDG → NEAR: every ticket from $0.47 to $5,000 is accepted at 0.3–0.7%, and the agent's own $1 move settled in 14 s. Route shape matters more than ticket size: the cost floor (≈ $0.075 per swap) is the withdrawal back to Robinhood Chain (THESIS.md, Data limits) |
 
 ## Data sources (all public)
@@ -45,8 +45,8 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | source | used for | endpoint |
 |---|---|---|
 | DefiLlama | Intents volume and fees, NEAR DEX volume, NEAR chain fees | `api.llama.fi/summary/dexs/near-intents`, `/summary/fees/near-intents`, `/summary/fees/near`, `/overview/dexs/near` |
-| NearBlocks | daily txns, active accounts, NEAR price; `intents.near` and network tx counters | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v1/account/intents.near/txns/count` |
-| NEAR JSON-RPC | hourly block/chunk samples | FastNEAR, Lava, 1RPC, dRPC public endpoints |
+| NearBlocks | daily txns, active accounts, NEAR price; `intents.near` and network tx counters; cross-check of the agent's NEAR tx count | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v1/account/<id>/txns/count`, `/txns-only/count` |
+| NEAR JSON-RPC | hourly block/chunk samples; the agent's NEAR sent-tx count (access-key nonce) | FastNEAR, Lava, 1RPC, dRPC public endpoints |
 | NEAR AI Agent Market | listings and delivered jobs | `market.near.ai/v1/agents` |
 | NEAR Intents 1Click | dry quotes (`dry: true`, nothing is sent) | `1click.chaindefuser.com/v0/quote`, `/v0/tokens` |
 | Relay | dry quotes for the comparison route | `api.relay.link/quote` |

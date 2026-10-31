@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-31T17:05:55.132Z",
+ "built_at": "2026-10-31T19:42:29.382Z",
  "offline": true,
  "last_day": "2026-10-30",
  "tests": [
@@ -69,17 +69,22 @@
    "half": "usage",
    "question": "How much of NEAR's on-chain traffic is Intents right now?",
    "value": {
-    "counter_share": 0.0403417525719684,
+    "counter_share": 0.04077064623328115,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T16:57:59.559Z"
+     "2026-10-31T18:55:42.487Z"
     ],
-    "rpc_sample_share": 0.14189189189189189,
-    "rpc_sample_txs": 592,
-    "rpc_samples": 7
+    "counter_share_txns_only": null,
+    "counter_txns_only_window": [
+     null,
+     null
+    ],
+    "rpc_sample_share": 0.14030612244897958,
+    "rpc_sample_txs": 784,
+    "rpc_samples": 9
    },
    "pass": null,
-   "rule": "reported, no threshold (two methods)"
+   "rule": "reported, no threshold (two methods; the counter in two units)"
   },
   {
    "id": "T6",
@@ -91,9 +96,9 @@
     "growth": 0.010025062656641603,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T16:57:59.559Z"
+     "2026-10-31T18:55:42.487Z"
     ],
-    "agents_last": 525
+    "agents_last": 527
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
@@ -115,14 +120,15 @@
    "half": "agents",
    "question": "What share of a live agent's money flow is cross-chain?",
    "value": {
-    "sent_txs": 495,
+    "sent_txs": 501,
     "chains_with_sent_txs": [
-     "robinhood:492",
-     "bsc:3"
+     "robinhood:495",
+     "bsc:3",
+     "near:3"
     ],
-    "nonces_read_at": "2026-10-31T17:03:21.573Z",
+    "nonces_read_at": "2026-10-31T19:41:54.929Z",
     "cross_chain_ops": 3,
-    "cross_chain_share": 0.006060606060606061,
+    "cross_chain_share": 0.005988023952095809,
     "cross_chain_cost_pct": [
      5.42,
      4.92,
@@ -133,6 +139,11 @@
      2.019158,
      1
     ],
+    "near_account_txs": {
+     "sent": 3,
+     "nearblocks_txns_only": 3,
+     "what": "SocialDB set calls (receiver social.near) that anchor the companion project's records on NEAR mainnet; single-chain, not bridges"
+    },
     "decisions": 2
    },
    "pass": null,

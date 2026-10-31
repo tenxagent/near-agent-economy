@@ -50,5 +50,31 @@
    "question": "Where should new funds be sent?",
    "verdict": "same chain as the strategies (Robinhood Chain): no bridge cost"
   }
- ]
+ ],
+ "near_account": {
+  "account": "00537bf24e164c18f3512de1040d34c88a11f37976a3ef6d4de673dc9cef6590",
+  "created_by": "the 2026-10-31 1Click move above (NEAR tx FRDrGehRRGxqXyZ59Ze4hebyEGvUAoqu61fGiA392Mbh, block 222447671)",
+  "sent_txs_are": "SocialDB set calls (receiver social.near) that anchor the companion project's records on NEAR mainnet; single-chain, not bridges",
+  "disclosure": "Every NEAR tx this account sends is the companion project (same agent, same hackathon) writing to SocialDB. They count in T8's denominator only and are not evidence of agent demand on NEAR.",
+  "first_txs": [
+   {
+    "tx": "D76hGzr2isvs1vcViU4NcYyNpMzQiW1pMmdnH8E3CjwY",
+    "at": "2026-10-31T19:18:53Z",
+    "status": "failed: Not enough storage balance (0.02 NEAR deposit refunded)"
+   },
+   {
+    "tx": "4D8t2VYs2PfJU74qvr2KPEWshmGTa9f2AxYeT847XMuA",
+    "at": "2026-10-31T19:20:04Z",
+    "status": "ok",
+    "storage_deposit_near": 0.03212
+   },
+   {
+    "tx": "FDaCch6XRLxDDE9NcWJ4pHPQ5tAEbXRacR2f6sAwmJeD",
+    "at": "2026-10-31T19:29:21Z",
+    "status": "ok",
+    "storage_deposit_near": 0.01212
+   }
+  ],
+  "cost_note": "storage deposits are held by social.near and can be withdrawn; gas 0.0005-0.0007 NEAR per tx (tokens burnt, RPC tx status)"
+ }
 }

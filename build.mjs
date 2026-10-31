@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { svgLine, svgScatter } from './lib/charts.mjs';
-import { classifyLedgerSummary, fetchNonces } from './lib/ledger.mjs';
+import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.mjs';
 import { fetchQuotes } from './lib/quotes.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
@@ -33,8 +33,9 @@ async function refresh() {
     fs.writeFileSync(path.join(RAW, file), JSON.stringify({ fetched_at: new Date().toISOString(), url, body }));
     console.log(`fetched ${file}`);
   }
-  const address = JSON.parse(fs.readFileSync(path.join(DIR, 'data', 'agent-ground-truth.json'), 'utf8')).address;
-  fs.writeFileSync(path.join(RAW, 'agent-nonces.json'), JSON.stringify({ fetched_at: new Date().toISOString(), address, nonces: await fetchNonces(address) }));
+  const gt = JSON.parse(fs.readFileSync(path.join(DIR, 'data', 'agent-ground-truth.json'), 'utf8'));
+  fs.writeFileSync(path.join(RAW, 'agent-nonces.json'), JSON.stringify({ fetched_at: new Date().toISOString(), address: gt.address, nonces: await fetchNonces(gt.address),
+    near: gt.near_account ? await fetchNearSent(gt.near_account.account) : undefined }));
   console.log('fetched agent-nonces.json');
   fs.writeFileSync(path.join(RAW, 'cross-chain-quotes.json'), JSON.stringify({ fetched_at: new Date().toISOString(), ...(await fetchQuotes()) }));
   console.log('fetched cross-chain-quotes.json');
@@ -117,11 +118,16 @@ async function main() {
   const first = ok[0], last = ok.at(-1);
   const dNet = Number(last.nearblocks.network.total_txns) - Number(first.nearblocks.network.total_txns);
   const dInt = last.nearblocks.intents_txns_total - first.nearblocks.intents_txns_total;
+  // transaction-level counter, recorded from 2026-10-31 ~20Z (txns/count above counts receipt rows, so its units differ)
+  const okT = snaps.filter((s) => s.nearblocks?.network?.total_txns && s.nearblocks?.intents_txns_only_total);
+  const dNetT = okT.length >= 2 ? Number(okT.at(-1).nearblocks.network.total_txns) - Number(okT[0].nearblocks.network.total_txns) : 0;
+  const dIntT = okT.length >= 2 ? okT.at(-1).nearblocks.intents_txns_only_total - okT[0].nearblocks.intents_txns_only_total : 0;
   const samp = snaps.filter((s) => s.rpc_sample?.txs);
   const sTx = samp.reduce((s, x) => s + x.rpc_sample.txs, 0), sInt = samp.reduce((s, x) => s + x.rpc_sample.txs_to_intents, 0);
   tests.push({ id: 'T5', half: 'usage', question: "How much of NEAR's on-chain traffic is Intents right now?",
-    value: { counter_share: dNet ? dInt / dNet : null, counter_window: [first?.at, last?.at], rpc_sample_share: sTx ? sInt / sTx : null, rpc_sample_txs: sTx, rpc_samples: samp.length },
-    pass: null, rule: 'reported, no threshold (two methods)' });
+    value: { counter_share: dNet ? dInt / dNet : null, counter_window: [first?.at, last?.at],
+      counter_share_txns_only: dNetT ? dIntT / dNetT : null, counter_txns_only_window: [okT[0]?.at, okT.at(-1)?.at], rpc_sample_share: sTx ? sInt / sTx : null, rpc_sample_txs: sTx, rpc_samples: samp.length },
+    pass: null, rule: 'reported, no threshold (two methods; the counter in two units)' });
 
   // T6/T7: Agent Market
   const am = snaps.filter((s) => s.agent_market?.agents);
