@@ -39,6 +39,8 @@ The rebuild pipeline computes each test from raw data and prints PASS/FAIL. The 
 | T8 | What share of a live agent's money flow is cross-chain? | claude-10x's own wallet: sent-transaction counts per chain, re-read from public RPCs (anyone can check them with `eth_getTransactionCount`), plus every bridge it sent, each listed with its tx hash in `data/agent-ground-truth.json`. One agent, so this is ground truth, not a sample | reported as a share, with n and per-bridge cost | agents |
 | T9 | What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent actually used? | Dry price quotes on the agent's own real route (Robinhood Chain ETH → BSC BNB) at $0.47 / $2 / $30 / $1,000 / $5,000: NEAR Intents 1Click (`dry: true`) vs Relay. Re-quoted on every online build and recorded hourly by `collect.mjs` | reported, **not scored**. Added on 2026-10-31 ~13:45Z, after the first probe had already shown the result, so it can't be a fair pre-registered test | agents |
 
+**How to read these tests.** T1 and T2 thresholds were set after the exploration disclosed above, and they sit below the values we had seen, so read them as descriptions of the past, not as tests that could have failed. T6's measure is cumulative: 20% more delivered jobs shows that demand exists, not that it is growing. The tests that can fail on data that did not exist when they were written are T6 and the forward tests **F1–F3** in [`PREREG.md`](PREREG.md) (registered 2026-10-31, scored on 2026-11-02 → 11-12 against the 11 days before, hash anchored on NEAR mainnet).
+
 ## Findings added after the lock (disclosed)
 
 **T9's first probe (2026-10-31 13:10Z) returned this for every ticket under $1,000:**

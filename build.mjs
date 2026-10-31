@@ -28,12 +28,27 @@ const SOURCES = {
 async function refresh() {
   fs.mkdirSync(RAW, { recursive: true });
   for (const [file, url] of Object.entries(SOURCES)) {
-    const r = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json' }, signal: AbortSignal.timeout(60_000) });
-    if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
-    const body = await r.json();
-    fs.writeFileSync(path.join(RAW, file), JSON.stringify({ fetched_at: new Date().toISOString(), url, body }));
-    console.log(`fetched ${file}`);
+    try {
+      const r = await fetch(url, { headers: { 'user-agent': UA, accept: 'application/json' }, signal: AbortSignal.timeout(60_000) });
+      if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
+      const body = await r.json();
+      fs.writeFileSync(path.join(RAW, file), JSON.stringify({ fetched_at: new Date().toISOString(), url, body }));
+      console.log(`fetched ${file}`);
+    } catch (e) {
+      // a rate limit or outage on one source keeps the committed copy (its fetched_at says how old it is) instead of failing the build
+      if (!fs.existsSync(path.join(RAW, file))) throw e;
+      console.warn(`kept committed ${file} (fetched_at ${readRaw(file).fetched_at}): ${e.message}`);
+    }
   }
+  // NearBlocks daily network txns (F2's denominator) are refreshed here too, so scoring does not depend on collect.mjs running
+  try {
+    const j = await (await fetch('https://api.nearblocks.io/v1/charts', { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(60_000) })).json();
+    const keep = ['date', 'txns', 'new_accounts', 'active_accounts', 'deleted_accounts', 'new_contracts', 'active_contracts', 'unique_contracts', 'multichain_txns', 'gas_used', 'blocks', 'near_price'];
+    const rows = (j.charts || []).map((r) => Object.fromEntries(keep.map((k) => [k, r[k] ?? null])));
+    if (!rows.length) throw new Error('no rows');
+    fs.writeFileSync(path.join(DIR, 'data', 'nearblocks-charts.json'), JSON.stringify({ fetched_at: new Date().toISOString(), source: 'https://api.nearblocks.io/v1/charts', rows }));
+    console.log('fetched nearblocks-charts.json');
+  } catch (e) { console.warn(`kept committed nearblocks-charts.json: ${e.message}`); }
   const gt = JSON.parse(fs.readFileSync(path.join(DIR, 'data', 'agent-ground-truth.json'), 'utf8'));
   fs.writeFileSync(path.join(RAW, 'agent-nonces.json'), JSON.stringify({ fetched_at: new Date().toISOString(), address: gt.address, nonces: await fetchNonces(gt.address),
     near: gt.near_account ? await fetchNearSent(gt.near_account.account) : undefined }));
@@ -159,6 +174,26 @@ async function main() {
       intents: r.near_intents_1click.ok ? `${r.near_intents_1click.cost_pct}%` : `refused: ${r.near_intents_1click.message}`,
       relay: !r.relay ? 'no route' : r.relay.ok ? `${r.relay.cost_pct}%` : `error: ${r.relay.message}` })) })) },
     pass: null, rule: 'reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)' });
+
+  // F1–F3: forward tests (PREREG.md), scored only on 2026-11-02 → 11-12 against the 11 days before
+  const daysIn = (from, n) => Array.from({ length: n }, (_, i) => addDays(from, i));
+  const W = daysIn('2026-11-02', 11), B = daysIn('2026-10-22', 11);
+  const sumDays = (map, days) => (days.every((d) => map.has(d)) ? days.reduce((s, d) => s + map.get(d), 0) : null);
+  // pending until every input exists; still missing at the submission deadline = not scorable, never estimated
+  const status = (scored) => (scored ? 'scored' : Date.now() > Date.parse('2026-11-14T23:59:59Z') ? 'not scorable' : 'pending');
+  const forward = (id, half, question, w, b, rule) => ({ id, half, question, value: { status: status(w !== null && b !== null), window: [W[0], W.at(-1)], baseline: [B[0], B.at(-1)], w, b },
+    pass: w === null || b === null ? null : w >= b, rule });
+  tests.push(forward('F1', 'usage', 'Does settled value keep growing?', sumDays(intentsVol, W), sumDays(intentsVol, B), 'volume(W) >= volume(B) (PREREG.md)'));
+  const netDaily = new Map([...nbDaily].map(([d, r]) => [d, Number(r.txns)]));
+  const share = (days) => { const i = sumDays(intDaily, days), n = sumDays(netDaily, days); return i === null || n === null ? null : i / n; };
+  tests.push(forward('F2', 'usage', "Does NEAR's traffic keep shifting to Intents?", share(W), share(B), 'share(W) >= share(B) (PREREG.md)'));
+  const snapAt = (iso) => snaps.find((s) => s.agent_market?.delivered_by_agent && Date.parse(s.at) >= Date.parse(iso) && Date.parse(s.at) - Date.parse(iso) <= 3 * 3600_000);
+  const jobsBetween = (a, b) => (a && b ? Object.entries(b.agent_market.delivered_by_agent).reduce((s, [k, n]) => s + n - (a.agent_market.delivered_by_agent[k] || 0), 0) : null);
+  const [s0, s1, s2] = ['2026-11-02T00:00:00Z', '2026-11-07T00:00:00Z', '2026-11-13T00:00:00Z'].map(snapAt);
+  const r1 = jobsBetween(s0, s1) === null ? null : jobsBetween(s0, s1) / 5, r2 = jobsBetween(s1, s2) === null ? null : jobsBetween(s1, s2) / 6;
+  tests.push({ id: 'F3', half: 'agents', question: 'Is agent demand accelerating, not just present?',
+    value: { status: status(r1 !== null && r2 !== null), snapshots: [s0?.at ?? null, s1?.at ?? null, s2?.at ?? null], jobs_per_day_first: r1, jobs_per_day_second: r2 },
+    pass: r1 === null || r2 === null ? null : r2 >= r1 && r2 > 0, rule: 'rate(11-07 -> 11-13) >= rate(11-02 -> 11-07) and > 0 (PREREG.md)' });
 
   // ---------- charts
   const months = [...ivM.keys()].filter((m) => m >= '2024-12').sort();

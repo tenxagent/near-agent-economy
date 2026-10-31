@@ -4,7 +4,7 @@ An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `
 
 **The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real and the **value-capture** half is not yet. The **agent** half depends on the route: NEAR Intents refuses the agent's ETH → BSC route below $1,000, but it settled the agent's own $1 USDG → NEAR move in 14 s.
 
-The claim, nine pre-registered tests and what would change our mind are in [`THESIS.md`](THESIS.md). Every number is rebuilt from raw public data by one command, and nothing is estimated silently.
+The claim, nine pre-registered tests and what would change our mind are in [`THESIS.md`](THESIS.md). Three forward tests, scored only on 2026-11-02 → 11-12 data that did not exist when they were written, are in [`PREREG.md`](PREREG.md). Every number is rebuilt from raw public data by one command, and nothing is estimated silently.
 
 ## Try it (Node 22, no dependencies, no keys)
 
@@ -39,6 +39,9 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
 | T8 agents | REPORT | the live agent sent 501 txs: 498 on 2 EVM chains and 3 from its own NEAR account. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4%. The NEAR txs are the companion project anchoring its records on SocialDB, so they are not evidence of agent demand (THESIS.md) |
 | T9 agents | REPORT | It depends on the route. Hood ETH → BSC: NEAR Intents refuses tickets under $1,000 ("temporary swap limits"); above that it costs ~0.3% vs Relay's ~0.8%. Hood USDG → NEAR: every ticket from $0.47 to $5,000 is accepted at 0.3–0.7%, and the agent's own $1 move settled in 14 s. Route shape matters more than ticket size: the cost floor (≈ $0.075 per swap) is the withdrawal back to Robinhood Chain (THESIS.md, Data limits) |
+| F1 usage | pending | Intents volume, 11-02 → 11-12 vs the 11 days before (PREREG.md) |
+| F2 usage | pending | Intents' share of NEAR txs (NearBlocks daily stats), same windows |
+| F3 agents | pending | Agent Market delivered jobs per day, 11-07 → 11-13 vs 11-02 → 11-07 |
 
 ## Data sources (all public)
 

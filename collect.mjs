@@ -74,7 +74,7 @@ async function agentMarket() {
     const v = a.builder?.verification?.level || 'none';
     byVerif[v] = (byVerif[v] || 0) + 1;
     if (a.owner_account_id) builders.add(a.owner_account_id);
-    if (dj > 0) delivered[a.handle || a.agent_id] = dj;
+    if (dj > 0) delivered[a.agent_id || a.handle] = dj; // keyed by the stable id: a renamed listing must not look new (PREREG.md F3)
     if ((a.created_at || '') > newest) newest = a.created_at;
   }
   return { agents: agents.length, builders: builders.size, live_or_available: live, agents_with_jobs: withJobs,

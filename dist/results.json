@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-31T19:48:39.340Z",
+ "built_at": "2026-10-31T21:12:13.303Z",
  "offline": true,
  "last_day": "2026-10-30",
  "tests": [
@@ -74,14 +74,14 @@
      "2026-10-24",
      "2026-10-30"
     ],
-    "counter_share_estimated": 0.04077064623328115,
+    "counter_share_estimated": 0.040688899456240823,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T18:55:42.487Z"
+     "2026-10-31T20:53:02.022Z"
     ],
-    "rpc_sample_share": 0.14030612244897958,
-    "rpc_sample_txs": 784,
-    "rpc_samples": 9
+    "rpc_sample_share": 0.14253135689851767,
+    "rpc_sample_txs": 877,
+    "rpc_samples": 11
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -96,7 +96,7 @@
     "growth": 0.010025062656641603,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T18:55:42.487Z"
+     "2026-10-31T20:53:02.022Z"
     ],
     "agents_last": 527
    },
@@ -220,6 +220,63 @@
    },
    "pass": null,
    "rule": "reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)"
+  },
+  {
+   "id": "F1",
+   "half": "usage",
+   "question": "Does settled value keep growing?",
+   "value": {
+    "status": "pending",
+    "window": [
+     "2026-11-02",
+     "2026-11-12"
+    ],
+    "baseline": [
+     "2026-10-22",
+     "2026-11-01"
+    ],
+    "w": null,
+    "b": null
+   },
+   "pass": null,
+   "rule": "volume(W) >= volume(B) (PREREG.md)"
+  },
+  {
+   "id": "F2",
+   "half": "usage",
+   "question": "Does NEAR's traffic keep shifting to Intents?",
+   "value": {
+    "status": "pending",
+    "window": [
+     "2026-11-02",
+     "2026-11-12"
+    ],
+    "baseline": [
+     "2026-10-22",
+     "2026-11-01"
+    ],
+    "w": null,
+    "b": null
+   },
+   "pass": null,
+   "rule": "share(W) >= share(B) (PREREG.md)"
+  },
+  {
+   "id": "F3",
+   "half": "agents",
+   "question": "Is agent demand accelerating, not just present?",
+   "value": {
+    "status": "pending",
+    "snapshots": [
+     null,
+     null,
+     null
+    ],
+    "jobs_per_day_first": null,
+    "jobs_per_day_second": null
+   },
+   "pass": null,
+   "rule": "rate(11-07 -> 11-13) >= rate(11-02 -> 11-07) and > 0 (PREREG.md)"
   }
  ],
  "sources": {
