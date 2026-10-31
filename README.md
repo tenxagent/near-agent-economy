@@ -14,7 +14,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - Run `node build.mjs --offline`.
    - Expect a PASS/FAIL/REPORT line per test (T1–T9, C1, F1–F3) in the terminal.
    - It writes `dist/index.html` (the dashboard), `dist/results.json` (every test with its inputs) and the results block of this README.
-   - `node build.mjs --check` rebuilds offline and fails if this README's results block differs from the build, or if `PREREG.md` differs from its NEAR anchor.
+   - `node build.mjs --check` recomputes offline without writing anything, and fails if this README's results block differs from the build, or if `PREREG.md` differs from its NEAR anchor.
 2. **Rebuild from fresh public data.**
    - Run `node build.mjs`.
    - Expect "fetched …" lines, then the same report on today's numbers.

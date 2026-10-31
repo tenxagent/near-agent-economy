@@ -288,13 +288,15 @@ async function main() {
       categories: ['Intents fees', 'bought back', 'gas burn', 'new NEAR supply'],
       series: [{ name: 'USD per year', color: '#0f766e', values: [(c1.intents_fees_90d * 365) / 90, (c1.buyback_90d * 365) / 90, (c1.burn_90d * 365) / 90, c1.net_issuance_usd_per_year] }] }) });
 
-  // ---------- write
-  fs.mkdirSync(DIST, { recursive: true });
+  // ---------- write (--check is read-only: it compares, and leaves dist/ and the README untouched)
   const results = { built_at: new Date().toISOString(), offline: OFFLINE, last_day: lastDay, conclusion, tests, sources: SOURCES };
-  fs.writeFileSync(path.join(DIST, 'results.json'), JSON.stringify(results, null, 1));
-  fs.writeFileSync(path.join(DIST, 'index.html'), (await import('./lib/page.mjs')).page({ results, charts }));
+  if (!CHECK) {
+    fs.mkdirSync(DIST, { recursive: true });
+    fs.writeFileSync(path.join(DIST, 'results.json'), JSON.stringify(results, null, 1));
+    fs.writeFileSync(path.join(DIST, 'index.html'), (await import('./lib/page.mjs')).page({ results, charts }));
+  }
   for (const t of tests) console.log(`${t.id} ${t.pass === null ? 'REPORT' : t.pass ? 'PASS  ' : 'FAIL  '} ${t.question}  ${JSON.stringify(t.value).slice(0, 160)}`);
-  console.log(`wrote dist/index.html and dist/results.json (${charts.length} charts)`);
+  if (!CHECK) console.log(`wrote dist/index.html and dist/results.json (${charts.length} charts)`);
 
   // README results block, generated (never typed by hand) between the two markers
   const verdictWord = (t) => (t.pass === true ? 'PASS' : t.pass === false ? 'FAIL' : t.value?.status === 'pending' ? 'pending' : t.value?.status === 'not scorable' ? 'not scorable' : 'REPORT');
