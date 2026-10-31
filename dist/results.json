@@ -1,7 +1,14 @@
 {
- "built_at": "2026-10-31T21:23:51.042Z",
- "offline": true,
+ "built_at": "2026-10-31T21:34:20.540Z",
+ "offline": false,
  "last_day": "2026-10-30",
+ "conclusion": [
+  "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.44B in the 90 days to 2026-10-30, 1.76× the 90 days before (T1, T2).",
+  "Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-10-30 that was $4.7M, 28% of Intents' fees; NEAR's gas burn added $248.2K (C1).",
+  "It is small next to the token. Annualized, captured value is $20.0M, 0.35% a year of NEAR's $5.81B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $142.7M a year at $4.43; the buyback is 13% of that. The bought-back NEAR is held (2.14M NEAR in buybacks.multisignature.near), not burned.",
+  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 94 weeks, T4), and agent commerce is tiny next to Intents (T7). Small agent-size tickets into NEAR do settle (T9).",
+  "Read as an investment case: the usage half is proven, value capture exists but covers about 13% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window."
+ ],
  "tests": [
   {
    "id": "T1",
@@ -129,6 +136,8 @@
     "nonces_read_at": "2026-10-31T19:41:54.929Z",
     "cross_chain_ops": 3,
     "cross_chain_share": 0.005988023952095809,
+    "evm_sent_txs": 498,
+    "cross_chain_share_evm_only": 0.006024096385542169,
     "cross_chain_cost_pct": [
      5.42,
      4.92,
@@ -222,6 +231,37 @@
    "rule": "reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)"
   },
   {
+   "id": "C1",
+   "half": "capture",
+   "question": "How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?",
+   "value": {
+    "window": [
+     "2026-08-02",
+     "2026-10-30"
+    ],
+    "buyback_90d": 4694215,
+    "burn_90d": 248184,
+    "intents_fees_90d": 17037689,
+    "buyback_share_of_intents_fees": 0.27551946745829203,
+    "captured_share_of_intents_fees": 0.2900862317653527,
+    "captured_usd_per_year": 20044173.722222224,
+    "market_cap_usd": 5808298821,
+    "near_price_usd": 4.43,
+    "stats_fetched_at": "2026-10-31T21:29:30.966Z",
+    "capture_yield": 0.003450954287983976,
+    "supply_span_days": 91.01879906352593,
+    "total_supply_near": 1310473021.259523,
+    "net_issuance_near_per_year": 32209707.65658193,
+    "net_issuance_rate": 0.02457868810273142,
+    "net_issuance_usd_per_year": 142689004.91865796,
+    "buyback_vs_net_issuance": 0.1334205794838567,
+    "buyback_wallet_near": 2144502.842527,
+    "supply_read_at": "2026-10-31T21:29:30.970Z"
+   },
+   "pass": null,
+   "rule": "reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)"
+  },
+  {
    "id": "F1",
    "half": "usage",
    "question": "Does settled value keep growing?",
@@ -284,6 +324,9 @@
   "defillama-near-intents-fees.json": "https://api.llama.fi/summary/fees/near-intents?dataType=dailyFees",
   "defillama-near-chain-fees.json": "https://api.llama.fi/summary/fees/near?dataType=dailyFees",
   "defillama-near-dex-volume.json": "https://api.llama.fi/overview/dexs/near?excludeTotalDataChartBreakdown=true",
-  "nearblocks-intents-daily-txns.json": "https://api.nearblocks.io/v3/accounts/intents.near/stats/txns?limit=100"
+  "nearblocks-intents-daily-txns.json": "https://api.nearblocks.io/v3/accounts/intents.near/stats/txns?limit=100",
+  "defillama-near-intents-holders-revenue.json": "https://api.llama.fi/summary/fees/near-intents?dataType=dailyHoldersRevenue",
+  "defillama-near-chain-revenue.json": "https://api.llama.fi/summary/fees/near?dataType=dailyRevenue",
+  "nearblocks-stats.json": "https://api.nearblocks.io/v1/stats"
  }
 }

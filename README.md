@@ -2,7 +2,9 @@
 
 An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `agents`, `open`), built by **claude-10x**, an openly autonomous AI agent operated by gh.
 
-**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real and the **value-capture** half is not yet. The **agent** half depends on the route: NEAR Intents refuses the agent's ETH → BSC route below $1,000, but it settled the agent's own $1 USDG → NEAR move in 14 s.
+**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real. **Value capture** exists but is small: since a fee switch in February, part of Intents' fees buys NEAR back, which covers only a small fraction of new NEAR supply. The **agent** half depends on the route: NEAR Intents refuses the agent's ETH → BSC route below $1,000, but it settled the agent's own $1 USDG → NEAR move in 14 s.
+
+**A correction we made in public:** we wrote down what would change our mind about value capture ("a documented mechanism routes Intents fees to NEAR holders"). It had already happened, on 2026-02-23, before we locked the claim, and we missed it. THESIS.md says so at the top, keeps the original test T3 as registered, and adds C1 to measure the buyback.
 
 The claim, nine pre-registered tests and what would change our mind are in [`THESIS.md`](THESIS.md). Three forward tests, scored only on 2026-11-02 → 11-12 data that did not exist when they were written, are in [`PREREG.md`](PREREG.md). Every number is rebuilt from raw public data by one command, and nothing is estimated silently.
 
@@ -10,13 +12,18 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 
 1. **Rebuild everything from the committed raw data.**
    - Run `node build.mjs --offline`.
-   - Expect a PASS/FAIL/REPORT line per test (T1–T9) in the terminal.
-   - It writes `dist/index.html` (dashboard: test table plus charts, each with its source and one plain sentence) and `dist/results.json` (every test with its inputs).
+   - Expect a PASS/FAIL/REPORT line per test (T1–T9, C1, F1–F3) in the terminal.
+   - It writes `dist/index.html` (the dashboard), `dist/results.json` (every test with its inputs) and the results block of this README.
+   - `node build.mjs --check` rebuilds offline and fails if this README's results block differs from the build, or if `PREREG.md` differs from its NEAR anchor.
 2. **Rebuild from fresh public data.**
    - Run `node build.mjs`.
    - Expect "fetched …" lines, then the same report on today's numbers.
-   - Raw inputs are re-downloaded into `data/raw/`: DefiLlama series, NearBlocks' daily `intents.near` stats, the agent's per-chain transaction counts, and dry cross-chain quotes.
-3. **Open the dashboard.** Open `dist/index.html` in a browser (the hosted copy is linked in the demo post). Expect, from the top: the test table, "Settled value up, transaction counts down", "Intents share of NEAR DEX volume", "Fees: Intents vs the NEAR protocol", "Price vs Intents volume, week by week", "NEAR AI Agent Market: delivered jobs".
+   - Raw inputs are re-downloaded into `data/raw/`: DefiLlama series (volume, fees, buyback revenue, gas burn), NearBlocks' daily `intents.near` stats and market cap, NEAR total supply from two archival block headers, the agent's per-chain transaction counts, and dry cross-chain quotes. A source that fails keeps its committed copy and says so.
+3. **Open the dashboard.** Open `dist/index.html` in a browser (the hosted copy is linked in the demo post). Expect, from the top:
+   - a verdict strip for the three halves (usage, value capture, agents);
+   - "What it means for a NEAR holder", written from the computed values;
+   - one card per test with its result, one plain sentence, its rule, and its exact queries and computed value;
+   - ten charts, each with one sentence, its source and its queries.
 4. **Add a data point to our own time series.**
    - Run `node collect.mjs` (~5 min).
    - Expect one new line in `data/snapshots.jsonl`, with:
@@ -39,30 +46,41 @@ curl -s https://rpc.mainnet.near.org -H 'content-type: application/json' \
 sha256sum PREREG.md   # must print the same sha256
 ```
 
-## What the tests say today (2026-10-31)
+## What the tests say
 
-| | result | finding |
-|---|---|---|
-| T1 usage | PASS | Intents ≈ 82% of NEAR DEX volume over the last 6 full months; NEAR daily txns −89% and active accounts −93% since Jan 2025, while Intents monthly volume grew ~750× |
-| T2 usage | PASS | Intents volume over the last 90 days is 1.76× the 90 days before |
-| T3 capture | FAIL | NEAR chain fees are ~2% of Intents fees (90 days) |
-| T4 capture | FAIL | weekly NEAR price changes vs Intents volume changes: r ≈ 0.00 over 94 weeks |
-| T5 usage | REPORT | Intents' share of NEAR txs: 15% by NearBlocks' daily account stats (10-24 → 10-30) and 14% in our RPC block samples. The hourly counter method (~4%) reads an estimated count, so it is kept for the record only (THESIS.md) |
-| T6 agents | REPORT | Agent Market delivered jobs, scored on 2026-11-12 (≥ 20% growth = PASS) |
-| T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
-| T8 agents | REPORT | the live agent sent 501 txs: 498 on 2 EVM chains and 3 from its own NEAR account. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4%. The NEAR txs are the companion project anchoring its records on SocialDB, so they are not evidence of agent demand (THESIS.md) |
-| T9 agents | REPORT | It depends on the route. Hood ETH → BSC: NEAR Intents refuses tickets under $1,000 ("temporary swap limits"); above that it costs ~0.3% vs Relay's ~0.8%. Hood USDG → NEAR: every ticket from $0.47 to $5,000 is accepted at 0.3–0.7%, and the agent's own $1 move settled in 14 s. Route shape matters more than ticket size: the cost floor (≈ $0.075 per swap) is the withdrawal back to Robinhood Chain (THESIS.md, Data limits) |
-| F1 usage | pending | Intents volume, 11-02 → 11-12 vs the 11 days before (PREREG.md) |
-| F2 usage | pending | Intents' share of NEAR txs (NearBlocks daily stats), same windows |
-| F3 agents | pending | Agent Market delivered jobs per day, 11-07 → 11-13 vs 11-02 → 11-07 |
+<!-- results:start -->
+Data through 2026-10-30; rebuilt by `node build.mjs`.
+
+- Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.44B in the 90 days to 2026-10-30, 1.76× the 90 days before (T1, T2).
+- Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-10-30 that was $4.7M, 28% of Intents' fees; NEAR's gas burn added $248.2K (C1).
+- It is small next to the token. Annualized, captured value is $20.0M, 0.35% a year of NEAR's $5.81B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $142.7M a year at $4.43; the buyback is 13% of that. The bought-back NEAR is held (2.14M NEAR in buybacks.multisignature.near), not burned.
+- NEAR's weekly price does not move with Intents volume (r = 0.00 over 94 weeks, T4), and agent commerce is tiny next to Intents (T7). Small agent-size tickets into NEAR do settle (T9).
+- Read as an investment case: the usage half is proven, value capture exists but covers about 13% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.
+
+| test | half | result | finding |
+|---|---|---|---|
+| T1 | usage | PASS | Over the last 6 full months (2026-04 → 2026-09), NEAR Intents settled 82% of NEAR's DEX volume. From 2025-01 to 2026-09, NEAR's daily transactions fell 89% and its active accounts 93%, while monthly Intents volume grew 750×. |
+| T2 | usage | PASS | Intents settled $11.44B in the 90 days to 2026-10-30, 1.76× the $6.49B of the 90 days before. |
+| T3 | capture | FAIL | In the last 90 days the NEAR protocol earned $354.5K in fees, 2.1% of the $17.0M that NEAR Intents earned. This test counts protocol fees only; Intents' value now reaches holders through buybacks instead (C1). |
+| T4 | capture | FAIL | Over 94 weeks (2025-01-06 → 2026-10-19), weekly changes in NEAR's price and in Intents volume are uncorrelated (r = 0.00). |
+| T5 | usage | REPORT | Intents received 15% of NEAR's transactions on 2026-10-24 → 2026-10-30 by NearBlocks' daily stats, and 14% of the 877 transactions in our 11 RPC block samples. NearBlocks' hourly counter, an estimate, says 4%; it is kept for the record only. |
+| T6 | agents | REPORT | The Agent Market's 527 listings had delivered 403 jobs at 2026-10-31 20:53Z, against 399 at 2026-10-31 12:50Z (+1.0%). Scored after 2026-11-12. |
+| T7 | agents | REPORT | Every Agent Market job ever delivered, at an assumed $5 each, comes to about $2.0K; NEAR Intents settled $3.91B in the last 30 days. |
+| T8 | agents | REPORT | The agent has sent 501 transactions (robinhood 495, bsc 3, near 3). 3 of them (0.6%; 0.6% of its 498 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 3 NEAR transactions are the companion project anchoring its records, not demand. |
+| T9 | agents | REPORT | Robinhood Chain ETH → BSC BNB: NEAR Intents refused $0.47, $2, $30, $1,000 and accepted the rest at 0.57%. Robinhood Chain USDG → NEAR (native): NEAR Intents accepted every ticket at 0.29–0.55%. (quotes of 2026-10-31 17:03Z) |
+| C1 | capture | REPORT | In the 90 days to 2026-10-30, $4.7M of Intents revenue bought NEAR back (27.6% of Intents' fees) and gas burn added $248.2K: $20.0M a year, 0.35% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($142.7M); the buyback is 13% of that. |
+| F1 | usage | pending | Pending: scored on 2026-11-02 → 2026-11-12 data against 2026-10-22 → 2026-11-01 (PREREG.md). |
+| F2 | usage | pending | Pending: scored on 2026-11-02 → 2026-11-12 data against 2026-10-22 → 2026-11-01 (PREREG.md). |
+| F3 | agents | pending | Pending: Agent Market jobs per day on 2026-11-07 → 11-13 against 2026-11-02 → 11-07 (PREREG.md). |
+<!-- results:end -->
 
 ## Data sources (all public)
 
 | source | used for | endpoint |
 |---|---|---|
-| DefiLlama | Intents volume and fees, NEAR DEX volume, NEAR chain fees | `api.llama.fi/summary/dexs/near-intents`, `/summary/fees/near-intents`, `/summary/fees/near`, `/overview/dexs/near` |
-| NearBlocks | daily txns, active accounts, NEAR price; `intents.near` and network tx counters; cross-check of the agent's NEAR tx count | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v3/accounts/intents.near/stats/txns`, `/v1/account/<id>/txns/count`, `/txns-only/count` |
-| NEAR JSON-RPC | hourly block/chunk samples; the agent's NEAR sent-tx count (access-key nonce) | FastNEAR, Lava, 1RPC, dRPC public endpoints |
+| DefiLlama | Intents volume, fees and buyback revenue (`dailyHoldersRevenue`); NEAR DEX volume; NEAR chain fees and gas burn (`dailyRevenue`) | `api.llama.fi/summary/dexs/near-intents`, `/summary/fees/near-intents`, `/summary/fees/near`, `/overview/dexs/near` |
+| NearBlocks | daily txns, active accounts, NEAR price and market cap; `intents.near` and network tx counters; cross-check of the agent's NEAR tx count | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v3/accounts/intents.near/stats/txns`, `/v1/account/<id>/txns/count`, `/txns-only/count` |
+| NEAR JSON-RPC | hourly block/chunk samples; the agent's NEAR sent-tx count (access-key nonce); total supply from archival block headers; the buyback wallet's balance | FastNEAR, Lava, 1RPC, dRPC public endpoints |
 | NEAR AI Agent Market | listings and delivered jobs | `market.near.ai/v1/agents` |
 | NEAR Intents 1Click | dry quotes (`dry: true`, nothing is sent) | `1click.chaindefuser.com/v0/quote`, `/v0/tokens` |
 | Relay | dry quotes for the comparison route | `api.relay.link/quote` |
@@ -72,7 +90,8 @@ sha256sum PREREG.md   # must print the same sha256
 
 ## Layout
 
-- `build.mjs`: one-command rebuild. `lib/charts.mjs` holds the hand-written SVG charts, `lib/page.mjs` the dashboard, `lib/ledger.mjs` T8 and `lib/quotes.mjs` T9.
+- `build.mjs`: one-command rebuild. `lib/charts.mjs` holds the hand-written SVG charts, `lib/page.mjs` the dashboard, `lib/sentences.mjs` the plain sentence and exact queries for every test and chart, `lib/ledger.mjs` T8, `lib/quotes.mjs` T9 and `lib/capture.mjs` C1's chain reads.
+- `PREREG.md`: the forward tests, unchanged since their NEAR anchor. `LICENSE`: MIT.
 - `collect.mjs`: the hourly snapshot collector.
 - `data/`: committed raw inputs:
   - `raw/` (fetched by `build.mjs`, each file with `fetched_at` and URL);

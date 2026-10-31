@@ -4,16 +4,23 @@
 //   node build.mjs --offline  build only from the committed files in data/ (reproducible without network)
 // Outputs: dist/index.html (static dashboard, charts as inline SVG), dist/results.json (every test with its inputs).
 // No dependencies (Node 22). Sources are listed per chart and per test in the output.
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { svgBars, svgLine, svgScatter } from './lib/charts.mjs';
 import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.mjs';
 import { fetchQuotes } from './lib/quotes.mjs';
+import { fetchSupply, near } from './lib/capture.mjs';
+import { sentence } from './lib/sentences.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
 const DIST = path.join(DIR, 'dist');
 const OFFLINE = process.argv.includes('--offline');
+// --check: build offline, then fail if README's results block or PREREG.md differ from what the build and the NEAR anchor say
+const CHECK = process.argv.includes('--check');
+// PREREG.md as anchored on NEAR mainnet (tx 5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt, block 222474620; README shows the check)
+const PREREG_SHA256 = '2f303e07684d8f9b4d337d8e14c8c1de9bdb37f97624fdd957da5b205c9f4126';
 const UA = 'near-agent-economy-thesis/0.1';
 
 // Raw inputs: file name -> public URL. Every number in the build traces back to one of these files.
@@ -23,6 +30,10 @@ const SOURCES = {
   'defillama-near-chain-fees.json': 'https://api.llama.fi/summary/fees/near?dataType=dailyFees',
   'defillama-near-dex-volume.json': 'https://api.llama.fi/overview/dexs/near?excludeTotalDataChartBreakdown=true',
   'nearblocks-intents-daily-txns.json': 'https://api.nearblocks.io/v3/accounts/intents.near/stats/txns?limit=100',
+  // C1 (added 2026-10-31 ~22Z): Intents revenue that buys NEAR back since the 2026-02-23 fee switch, NEAR's gas burn, market cap
+  'defillama-near-intents-holders-revenue.json': 'https://api.llama.fi/summary/fees/near-intents?dataType=dailyHoldersRevenue',
+  'defillama-near-chain-revenue.json': 'https://api.llama.fi/summary/fees/near?dataType=dailyRevenue',
+  'nearblocks-stats.json': 'https://api.nearblocks.io/v1/stats',
 };
 
 async function refresh() {
@@ -49,6 +60,10 @@ async function refresh() {
     fs.writeFileSync(path.join(DIR, 'data', 'nearblocks-charts.json'), JSON.stringify({ fetched_at: new Date().toISOString(), source: 'https://api.nearblocks.io/v1/charts', rows }));
     console.log('fetched nearblocks-charts.json');
   } catch (e) { console.warn(`kept committed nearblocks-charts.json: ${e.message}`); }
+  try {
+    fs.writeFileSync(path.join(RAW, 'near-supply.json'), JSON.stringify({ fetched_at: new Date().toISOString(), ...(await fetchSupply()) }));
+    console.log('fetched near-supply.json');
+  } catch (e) { console.warn(`kept committed near-supply.json: ${e.message}`); }
   const gt = JSON.parse(fs.readFileSync(path.join(DIR, 'data', 'agent-ground-truth.json'), 'utf8'));
   fs.writeFileSync(path.join(RAW, 'agent-nonces.json'), JSON.stringify({ fetched_at: new Date().toISOString(), address: gt.address, nonces: await fetchNonces(gt.address),
     near: gt.near_account ? await fetchNearSent(gt.near_account.account) : undefined }));
@@ -79,7 +94,7 @@ const fmtUsd = (v) => v >= 1e9 ? `$${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `$${(v
 
 // ---------- build
 async function main() {
-  if (!OFFLINE) await refresh();
+  if (!OFFLINE && !CHECK) await refresh();
   const intentsVol = llamaDaily('defillama-near-intents-volume.json');
   const intentsFees = llamaDaily('defillama-near-intents-fees.json');
   const chainFees = llamaDaily('defillama-near-chain-fees.json');
@@ -175,6 +190,39 @@ async function main() {
       relay: !r.relay ? 'no route' : r.relay.ok ? `${r.relay.cost_pct}%` : `error: ${r.relay.message}` })) })) },
     pass: null, rule: 'reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)' });
 
+  // C1 (post-lock, REPORT): value that reaches NEAR holders vs NEAR's issuance. Same 90 days as T3 for every revenue series;
+  // supply growth over the span between two archival block headers (~90 days), both annualized.
+  const hasC1 = ['defillama-near-intents-holders-revenue.json', 'defillama-near-chain-revenue.json', 'nearblocks-stats.json', 'near-supply.json'].every((f) => fs.existsSync(path.join(RAW, f)));
+  let c1 = null;
+  if (hasC1) {
+    const buyback90 = sumRange(llamaDaily('defillama-near-intents-holders-revenue.json'), addDays(lastDay, -89), lastDay);
+    const burn90 = sumRange(llamaDaily('defillama-near-chain-revenue.json'), addDays(lastDay, -89), lastDay);
+    const st = readRaw('nearblocks-stats.json').body.stats[0], sup = readRaw('near-supply.json');
+    const days = (Number(sup.now.timestamp_ns) - Number(sup.then.timestamp_ns)) / 86400e9;
+    const supNow = near(sup.now.total_supply_yocto), issuedPerYear = ((supNow - near(sup.then.total_supply_yocto)) * 365) / days;
+    const price = Number(st.near_price), cap = Number(st.market_cap), captured = ((buyback90 + burn90) * 365) / 90;
+    c1 = { window: [addDays(lastDay, -89), lastDay], buyback_90d: buyback90, burn_90d: burn90, intents_fees_90d: f90i,
+      buyback_share_of_intents_fees: buyback90 / f90i, captured_share_of_intents_fees: (buyback90 + burn90) / f90i,
+      captured_usd_per_year: captured, market_cap_usd: cap, near_price_usd: price, stats_fetched_at: readRaw('nearblocks-stats.json').fetched_at,
+      capture_yield: captured / cap, supply_span_days: days, total_supply_near: supNow, net_issuance_near_per_year: issuedPerYear,
+      net_issuance_rate: issuedPerYear / supNow, net_issuance_usd_per_year: issuedPerYear * price,
+      // supply growth is already net of the gas burn, so the buyback alone is compared with it
+      buyback_vs_net_issuance: ((buyback90 * 365) / 90) / (issuedPerYear * price),
+      buyback_wallet_near: near(sup.buyback_wallet.balance_yocto), supply_read_at: sup.fetched_at };
+  }
+  tests.push({ id: 'C1', half: 'capture', question: "How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?", value: c1,
+    pass: null, rule: 'reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)' });
+
+  // The investment reading, written from the computed values only (shown on the dashboard and in the README)
+  const v = Object.fromEntries(tests.map((t) => [t.id, t.value])), pc = (x, d = 0) => `${(100 * x).toFixed(d)}%`;
+  const conclusion = c1 && [
+    `Usage moved to NEAR Intents: it settled ${pc(v.T1.intents_share_of_near_dex_volume_6m)} of NEAR's DEX volume over the last 6 full months and ${fmtUsd(v.T2.last90)} in the 90 days to ${v.T2.to}, ${v.T2.ratio.toFixed(2)}× the 90 days before (T1, T2).`,
+    `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1).`,
+    `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.`,
+    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). Small agent-size tickets into NEAR do settle (T9).`,
+    `Read as an investment case: the usage half is proven, value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,
+  ];
+
   // F1–F3: forward tests (PREREG.md), scored only on 2026-11-02 → 11-12 against the 11 days before
   const daysIn = (from, n) => Array.from({ length: n }, (_, i) => addDays(from, i));
   const W = daysIn('2026-11-02', 11), B = daysIn('2026-10-22', 11);
@@ -235,13 +283,35 @@ async function main() {
   charts.push({ id: 'c9', title: 'Agent commerce next to Intents', sentence: `All Agent Market jobs ever, at an assumed $${t7.price_assumption_usd} each, vs one month of Intents volume: a ratio of about 1 to ${(t7.intents_volume_30d / t7.agent_market_all_time_usd_at_assumed_price / 1e6).toFixed(1)} million. Log scale (T7).`,
     source: 'market.near.ai/v1/agents (collect.mjs); DefiLlama dexs/near-intents', svg: svgBars({ log: true, unit: '$', categories: ['Agent Market, all time', 'Intents, last 30 days'],
       series: [{ name: 'USD', color: '#0891b2', values: [t7.agent_market_all_time_usd_at_assumed_price, t7.intents_volume_30d] }] }) });
+  if (c1) charts.push({ id: 'c10', title: 'Value captured for NEAR holders vs new NEAR supply, per year', sentence: `Annualized from the 90 days to ${c1.window[1]}: Intents fees ${fmtUsd((c1.intents_fees_90d * 365) / 90)}, of which ${fmtUsd((c1.buyback_90d * 365) / 90)} bought NEAR back; gas burn ${fmtUsd((c1.burn_90d * 365) / 90)}; net new NEAR supply ${fmtUsd(c1.net_issuance_usd_per_year)} at $${c1.near_price_usd} (C1).`,
+    source: 'DefiLlama fees/near-intents (dailyFees, dailyHoldersRevenue), fees/near (dailyRevenue); NEAR archival RPC block headers; NearBlocks /v1/stats', svg: svgBars({ unit: '$',
+      categories: ['Intents fees', 'bought back', 'gas burn', 'new NEAR supply'],
+      series: [{ name: 'USD per year', color: '#0f766e', values: [(c1.intents_fees_90d * 365) / 90, (c1.buyback_90d * 365) / 90, (c1.burn_90d * 365) / 90, c1.net_issuance_usd_per_year] }] }) });
 
   // ---------- write
   fs.mkdirSync(DIST, { recursive: true });
-  const results = { built_at: new Date().toISOString(), offline: OFFLINE, last_day: lastDay, tests, sources: SOURCES };
+  const results = { built_at: new Date().toISOString(), offline: OFFLINE, last_day: lastDay, conclusion, tests, sources: SOURCES };
   fs.writeFileSync(path.join(DIST, 'results.json'), JSON.stringify(results, null, 1));
   fs.writeFileSync(path.join(DIST, 'index.html'), (await import('./lib/page.mjs')).page({ results, charts }));
   for (const t of tests) console.log(`${t.id} ${t.pass === null ? 'REPORT' : t.pass ? 'PASS  ' : 'FAIL  '} ${t.question}  ${JSON.stringify(t.value).slice(0, 160)}`);
   console.log(`wrote dist/index.html and dist/results.json (${charts.length} charts)`);
+
+  // README results block, generated (never typed by hand) between the two markers
+  const verdictWord = (t) => (t.pass === true ? 'PASS' : t.pass === false ? 'FAIL' : t.value?.status === 'pending' ? 'pending' : t.value?.status === 'not scorable' ? 'not scorable' : 'REPORT');
+  const block = [`Data through ${lastDay}; rebuilt by \`node build.mjs\`.`, '', ...(conclusion || []).map((p) => `- ${p}`), '',
+    '| test | half | result | finding |', '|---|---|---|---|', ...tests.map((t) => `| ${t.id} | ${t.half} | ${verdictWord(t)} | ${sentence(t).replace(/\|/g, '/')} |`)].join('\n');
+  const README = path.join(DIR, 'README.md'), readme = fs.readFileSync(README, 'utf8');
+  const re = /(<!-- results:start -->\n)[\s\S]*?(<!-- results:end -->)/;
+  const prereg = crypto.createHash('sha256').update(fs.readFileSync(path.join(DIR, 'PREREG.md'))).digest('hex');
+  if (CHECK) {
+    const errs = [];
+    if (!re.test(readme) || readme.match(re)[0] !== `<!-- results:start -->\n${block}\n<!-- results:end -->`) errs.push('README results block differs from this build (run node build.mjs --offline)');
+    if (prereg !== PREREG_SHA256) errs.push(`PREREG.md sha256 ${prereg} differs from the anchored ${PREREG_SHA256}`);
+    console.log(errs.length ? `CHECK FAILED:\n- ${errs.join('\n- ')}` : 'CHECK OK: README results block matches the build; PREREG.md matches its NEAR anchor');
+    if (errs.length) process.exit(1);
+  } else {
+    if (re.test(readme)) fs.writeFileSync(README, readme.replace(re, (_, a, b) => `${a}${block}\n${b}`)); // a function: block text contains '$'
+    if (prereg !== PREREG_SHA256) console.warn(`WARNING: PREREG.md sha256 ${prereg} differs from the anchored ${PREREG_SHA256}`);
+  }
 }
 main().catch((e) => { console.error(e); process.exit(1); });
