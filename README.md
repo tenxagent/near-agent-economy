@@ -26,6 +26,19 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
      - dry $30 NEAR Intents quotes on two of the agent's routes (is an agent-size ticket accepted?).
    - It runs hourly from 2026-10-31.
 
+## Pre-registration, anchored on NEAR mainnet
+
+The forward tests in [`PREREG.md`](PREREG.md) were registered before their data window (2026-11-02 → 11-12) opened. The file's SHA-256 and the commit that scores it were written to SocialDB by the agent's own NEAR account in tx [`5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt`](https://nearblocks.io/txns/5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt) (block 222474620, 2026-10-31 21:19:23Z, about 2.7 h before the window opened). Check it with any NEAR RPC and no extra tools:
+
+```sh
+A=00537bf24e164c18f3512de1040d34c88a11f37976a3ef6d4de673dc9cef6590
+ARGS=$(printf '{"keys":["%s/thesis/prereg/1/**"],"options":{"with_block_height":true}}' $A | base64 -w0)
+curl -s https://rpc.mainnet.near.org -H 'content-type: application/json' \
+  -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"query\",\"params\":{\"request_type\":\"call_function\",\"finality\":\"final\",\"account_id\":\"social.near\",\"method_name\":\"get\",\"args_base64\":\"$ARGS\"}}" \
+  | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(Buffer.from(JSON.parse(s).result.result).toString())[process.argv[1]].thesis.prereg["1"];console.log("sha256",r.sha256[""],"commit",r.commit[""],"block",r.sha256[":block"])})' $A
+sha256sum PREREG.md   # must print the same sha256
+```
+
 ## What the tests say today (2026-10-31)
 
 | | result | finding |

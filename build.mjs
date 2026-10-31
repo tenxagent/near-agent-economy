@@ -6,7 +6,7 @@
 // No dependencies (Node 22). Sources are listed per chart and per test in the output.
 import fs from 'node:fs';
 import path from 'node:path';
-import { svgLine, svgScatter } from './lib/charts.mjs';
+import { svgBars, svgLine, svgScatter } from './lib/charts.mjs';
 import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.mjs';
 import { fetchQuotes } from './lib/quotes.mjs';
 
@@ -215,7 +215,26 @@ async function main() {
   charts.push({ id: 'c4', title: 'Price vs Intents volume, week by week', sentence: `Each dot is one week: change in NEAR price vs change in Intents volume. r = ${r4.toFixed(2)} over ${wk.length} weeks.`,
     source: 'DefiLlama dexs/near-intents; NearBlocks /v1/charts near_price', svg: svgScatter({ xLabel: 'Δlog Intents volume', yLabel: 'Δlog NEAR price', points: dI.map((x, i) => [x, dP[i]]) }) });
   if (am.length >= 2) charts.push({ id: 'c5', title: 'NEAR AI Agent Market: delivered jobs', sentence: `Delivered jobs across all listed agents, from our hourly snapshots: ${a0.delivered_jobs_total} → ${a1.delivered_jobs_total}.`,
-    source: 'market.near.ai/v1/agents (collect.mjs)', svg: svgLine({ time: true, series: [{ name: 'delivered jobs (cumulative)', color: '#7c3aed', points: am.map((s) => [s.at, s.agent_market.delivered_jobs_total]) }] }) });
+    source: 'market.near.ai/v1/agents (collect.mjs)', svg: svgLine({ time: true, zero: false, series: [{ name: 'delivered jobs (cumulative)', color: '#7c3aed', points: am.map((s) => [s.at, s.agent_market.delivered_jobs_total]) }] }) });
+  const shareDays = [...intDaily.keys()].filter((d) => nbDaily.has(d)).sort();
+  if (shareDays.length >= 2) charts.push({ id: 'c6', title: "Intents' share of NEAR transactions, day by day", sentence: `Daily intents.near transactions ÷ NEAR's daily transactions, ${shareDays[0]} → ${shareDays.at(-1)}: from ${(100 * intDaily.get(shareDays[0]) / Number(nbDaily.get(shareDays[0]).txns)).toFixed(0)}% to ${(100 * intDaily.get(shareDays.at(-1)) / Number(nbDaily.get(shareDays.at(-1)).txns)).toFixed(0)}% (T5).`,
+    source: 'NearBlocks /v3/accounts/intents.near/stats/txns ÷ /v1/charts txns', svg: svgLine({ pct: true, xfmt: 'day', series: [{ name: 'Intents share of NEAR txns', color: '#2563eb', points: shareDays.map((d) => [d, intDaily.get(d) / Number(nbDaily.get(d).txns)]) }] }) });
+  const tickets = qRoutes[0].rows.map((r) => `$${r.usd.toLocaleString('en-US')}`);
+  const costOf = (x) => (x?.ok ? x.cost_pct : null), noteOf = (x) => (x && !x.ok ? 'refused' : null);
+  charts.push({ id: 'c7', title: 'What a cross-chain move costs, by ticket size', sentence: `Dry quotes of ${q.fetched_at.slice(0, 16).replace('T', ' ')}Z. A missing bar marked "refused" is a ticket NEAR Intents would not take (T9).`,
+    source: 'NEAR Intents 1Click /v0/quote (dry) and Relay /quote', svg: svgBars({ unit: '%', categories: tickets, series: [
+      ...qRoutes.map((rt, i) => ({ name: `Intents: ${rt.route.replace('Robinhood Chain ', 'hood ').replace(' -> ', ' → ').replace(' (native)', '')}`, color: ['#2563eb', '#16a34a'][i] ?? '#7c3aed',
+        values: rt.rows.map((r) => costOf(r.near_intents_1click)), notes: rt.rows.map((r) => noteOf(r.near_intents_1click)) })),
+      ...qRoutes.filter((rt) => rt.rows.some((r) => r.relay)).map((rt) => ({ name: `Relay: ${rt.route.replace('Robinhood Chain ', 'hood ').replace(' -> ', ' → ')}`, color: '#f59e0b',
+        values: rt.rows.map((r) => costOf(r.relay)), notes: rt.rows.map(() => null) }))] }) });
+  const perChain = t8.chains_with_sent_txs.map((c) => c.split(':'));
+  charts.push({ id: 'c8', title: "The agent's own transactions, by chain", sentence: `${t8.sent_txs} transactions sent, ${t8.cross_chain_ops} of them cross-chain (${(100 * t8.cross_chain_share).toFixed(1)}%). Log scale (T8).`,
+    source: 'eth_getTransactionCount on 12 EVM chains; NEAR access-key nonce; data/agent-ground-truth.json', svg: svgBars({ log: true, categories: [...perChain.map(([c]) => c), 'cross-chain'],
+      series: [{ name: 'transactions sent', color: '#7c3aed', values: [...perChain.map(([, n]) => Number(n)), t8.cross_chain_ops] }] }) });
+  const t7 = tests.find((t) => t.id === 'T7').value;
+  charts.push({ id: 'c9', title: 'Agent commerce next to Intents', sentence: `All Agent Market jobs ever, at an assumed $${t7.price_assumption_usd} each, vs one month of Intents volume: a ratio of about 1 to ${(t7.intents_volume_30d / t7.agent_market_all_time_usd_at_assumed_price / 1e6).toFixed(1)} million. Log scale (T7).`,
+    source: 'market.near.ai/v1/agents (collect.mjs); DefiLlama dexs/near-intents', svg: svgBars({ log: true, unit: '$', categories: ['Agent Market, all time', 'Intents, last 30 days'],
+      series: [{ name: 'USD', color: '#0891b2', values: [t7.agent_market_all_time_usd_at_assumed_price, t7.intents_volume_30d] }] }) });
 
   // ---------- write
   fs.mkdirSync(DIST, { recursive: true });
