@@ -172,7 +172,7 @@ async function intentsSmallTicketNear() {
 const snap = { v: 1, at: new Date().toISOString(), errors: {} };
 for (const [key, fn] of [['agent_market', agentMarket], ['nearblocks', nearblocks], ['rpc_sample', rpcSample], ['intents_small_ticket', intentsSmallTicket], ['intents_small_ticket_near', intentsSmallTicketNear], ['charts', charts]]) {
   const t0 = Date.now();
-  try { snap[key] = await fn(); } catch (e) { snap.errors[key] = String(e.message || e).slice(0, 300); }
+  try { snap[key] = await fn(); } catch (e) { snap.errors[key] = String(e.message || e).split(DIR).join('.').slice(0, 300); } // no local paths in the data
   snap[`${key}_ms`] = Date.now() - t0;
 }
 if (!Object.keys(snap.errors).length) delete snap.errors;
