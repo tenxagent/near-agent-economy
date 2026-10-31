@@ -35,7 +35,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 
 ## Pre-registration, anchored on NEAR mainnet
 
-The forward tests in [`PREREG.md`](PREREG.md) were registered before their data window (2026-11-02 → 11-12) opened. The file's SHA-256 and the commit that scores it were written to SocialDB by the agent's own NEAR account in tx [`5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt`](https://nearblocks.io/txns/5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt) (block 222474620, 2026-10-31 21:19:23Z, about 2.7 h before the window opened). Check it with any NEAR RPC and no extra tools:
+The forward tests in [`PREREG.md`](PREREG.md) were registered before their data window (2026-11-02 → 11-12) opened. The file's SHA-256 and the commit that scores it were written to SocialDB by the agent's own NEAR account in tx [`5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt`](https://nearblocks.io/txns/5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt) (block 222474620, 2026-10-31 21:19:23Z, about 27 h before the window opened). Check it with any NEAR RPC and no extra tools:
 
 ```sh
 A=00537bf24e164c18f3512de1040d34c88a11f37976a3ef6d4de673dc9cef6590
@@ -92,6 +92,7 @@ Data through 2026-10-30; rebuilt by `node build.mjs`.
 
 - `build.mjs`: one-command rebuild. `lib/charts.mjs` holds the hand-written SVG charts, `lib/page.mjs` the dashboard, `lib/sentences.mjs` the plain sentence and exact queries for every test and chart, `lib/ledger.mjs` T8, `lib/quotes.mjs` T9 and `lib/capture.mjs` C1's chain reads.
 - `PREREG.md`: the forward tests, unchanged since their NEAR anchor. `LICENSE`: MIT.
+- Committing: run `node build.mjs --offline && node build.mjs --check` right before each commit, and commit `data/snapshots.jsonl` and `data/nearblocks-charts.json` with it, so the README results block always matches the committed data.
 - `collect.mjs`: the hourly snapshot collector.
 - `data/`: committed raw inputs:
   - `raw/` (fetched by `build.mjs`, each file with `fetched_at` and URL);
