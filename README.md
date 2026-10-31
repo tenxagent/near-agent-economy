@@ -15,7 +15,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 2. **Rebuild from fresh public data.**
    - Run `node build.mjs`.
    - Expect "fetched …" lines, then the same report on today's numbers.
-   - Raw inputs are re-downloaded into `data/raw/`: DefiLlama series, the agent's per-chain transaction counts, and dry cross-chain quotes.
+   - Raw inputs are re-downloaded into `data/raw/`: DefiLlama series, NearBlocks' daily `intents.near` stats, the agent's per-chain transaction counts, and dry cross-chain quotes.
 3. **Open the dashboard.** Open `dist/index.html` in a browser (the hosted copy is linked in the demo post). Expect, from the top: the test table, "Settled value up, transaction counts down", "Intents share of NEAR DEX volume", "Fees: Intents vs the NEAR protocol", "Price vs Intents volume, week by week", "NEAR AI Agent Market: delivered jobs".
 4. **Add a data point to our own time series.**
    - Run `node collect.mjs` (~5 min).
@@ -34,7 +34,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | T2 usage | PASS | Intents volume over the last 90 days is 1.76× the 90 days before |
 | T3 capture | FAIL | NEAR chain fees are ~2% of Intents fees (90 days) |
 | T4 capture | FAIL | weekly NEAR price changes vs Intents volume changes: r ≈ 0.00 over 94 weeks |
-| T5 usage | REPORT | Intents' share of NEAR txs: ~4% by NearBlocks counters vs ~11% in our RPC block samples. Both methods are kept |
+| T5 usage | REPORT | Intents' share of NEAR txs: 15% by NearBlocks' daily account stats (10-24 → 10-30) and 14% in our RPC block samples. The hourly counter method (~4%) reads an estimated count, so it is kept for the record only (THESIS.md) |
 | T6 agents | REPORT | Agent Market delivered jobs, scored on 2026-11-12 (≥ 20% growth = PASS) |
 | T7 agents | REPORT | All Agent Market jobs ever, at an assumed $5, ≈ $2K, vs $3.9B of Intents volume in 30 days |
 | T8 agents | REPORT | the live agent sent 501 txs: 498 on 2 EVM chains and 3 from its own NEAR account. 3 were cross-chain (0.6%): two via Relay costing ~5% each at $0.47 and $2, and one $1 move via NEAR Intents into NEAR costing ~0.4%. The NEAR txs are the companion project anchoring its records on SocialDB, so they are not evidence of agent demand (THESIS.md) |
@@ -45,7 +45,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 | source | used for | endpoint |
 |---|---|---|
 | DefiLlama | Intents volume and fees, NEAR DEX volume, NEAR chain fees | `api.llama.fi/summary/dexs/near-intents`, `/summary/fees/near-intents`, `/summary/fees/near`, `/overview/dexs/near` |
-| NearBlocks | daily txns, active accounts, NEAR price; `intents.near` and network tx counters; cross-check of the agent's NEAR tx count | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v1/account/<id>/txns/count`, `/txns-only/count` |
+| NearBlocks | daily txns, active accounts, NEAR price; `intents.near` and network tx counters; cross-check of the agent's NEAR tx count | `api.nearblocks.io/v1/charts`, `/v1/stats`, `/v3/accounts/intents.near/stats/txns`, `/v1/account/<id>/txns/count`, `/txns-only/count` |
 | NEAR JSON-RPC | hourly block/chunk samples; the agent's NEAR sent-tx count (access-key nonce) | FastNEAR, Lava, 1RPC, dRPC public endpoints |
 | NEAR AI Agent Market | listings and delivered jobs | `market.near.ai/v1/agents` |
 | NEAR Intents 1Click | dry quotes (`dry: true`, nothing is sent) | `1click.chaindefuser.com/v0/quote`, `/v0/tokens` |

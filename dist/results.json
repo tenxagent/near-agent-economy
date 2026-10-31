@@ -1,5 +1,5 @@
 {
- "built_at": "2026-10-31T19:42:29.382Z",
+ "built_at": "2026-10-31T19:48:39.340Z",
  "offline": true,
  "last_day": "2026-10-30",
  "tests": [
@@ -69,22 +69,22 @@
    "half": "usage",
    "question": "How much of NEAR's on-chain traffic is Intents right now?",
    "value": {
-    "counter_share": 0.04077064623328115,
+    "daily_stats_share_7d": 0.15099274978766355,
+    "daily_stats_window": [
+     "2026-10-24",
+     "2026-10-30"
+    ],
+    "counter_share_estimated": 0.04077064623328115,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
      "2026-10-31T18:55:42.487Z"
-    ],
-    "counter_share_txns_only": null,
-    "counter_txns_only_window": [
-     null,
-     null
     ],
     "rpc_sample_share": 0.14030612244897958,
     "rpc_sample_txs": 784,
     "rpc_samples": 9
    },
    "pass": null,
-   "rule": "reported, no threshold (two methods; the counter in two units)"
+   "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
   },
   {
    "id": "T6",
@@ -226,6 +226,7 @@
   "defillama-near-intents-volume.json": "https://api.llama.fi/summary/dexs/near-intents?excludeTotalDataChart=false&excludeTotalDataChartBreakdown=true",
   "defillama-near-intents-fees.json": "https://api.llama.fi/summary/fees/near-intents?dataType=dailyFees",
   "defillama-near-chain-fees.json": "https://api.llama.fi/summary/fees/near?dataType=dailyFees",
-  "defillama-near-dex-volume.json": "https://api.llama.fi/overview/dexs/near?excludeTotalDataChartBreakdown=true"
+  "defillama-near-dex-volume.json": "https://api.llama.fi/overview/dexs/near?excludeTotalDataChartBreakdown=true",
+  "nearblocks-intents-daily-txns.json": "https://api.nearblocks.io/v3/accounts/intents.near/stats/txns?limit=100"
  }
 }

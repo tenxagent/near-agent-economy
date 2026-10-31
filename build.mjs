@@ -22,6 +22,7 @@ const SOURCES = {
   'defillama-near-intents-fees.json': 'https://api.llama.fi/summary/fees/near-intents?dataType=dailyFees',
   'defillama-near-chain-fees.json': 'https://api.llama.fi/summary/fees/near?dataType=dailyFees',
   'defillama-near-dex-volume.json': 'https://api.llama.fi/overview/dexs/near?excludeTotalDataChartBreakdown=true',
+  'nearblocks-intents-daily-txns.json': 'https://api.nearblocks.io/v3/accounts/intents.near/stats/txns?limit=100',
 };
 
 async function refresh() {
@@ -118,16 +119,18 @@ async function main() {
   const first = ok[0], last = ok.at(-1);
   const dNet = Number(last.nearblocks.network.total_txns) - Number(first.nearblocks.network.total_txns);
   const dInt = last.nearblocks.intents_txns_total - first.nearblocks.intents_txns_total;
-  // transaction-level counter, recorded from 2026-10-31 ~20Z (txns/count above counts receipt rows, so its units differ)
-  const okT = snaps.filter((s) => s.nearblocks?.network?.total_txns && s.nearblocks?.intents_txns_only_total);
-  const dNetT = okT.length >= 2 ? Number(okT.at(-1).nearblocks.network.total_txns) - Number(okT[0].nearblocks.network.total_txns) : 0;
-  const dIntT = okT.length >= 2 ? okT.at(-1).nearblocks.intents_txns_only_total - okT[0].nearblocks.intents_txns_only_total : 0;
+  // NearBlocks' own daily per-account stats vs its daily network txns, last 7 days present in both (added 2026-10-31 ~20Z: the
+  // account txns/count used above is an *estimated* count per NearBlocks' API spec, so its hourly deltas are not traffic)
+  const intDaily = fs.existsSync(path.join(RAW, 'nearblocks-intents-daily-txns.json'))
+    ? new Map(readRaw('nearblocks-intents-daily-txns.json').body.data.map((r) => [r.date, Number(r.txns)])) : new Map();
+  const days7 = [...intDaily.keys()].filter((d) => nbDaily.has(d)).sort().slice(-7);
+  const int7 = days7.reduce((s, d) => s + intDaily.get(d), 0), net7 = days7.reduce((s, d) => s + Number(nbDaily.get(d).txns), 0);
   const samp = snaps.filter((s) => s.rpc_sample?.txs);
   const sTx = samp.reduce((s, x) => s + x.rpc_sample.txs, 0), sInt = samp.reduce((s, x) => s + x.rpc_sample.txs_to_intents, 0);
   tests.push({ id: 'T5', half: 'usage', question: "How much of NEAR's on-chain traffic is Intents right now?",
-    value: { counter_share: dNet ? dInt / dNet : null, counter_window: [first?.at, last?.at],
-      counter_share_txns_only: dNetT ? dIntT / dNetT : null, counter_txns_only_window: [okT[0]?.at, okT.at(-1)?.at], rpc_sample_share: sTx ? sInt / sTx : null, rpc_sample_txs: sTx, rpc_samples: samp.length },
-    pass: null, rule: 'reported, no threshold (two methods; the counter in two units)' });
+    value: { daily_stats_share_7d: net7 ? int7 / net7 : null, daily_stats_window: [days7[0], days7.at(-1)],
+      counter_share_estimated: dNet ? dInt / dNet : null, counter_window: [first?.at, last?.at], rpc_sample_share: sTx ? sInt / sTx : null, rpc_sample_txs: sTx, rpc_samples: samp.length },
+    pass: null, rule: 'reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)' });
 
   // T6/T7: Agent Market
   const am = snaps.filter((s) => s.agent_market?.agents);
