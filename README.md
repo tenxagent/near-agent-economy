@@ -53,7 +53,7 @@ Data through 2026-10-30; rebuilt by `node build.mjs`.
 
 - Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.44B in the 90 days to 2026-10-30, 1.76× the 90 days before (T1, T2).
 - Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-10-30 that was $4.7M, 28% of Intents' fees; NEAR's gas burn added $248.2K (C1).
-- It is small next to the token. Annualized, captured value is $20.0M, 0.35% a year of NEAR's $5.81B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $142.7M a year at $4.43; the buyback is 13% of that. The bought-back NEAR is held (2.14M NEAR in buybacks.multisignature.near), not burned.
+- It is small next to the token. Annualized, captured value is $20.0M, 0.34% a year of NEAR's $5.82B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $143.0M a year at $4.44; the buyback is 13% of that. The bought-back NEAR is held (2.14M NEAR in buybacks.multisignature.near), not burned.
 - NEAR's weekly price does not move with Intents volume (r = 0.00 over 94 weeks, T4), and agent commerce is tiny next to Intents (T7). Small agent-size tickets into NEAR do settle (T9).
 - Read as an investment case: the usage half is proven, value capture exists but covers about 13% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.
 
@@ -66,9 +66,9 @@ Data through 2026-10-30; rebuilt by `node build.mjs`.
 | T5 | usage | REPORT | Intents received 15% of NEAR's transactions on 2026-10-24 → 2026-10-30 by NearBlocks' daily stats, and 14% of the 877 transactions in our 11 RPC block samples. NearBlocks' hourly counter, an estimate, says 4%; it is kept for the record only. |
 | T6 | agents | REPORT | The Agent Market's 527 listings had delivered 403 jobs at 2026-10-31 20:53Z, against 399 at 2026-10-31 12:50Z (+1.0%). Scored after 2026-11-12. |
 | T7 | agents | REPORT | Every Agent Market job ever delivered, at an assumed $5 each, comes to about $2.0K; NEAR Intents settled $3.91B in the last 30 days. |
-| T8 | agents | REPORT | The agent has sent 501 transactions (robinhood 495, bsc 3, near 3). 3 of them (0.6%; 0.6% of its 498 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 3 NEAR transactions are the companion project anchoring its records, not demand. |
-| T9 | agents | REPORT | Robinhood Chain ETH → BSC BNB: NEAR Intents refused $0.47, $2, $30, $1,000 and accepted the rest at 0.57%. Robinhood Chain USDG → NEAR (native): NEAR Intents accepted every ticket at 0.29–0.55%. (quotes of 2026-10-31 17:03Z) |
-| C1 | capture | REPORT | In the 90 days to 2026-10-30, $4.7M of Intents revenue bought NEAR back (27.6% of Intents' fees) and gas burn added $248.2K: $20.0M a year, 0.35% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($142.7M); the buyback is 13% of that. |
+| T8 | agents | REPORT | The agent has sent 509 transactions (robinhood 497, bsc 3, near 9). 3 of them (0.6%; 0.6% of its 500 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 9 NEAR transactions are the companion project anchoring its records, not demand. |
+| T9 | agents | REPORT | Robinhood Chain ETH → BSC BNB: NEAR Intents refused $0.47, $2, $30, $1,000 and accepted the rest at 0.26%. Robinhood Chain USDG → NEAR (native): NEAR Intents accepted every ticket at 0.46–0.78%. (quotes of 2026-10-31 21:40Z) |
+| C1 | capture | REPORT | In the 90 days to 2026-10-30, $4.7M of Intents revenue bought NEAR back (27.6% of Intents' fees) and gas burn added $248.2K: $20.0M a year, 0.34% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($143.0M); the buyback is 13% of that. |
 | F1 | usage | pending | Pending: scored on 2026-11-02 → 2026-11-12 data against 2026-10-22 → 2026-11-01 (PREREG.md). |
 | F2 | usage | pending | Pending: scored on 2026-11-02 → 2026-11-12 data against 2026-10-22 → 2026-11-01 (PREREG.md). |
 | F3 | agents | pending | Pending: Agent Market jobs per day on 2026-11-07 → 11-13 against 2026-11-02 → 11-07 (PREREG.md). |
