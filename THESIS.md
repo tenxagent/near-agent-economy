@@ -91,6 +91,12 @@ On 10-31: buyback 27.6% of Intents fees; captured value 0.35% of market cap a ye
 - **withdraw**: tokens leaving Intents.
 The fixed cutoffs are **agent-size: under $50** (the agent's own tickets were $0.47 to $2.02) and **under $10**. For each kind P1 reports n, the share under each cutoff and the median, and counts unpriced legs instead of guessing them. It is a REPORT with no threshold. "Agent-size" describes a ticket, not who sent it: chain data cannot tell agents from people (see Data limits).
 
+**P1 result (2026-11-01 ~00:10Z).** The sample drawn from 22:01Z to 00:09Z: 300 random blocks over the 7 days to 2026-10-31, 1,103 transactions, 163 of them to `intents.near`, 357 executed intents, 2 legs unpriced.
+- **Swap legs** (`token_diff`, n = 98): 48% under $50, 26% under $10, median $65.
+- **Withdrawals** (n = 55): 47% under $50, 21% under $10, median $68.
+- **Transfers** (n = 204): 85% under $50, 79% under $10, median $0.29.
+The transfer result made us look closer, and this check came *after* seeing the result. We re-read 14 of the sampled blocks: 24 of 30 transfers there went to a few recurring implicit accounts, median $0.01. They are fee or affiliate payouts inside the same transactions, not users' tickets to solvers. So the registered "transfer" kind does not measure ticket size, and we read P1 from swap legs and withdrawals: **about half of what NEAR Intents executes is agent-size (under $50), and a fifth to a quarter is under $10.** Small tickets are not an edge case, which is why T9's per-route minimum matters. The same re-read also saw the NEAR AI Agent Market's escrow (`escrow.ai.near` → `treasury.ai.near`) settle through `intents.near`, so agent commerce already uses Intents for settlement. We did not measure how much.
+
 ## What would change our mind
 
 - **Usage:** Intents' share of NEAR DEX volume falls below 0.50 in any month, or 90-day Intents volume drops by more than half (T2 < 0.5).

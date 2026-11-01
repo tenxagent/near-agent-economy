@@ -1,12 +1,12 @@
 {
- "built_at": "2026-10-31T22:00:32.783Z",
+ "built_at": "2026-11-01T00:17:36.504Z",
  "offline": true,
  "last_day": "2026-10-30",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.44B in the 90 days to 2026-10-30, 1.76× the 90 days before (T1, T2).",
   "Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-10-30 that was $4.7M, 28% of Intents' fees; NEAR's gas burn added $248.2K (C1).",
   "It is small next to the token. Annualized, captured value is $20.0M, 0.34% a year of NEAR's $5.82B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $143.0M a year at $4.44; the buyback is 13% of that. The bought-back NEAR is held (2.14M NEAR in buybacks.multisignature.near), not burned.",
-  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 94 weeks, T4), and agent commerce is tiny next to Intents (T7). Small agent-size tickets into NEAR do settle (T9).",
+  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 94 weeks, T4), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1), and agent-size tickets into NEAR do settle (T9).",
   "Read as an investment case: the usage half is proven, value capture exists but covers about 13% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window."
  ],
  "tests": [
@@ -90,14 +90,14 @@
      "2026-10-24",
      "2026-10-30"
     ],
-    "counter_share_estimated": 0.040688899456240823,
+    "counter_share_estimated": 0.041169396968084054,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T20:53:02.022Z"
+     "2026-11-01T00:07:00.290Z"
     ],
-    "rpc_sample_share": 0.14253135689851767,
-    "rpc_sample_txs": 877,
-    "rpc_samples": 11
+    "rpc_sample_share": 0.12836624775583483,
+    "rpc_sample_txs": 1114,
+    "rpc_samples": 14
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -112,9 +112,9 @@
     "growth": 0.010025062656641603,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-10-31T20:53:02.022Z"
+     "2026-11-01T00:07:00.290Z"
     ],
-    "agents_last": 527
+    "agents_last": 528
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
@@ -272,6 +272,43 @@
    },
    "pass": null,
    "rule": "reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)"
+  },
+  {
+   "id": "P1",
+   "half": "agents",
+   "question": "How large are the intents NEAR Intents executes?",
+   "value": {
+    "sampled_at": "2026-11-01T00:09:53.476Z",
+    "days": 7,
+    "blocks": 300,
+    "intents_txs": 163,
+    "seed": 222478995,
+    "kinds": {
+     "transfer": {
+      "n": 204,
+      "unpriced": 0,
+      "median_usd": 0.2911685,
+      "share_under_50": 0.8480392156862745,
+      "share_under_10": 0.7892156862745098
+     },
+     "token_diff": {
+      "n": 98,
+      "unpriced": 0,
+      "median_usd": 65.0772158895994,
+      "share_under_50": 0.47959183673469385,
+      "share_under_10": 0.25510204081632654
+     },
+     "withdraw": {
+      "n": 55,
+      "unpriced": 2,
+      "median_usd": 67.74811,
+      "share_under_50": 0.4716981132075472,
+      "share_under_10": 0.20754716981132076
+     }
+    }
+   },
+   "pass": null,
+   "rule": "reported, no threshold (cutoffs < $50 and < $10 registered before sampling; THESIS.md)"
   },
   {
    "id": "F1",

@@ -225,13 +225,29 @@ async function main() {
   tests.push({ id: 'C1', half: 'capture', question: "How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?", value: c1,
     pass: null, rule: 'reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)' });
 
+  // P1 (registered 2026-10-31 ~23:10Z, before the sample was drawn; THESIS.md): sizes of the intents NEAR Intents executes,
+  // per kind, against the fixed agent-size cutoffs. The sample is drawn by sample-intents.mjs, not by this build.
+  const P1_KINDS = ['transfer', 'token_diff', 'withdraw'];
+  let p1 = null;
+  if (fs.existsSync(path.join(RAW, 'intents-sample.json'))) {
+    const smp = readRaw('intents-sample.json');
+    const median = (xs) => { const a = [...xs].sort((x, y) => x - y); return a.length ? (a.length % 2 ? a[(a.length - 1) / 2] : (a[a.length / 2 - 1] + a[a.length / 2]) / 2) : null; };
+    p1 = { sampled_at: smp.fetched_at, days: smp.days, blocks: smp.blocks_ok, intents_txs: smp.intents_txs, seed: smp.seed, kinds: Object.fromEntries(P1_KINDS.map((k) => {
+      const all = smp.events.filter((e) => e.kind === k), sized = all.filter((e) => e.usd !== null).map((e) => e.usd);
+      return [k, { n: all.length, unpriced: all.length - sized.length, median_usd: median(sized),
+        share_under_50: sized.length ? sized.filter((u) => u < 50).length / sized.length : null, share_under_10: sized.length ? sized.filter((u) => u < 10).length / sized.length : null }];
+    })) };
+  }
+  tests.push({ id: 'P1', half: 'agents', question: 'How large are the intents NEAR Intents executes?', value: p1,
+    pass: null, rule: 'reported, no threshold (cutoffs < $50 and < $10 registered before sampling; THESIS.md)' });
+
   // The investment reading, written from the computed values only (shown on the dashboard and in the README)
   const v = Object.fromEntries(tests.map((t) => [t.id, t.value])), pc = (x, d = 0) => `${(100 * x).toFixed(d)}%`;
   const conclusion = c1 && [
     `Usage moved to NEAR Intents: it settled ${pc(v.T1.intents_share_of_near_dex_volume_6m)} of NEAR's DEX volume over the last 6 full months and ${fmtUsd(v.T2.last90)} in the 90 days to ${v.T2.to}, ${v.T2.ratio.toFixed(2)}× the 90 days before (T1, T2).`,
     `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1).`,
     `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.`,
-    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). Small agent-size tickets into NEAR do settle (T9).`,
+    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: ${p1 ? `${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1), and ` : ''}agent-size tickets into NEAR do settle (T9).`,
     `Read as an investment case: the usage half is proven, value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,
   ];
 
@@ -295,6 +311,10 @@ async function main() {
   charts.push({ id: 'c9', title: 'Agent commerce next to Intents', sentence: `All Agent Market jobs ever, at an assumed $${t7.price_assumption_usd} each, vs one month of Intents volume: a ratio of about 1 to ${(t7.intents_volume_30d / t7.agent_market_all_time_usd_at_assumed_price / 1e6).toFixed(1)} million. Log scale (T7).`,
     source: 'market.near.ai/v1/agents (collect.mjs); DefiLlama dexs/near-intents', svg: svgBars({ log: true, unit: '$', categories: ['Agent Market, all time', 'Intents, last 30 days'],
       series: [{ name: 'USD', color: '#0891b2', values: [t7.agent_market_all_time_usd_at_assumed_price, t7.intents_volume_30d] }] }) });
+  if (p1) charts.push({ id: 'c11', title: 'How large NEAR Intents tickets are, by kind', sentence: `Share of sampled intents under the agent-size cutoffs, from ${p1.blocks} random blocks over the ${p1.days} days to ${p1.sampled_at.slice(0, 10)} (P1).`,
+    source: 'NEAR archival RPC (blocks, chunks, tx outcomes of intents.near); 1Click /v0/tokens prices', svg: svgBars({ unit: '%', categories: P1_KINDS.map((k) => `${k} (n=${p1.kinds[k].n})`),
+      series: [{ name: 'under $50', color: '#7c3aed', values: P1_KINDS.map((k) => (p1.kinds[k].share_under_50 ?? NaN) * 100) },
+        { name: 'under $10', color: '#c4b5fd', values: P1_KINDS.map((k) => (p1.kinds[k].share_under_10 ?? NaN) * 100) }] }) });
   if (c1) charts.push({ id: 'c10', title: 'Value captured for NEAR holders vs new NEAR supply, per year', sentence: `Annualized from the 90 days to ${c1.window[1]}: Intents fees ${fmtUsd((c1.intents_fees_90d * 365) / 90)}, of which ${fmtUsd((c1.buyback_90d * 365) / 90)} bought NEAR back; gas burn ${fmtUsd((c1.burn_90d * 365) / 90)}; net new NEAR supply ${fmtUsd(c1.net_issuance_usd_per_year)} at $${c1.near_price_usd} (C1).`,
     source: 'DefiLlama fees/near-intents (dailyFees, dailyHoldersRevenue), fees/near (dailyRevenue); NEAR archival RPC block headers; NearBlocks /v1/stats', svg: svgBars({ unit: '$',
       categories: ['Intents fees', 'bought back', 'gas burn', 'new NEAR supply'],

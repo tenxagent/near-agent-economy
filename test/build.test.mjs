@@ -35,12 +35,13 @@ test('the committed build is reproducible: --check passes and writes nothing', (
 test('committed results hold their internal invariants', () => {
   const r = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'results.json'), 'utf8'));
   const v = Object.fromEntries(r.tests.map((t) => [t.id, t.value]));
-  assert.deepEqual(r.tests.map((t) => t.id), ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'C1', 'F1', 'F2', 'F3']);
+  assert.deepEqual(r.tests.map((t) => t.id), ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'C1', 'P1', 'F1', 'F2', 'F3']);
   assert.ok(Math.abs(v.T3.ratio - v.T3.near_chain_fees_90d / v.T3.intents_fees_90d) < 1e-12);
   assert.equal(v.C1.intents_fees_90d, v.T3.intents_fees_90d); // C1 and T3 cover the same 90 days
   assert.ok(Math.abs(v.C1.burn_90d / v.T3.near_chain_fees_90d - 0.7) < 0.01); // NEAR burns 70% of gas fees
   for (const x of [v.T1.intents_share_of_near_dex_volume_6m, v.T5.daily_stats_share_7d, v.T5.rpc_sample_share, v.C1.buyback_share_of_intents_fees]) assert.ok(x > 0 && x < 1);
   assert.equal(v.T8.sent_txs, v.T8.evm_sent_txs + v.T8.near_account_txs.sent);
+  for (const k of Object.values(v.P1?.kinds ?? {})) if (k.n - k.unpriced > 0) assert.ok(k.share_under_10 <= k.share_under_50 && k.share_under_50 <= 1);
   for (const t of r.tests) {
     assert.ok(sentence(t).length > 20, `${t.id} has a sentence`);
     assert.ok(QUERIES[t.id]?.length, `${t.id} lists its queries`);
