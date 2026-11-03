@@ -66,6 +66,10 @@ test('forward tests score on synthetic window data exactly as PREREG.md says', (
   // F3: listings keyed by agent_id; a removed listing is ignored, a new one counts all its jobs.
   // first part (5 days): a 10 -> 20 = 10 jobs = 2/day; second part (6 days): a 20 -> 32 + new 6 = 18 jobs = 3/day -> PASS
   const snap = (at, m) => JSON.stringify({ v: 1, at, agent_market: { agents: 3, delivered_jobs_total: 0, delivered_by_agent: m } });
+  // keep only the real snapshots from before the window (the collector's own 11-02+ snapshots are committed now and would
+  // otherwise be picked instead of the synthetic ones below)
+  const sp = path.join(tmp, 'data', 'snapshots.jsonl');
+  fs.writeFileSync(sp, fs.readFileSync(sp, 'utf8').split('\n').filter((l) => l.trim() && JSON.parse(l).at < '2026-11-02T00:00:00Z').map((l) => l + '\n').join(''));
   fs.appendFileSync(path.join(tmp, 'data', 'snapshots.jsonl'), [snap('2026-11-02T00:07:00.000Z', { a: 10, gone: 50 }), snap('2026-11-07T00:07:00.000Z', { a: 20 }),
     snap('2026-11-13T00:07:00.000Z', { a: 32, b: 6 })].join('\n') + '\n');
   build(tmp, '--offline');
