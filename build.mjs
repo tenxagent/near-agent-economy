@@ -19,6 +19,21 @@ const DIST = path.join(DIR, 'dist');
 const OFFLINE = process.argv.includes('--offline');
 // --check: build offline, then fail if README's results block or PREREG.md differ from what the build and the NEAR anchor say
 const CHECK = process.argv.includes('--check');
+// 11-03 (screening): `--check --online` reads the anchored SHA-256 live from SocialDB instead of trusting the pinned constant
+const ONLINE = process.argv.includes('--online');
+const ANCHOR_ACCOUNT = '00537bf24e164c18f3512de1040d34c88a11f37976a3ef6d4de673dc9cef6590';
+async function anchoredPreregSha() {
+  const args = Buffer.from(JSON.stringify({ keys: [`${ANCHOR_ACCOUNT}/thesis/prereg/1/**`], options: { with_block_height: true } })).toString('base64');
+  for (const url of ['https://rpc.mainnet.fastnear.com', 'https://rpc.mainnet.near.org']) {
+    try {
+      const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(20_000),
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'query', params: { request_type: 'call_function', finality: 'final', account_id: 'social.near', method_name: 'get', args_base64: args } }) });
+      const j = await r.json(); const v = JSON.parse(Buffer.from(j.result.result).toString())[ANCHOR_ACCOUNT].thesis.prereg['1'];
+      return { sha256: v.sha256[''], block: v.sha256[':block'], url };
+    } catch { /* next RPC */ }
+  }
+  throw new Error('could not read the PREREG anchor from SocialDB');
+}
 // PREREG.md as anchored on NEAR mainnet (tx 5vrqMKwEUT3FnyqCmUwVnopAPrnyMhT6L8bZ8CiHdPWt, block 222474620; README shows the check)
 const PREREG_SHA256 = '2f303e07684d8f9b4d337d8e14c8c1de9bdb37f97624fdd957da5b205c9f4126';
 const UA = 'near-agent-economy-thesis/0.1';
@@ -341,7 +356,11 @@ async function main() {
     const errs = [];
     if (!re.test(readme) || readme.match(re)[0] !== `<!-- results:start -->\n${block}\n<!-- results:end -->`) errs.push('README results block differs from this build (run node build.mjs --offline)');
     if (prereg !== PREREG_SHA256) errs.push(`PREREG.md sha256 ${prereg} differs from the anchored ${PREREG_SHA256}`);
-    console.log(errs.length ? `CHECK FAILED:\n- ${errs.join('\n- ')}` : 'CHECK OK: README results block matches the build; PREREG.md matches its NEAR anchor');
+    let src = 'the anchored value pinned in build.mjs';
+    if (ONLINE) { const a = await anchoredPreregSha(); src = `SocialDB live (block ${a.block}, ${a.url})`;
+      if (a.sha256 !== prereg) errs.push(`PREREG.md sha256 ${prereg} differs from SocialDB's ${a.sha256}`);
+      if (a.sha256 !== PREREG_SHA256) errs.push(`the pinned constant ${PREREG_SHA256} differs from SocialDB's ${a.sha256}`); }
+    console.log(errs.length ? `CHECK FAILED:\n- ${errs.join('\n- ')}` : `CHECK OK: README results block matches the build; PREREG.md matches its NEAR anchor (${src})`);
     if (errs.length) process.exit(1);
   } else {
     if (re.test(readme)) fs.writeFileSync(README, readme.replace(re, (_, a, b) => `${a}${block}\n${b}`)); // a function: block text contains '$'
