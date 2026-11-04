@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-04T14:39:53.632Z",
- "offline": false,
+ "built_at": "2026-11-04T16:04:32.013Z",
+ "offline": true,
  "last_day": "2026-11-03",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.65B in the 90 days to 2026-11-03, 1.80× the 90 days before (T1, T2).",
@@ -226,14 +226,14 @@
      "2026-10-28",
      "2026-11-03"
     ],
-    "counter_share_estimated": 0.03922811465596169,
+    "counter_share_estimated": 0.039216519775932594,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-04T14:07:00.614Z"
+     "2026-11-04T15:36:51.702Z"
     ],
-    "rpc_sample_share": 0.15328169588259274,
-    "rpc_sample_txs": 7359,
-    "rpc_samples": 100
+    "rpc_sample_share": 0.1541449042453462,
+    "rpc_sample_txs": 7467,
+    "rpc_samples": 101
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -244,13 +244,13 @@
    "question": "Is agent-native demand on NEAR growing?",
    "value": {
     "delivered_jobs_first": 399,
-    "delivered_jobs_last": 507,
-    "growth": 0.2706766917293233,
+    "delivered_jobs_last": 512,
+    "growth": 0.28320802005012524,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-04T07:07:24.016Z"
+     "2026-11-04T15:36:51.702Z"
     ],
-    "agents_last": 562
+    "agents_last": 567
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
@@ -260,7 +260,7 @@
    "half": "agents",
    "question": "How big is agent commerce next to Intents?",
    "value": {
-    "agent_market_all_time_usd_at_assumed_price": 2535,
+    "agent_market_all_time_usd_at_assumed_price": 2560,
     "price_assumption_usd": 5,
     "intents_volume_30d": 3970607022
    },
