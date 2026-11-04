@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-04T10:20:15.506Z",
- "offline": false,
+ "built_at": "2026-11-04T11:13:42.207Z",
+ "offline": true,
  "last_day": "2026-11-03",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.65B in the 90 days to 2026-11-03, 1.80× the 90 days before (T1, T2).",
@@ -9,6 +9,142 @@
   "NEAR's weekly price does not move with Intents volume (r = 0.00 over 95 weeks, T4), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1), and agent-size tickets into NEAR do settle (T9).",
   "Read as an investment case: the usage half is proven, value capture exists but covers about 15% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window."
  ],
+ "model": {
+  "base": {
+   "window_end": "2026-11-03",
+   "captured_usd_per_year": 19459001.666666668,
+   "captured_share": 0.2764140460742501,
+   "net_issuance_near_per_year": 32214371.81398794,
+   "near_price_usd": 4.08,
+   "growth_90d": 1.8043104257419458
+  },
+  "default": {
+   "params": {
+    "halfLife": 2,
+    "capture": 0.2764140460742501,
+    "priceQ": 0,
+    "quarters": 40
+   },
+   "quartersToHalf": 4,
+   "quartersToFull": null,
+   "half_at": "2027-Q4",
+   "full_at": null,
+   "coverage_now": 0.14805078867078345,
+   "coverage_in_4q": 0.5023611508635383,
+   "coverage_in_8q": 0.7103699502085915
+  },
+  "no_growth": {
+   "quartersToHalf": null,
+   "coverage": 0.14805078867078345
+  },
+  "measured_growth_forever": {
+   "quartersToHalf": 3,
+   "half_at": "2027-Q3"
+  },
+  "grid": [
+   {
+    "halfLife": 0,
+    "cells": [
+     {
+      "capture": 0.2764140460742501,
+      "quartersToHalf": null,
+      "quartersToFull": null
+     },
+     {
+      "capture": 0.5,
+      "quartersToHalf": null,
+      "quartersToFull": null
+     },
+     {
+      "capture": 1,
+      "quartersToHalf": 0,
+      "quartersToFull": null
+     }
+    ]
+   },
+   {
+    "halfLife": 1,
+    "cells": [
+     {
+      "capture": 0.2764140460742501,
+      "quartersToHalf": null,
+      "quartersToFull": null
+     },
+     {
+      "capture": 0.5,
+      "quartersToHalf": 4,
+      "quartersToFull": null
+     },
+     {
+      "capture": 1,
+      "quartersToHalf": 0,
+      "quartersToFull": 4
+     }
+    ]
+   },
+   {
+    "halfLife": 2,
+    "cells": [
+     {
+      "capture": 0.2764140460742501,
+      "quartersToHalf": 4,
+      "quartersToFull": null
+     },
+     {
+      "capture": 0.5,
+      "quartersToHalf": 2,
+      "quartersToFull": 5
+     },
+     {
+      "capture": 1,
+      "quartersToHalf": 0,
+      "quartersToFull": 2
+     }
+    ]
+   },
+   {
+    "halfLife": 4,
+    "cells": [
+     {
+      "capture": 0.2764140460742501,
+      "quartersToHalf": 3,
+      "quartersToFull": 5
+     },
+     {
+      "capture": 0.5,
+      "quartersToHalf": 2,
+      "quartersToFull": 3
+     },
+     {
+      "capture": 1,
+      "quartersToHalf": 0,
+      "quartersToFull": 2
+     }
+    ]
+   },
+   {
+    "halfLife": null,
+    "cells": [
+     {
+      "capture": 0.2764140460742501,
+      "quartersToHalf": 3,
+      "quartersToFull": 4
+     },
+     {
+      "capture": 0.5,
+      "quartersToHalf": 2,
+      "quartersToFull": 3
+     },
+     {
+      "capture": 1,
+      "quartersToHalf": 0,
+      "quartersToFull": 2
+     }
+    ]
+   }
+  ],
+  "sentence": "Model (`node model.mjs`, every assumption is a flag): starting from today's 15% and assuming Intents' growth fades by half every 2 quarters, the buyback reaches half of net issuance in 2027-Q4 (4 quarters); with no further growth it stays at 15%; if the measured 1.80× per 90 days never fades, in 2027-Q3 (3 quarters). A scenario, not a forecast: the fade is our assumption."
+ },
  "tests": [
   {
    "id": "T1",
@@ -90,14 +226,14 @@
      "2026-10-28",
      "2026-11-03"
     ],
-    "counter_share_estimated": 0.039263971987671384,
+    "counter_share_estimated": 0.03923227893950675,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-04T10:07:03.225Z"
+     "2026-11-04T11:07:02.712Z"
     ],
-    "rpc_sample_share": 0.15148047489629524,
-    "rpc_sample_txs": 6991,
-    "rpc_samples": 96
+    "rpc_sample_share": 0.1516439909297052,
+    "rpc_sample_txs": 7056,
+    "rpc_samples": 97
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"

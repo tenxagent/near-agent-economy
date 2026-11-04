@@ -12,6 +12,7 @@ import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.
 import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near } from './lib/capture.mjs';
 import { sentence } from './lib/sentences.mjs';
+import { baseFrom, summary as modelSummary } from './lib/model.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
@@ -266,6 +267,11 @@ async function main() {
     `Read as an investment case: the usage half is proven, value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,
   ];
 
+  // The re-runnable model (lib/model.mjs, `node model.mjs`): when would the buyback reach THESIS.md's bar (half of net issuance)?
+  const model = c1 && modelSummary(baseFrom(c1, v.T2));
+  const qWhen = (q, at) => (q === null ? 'not within 10 years' : q === 0 ? 'already' : `in ${at} (${q} quarters)`);
+  const modelLine = model && `Model (\`node model.mjs\`, every assumption is a flag): starting from today's ${pc(model.default.coverage_now)} and assuming Intents' growth fades by half every 2 quarters, the buyback reaches half of net issuance ${qWhen(model.default.quartersToHalf, model.default.half_at)}; with no further growth it stays at ${pc(model.no_growth.coverage)}; if the measured ${v.T2.ratio.toFixed(2)}× per 90 days never fades, ${qWhen(model.measured_growth_forever.quartersToHalf, model.measured_growth_forever.half_at)}. A scenario, not a forecast: the fade is our assumption.`;
+
   // F1–F3: forward tests (PREREG.md), scored only on 2026-11-02 → 11-12 against the 11 days before
   const daysIn = (from, n) => Array.from({ length: n }, (_, i) => addDays(from, i));
   const W = daysIn('2026-11-02', 11), B = daysIn('2026-10-22', 11);
@@ -336,7 +342,7 @@ async function main() {
       series: [{ name: 'USD per year', color: '#0f766e', values: [(c1.intents_fees_90d * 365) / 90, (c1.buyback_90d * 365) / 90, (c1.burn_90d * 365) / 90, c1.net_issuance_usd_per_year] }] }) });
 
   // ---------- write (--check is read-only: it compares, and leaves dist/ and the README untouched)
-  const results = { built_at: new Date().toISOString(), offline: OFFLINE, last_day: lastDay, conclusion, tests, sources: SOURCES };
+  const results = { built_at: new Date().toISOString(), offline: OFFLINE, last_day: lastDay, conclusion, model: model ? { ...model, sentence: modelLine } : null, tests, sources: SOURCES };
   if (!CHECK) {
     fs.mkdirSync(DIST, { recursive: true });
     fs.writeFileSync(path.join(DIST, 'results.json'), JSON.stringify(results, null, 1));
@@ -347,7 +353,7 @@ async function main() {
 
   // README results block, generated (never typed by hand) between the two markers
   const verdictWord = (t) => (t.pass === true ? 'PASS' : t.pass === false ? 'FAIL' : t.value?.status === 'pending' ? 'pending' : t.value?.status === 'not scorable' ? 'not scorable' : 'REPORT');
-  const block = [`Data through ${lastDay}; rebuilt by \`node build.mjs\`.`, '', ...(conclusion || []).map((p) => `- ${p}`), '',
+  const block = [`Data through ${lastDay}; rebuilt by \`node build.mjs\`.`, '', ...(conclusion || []).map((p) => `- ${p}`), ...(modelLine ? [`- ${modelLine}`] : []), '',
     '| test | half | result | finding |', '|---|---|---|---|', ...tests.map((t) => `| ${t.id} | ${t.half} | ${verdictWord(t)} | ${sentence(t).replace(/\|/g, '/')} |`)].join('\n');
   const README = path.join(DIR, 'README.md'), readme = fs.readFileSync(README, 'utf8');
   const re = /(<!-- results:start -->\n)[\s\S]*?(<!-- results:end -->)/;
