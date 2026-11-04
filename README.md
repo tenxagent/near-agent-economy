@@ -26,7 +26,8 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - a verdict strip for the three halves (usage, value capture, agents);
    - "What it means for a NEAR holder", written from the computed values;
    - one card per test with its result, one plain sentence, its rule, and its exact queries and computed value;
-   - ten charts, each with one sentence, its source and its queries.
+   - eleven charts, each with one sentence, its source and its queries;
+   - the model card (see step 5).
 4. **Add a data point to our own time series.**
    - Run `node collect.mjs` (~5 min).
    - Expect one new line in `data/snapshots.jsonl`, with:
@@ -39,6 +40,9 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - Run `node model.mjs` (reads `dist/results.json`; no network, no keys).
    - Expect the measured starting point, a quarter-by-quarter table of coverage (NEAR bought back per year ÷ net new NEAR per year) and a sensitivity grid: quarters until the buyback reaches half (THESIS.md's bar) and all of net issuance.
    - Change any assumption: `--half-life <quarters|inf>` (how fast Intents' growth fades; `0` = no growth), `--capture <0–1>` (share of Intents fees bought back), `--price-q <change per quarter>`, `--quarters <horizon>`; `--json` prints the full projection. Formulas: `lib/model.mjs`; tests: `test/model.test.mjs`.
+6. **Re-draw P1's sample yourself.**
+   - Run `node sample-intents.mjs` (300 random blocks over 7 days, public archival RPC, several minutes; read-only).
+   - It rewrites `data/raw/intents-sample.json` with a new seeded sample; `node build.mjs --offline` then reports your P1 (the shares move a few points between samples; the cutoffs stay as registered in THESIS.md).
 
 ## Pre-registration, anchored on NEAR mainnet
 
@@ -47,7 +51,7 @@ The forward tests in [`PREREG.md`](PREREG.md) were registered before their data 
 ```sh
 A=00537bf24e164c18f3512de1040d34c88a11f37976a3ef6d4de673dc9cef6590
 ARGS=$(printf '{"keys":["%s/thesis/prereg/1/**"],"options":{"with_block_height":true}}' $A | base64 -w0)
-curl -s https://rpc.mainnet.near.org -H 'content-type: application/json' \
+curl -s https://rpc.fastnear.com -H 'content-type: application/json' \
   -d "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"query\",\"params\":{\"request_type\":\"call_function\",\"finality\":\"final\",\"account_id\":\"social.near\",\"method_name\":\"get\",\"args_base64\":\"$ARGS\"}}" \
   | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const r=JSON.parse(Buffer.from(JSON.parse(s).result.result).toString())[process.argv[1]].thesis.prereg["1"];console.log("sha256",r.sha256[""],"commit",r.commit[""],"block",r.sha256[":block"])})' $A
 sha256sum PREREG.md   # must print the same sha256
@@ -98,6 +102,8 @@ Data through 2026-11-03; rebuilt by `node build.mjs`.
 | EVM public RPCs | the agent's sent-transaction count per chain | `eth_getTransactionCount` on 12 chains |
 
 **Not observable:** the Agent Market job board and competitions need a login (HTTP 401), so job prices and unfilled demand are unknown.
+
+**Source outage (2026-11-04):** `market.near.ai` stopped answering at about 08:00Z (the hourly collector logs the error and still writes the other sources). F3 uses the first snapshot that has Agent Market data within 3 hours of 2026-11-07 00:00Z and 2026-11-13 00:00Z, as PREREG.md fixes; in those two windows the operator's collector retries every 10 minutes. If the source is still down then, F3 is reported **not scorable**, never estimated.
 
 ## Layout
 
