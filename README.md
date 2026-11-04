@@ -59,6 +59,18 @@ sha256sum PREREG.md   # must print the same sha256
 
 **P1's cutoffs are anchored the same way.** `THESIS.md` as of commit `4b489b5` (2026-10-31 22:00:43Z), which fixes P1's agent-size cutoffs, has its SHA-256 under key `…/thesis/prereg/2` in tx [`BHEka3RfXtrCsj1VYFKbK1Rk1hp6xPFi6uuv1KT2viJE`](https://nearblocks.io/txns/BHEka3RfXtrCsj1VYFKbK1Rk1hp6xPFi6uuv1KT2viJE) (block 222479133, 22:02:34Z). The sample started at 22:01:14Z, and `sample-intents.mjs` writes sizes only when it finishes, so no size existed when either was written. To check, run the command above with `prereg/2` in place of `prereg/1` (and `["2"]` in the decoder), then `git show 4b489b5:THESIS.md | sha256sum`. That pins the version at that commit; the live `THESIS.md` keeps changing.
 
+## Scoring day (2026-11-13 → 11-14)
+
+- **11-13 00:00–03:00Z:** the snapshot F3 needs: the first collector snapshot with Agent Market data (PREREG.md: never more than 3 hours late). The operator's collector retries every 10 minutes in this window.
+- **From 11-13 06:31Z,** at 06:31, 14:31 and 22:31Z through 11-14, the operator's refresh does the following:
+  - rebuilds from fresh public data, then runs `node build.mjs --check --online` and the tests;
+  - commits `README.md`, `dist/` and `data/`, and publishes.
+- **When F1–F3 score:** F1 and F2 as soon as DefiLlama and NearBlocks have every day through 11-12; F3 as soon as the 11-13 snapshot exists.
+- **The first build with F1, F2 and F3 all scored is anchored once** in SocialDB under `00537bf2…6590/thesis/scored/1`. The anchor holds the SHA-256 of `dist/results.json` at that commit, the commit, and the three verdicts.
+  - To check it, run the PREREG query above with the key `…/thesis/scored/1/**`.
+  - Then compare with `git show <commit>:dist/results.json | sha256sum`.
+- **11-14 23:59Z, the submission deadline:** a forward test whose inputs are still missing is reported **not scorable**, never estimated.
+
 ## What the tests say
 
 <!-- results:start -->
