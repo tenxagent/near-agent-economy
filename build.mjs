@@ -12,7 +12,7 @@ import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.
 import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near } from './lib/capture.mjs';
 import { sentence } from './lib/sentences.mjs';
-import { baseFrom, summary as modelSummary } from './lib/model.mjs';
+import { baseFrom, summary as modelSummary, growthHistory } from './lib/model.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
@@ -268,9 +268,9 @@ async function main() {
   ];
 
   // The re-runnable model (lib/model.mjs, `node model.mjs`): when would the buyback reach THESIS.md's bar (half of net issuance)?
-  const model = c1 && modelSummary(baseFrom(c1, v.T2));
+  const model = c1 && { ...modelSummary(baseFrom(c1, v.T2)), history: growthHistory([...intentsVol].sort(), lastDay) };
   const qWhen = (q, at) => (q === null ? 'not within 10 years' : q === 0 ? 'already' : `in ${at} (${q} quarters)`);
-  const modelLine = model && `Model (\`node model.mjs\`, every assumption is a flag): starting from today's ${pc(model.default.coverage_now)} and assuming Intents' growth fades by half every 2 quarters, the buyback reaches half of net issuance ${qWhen(model.default.quartersToHalf, model.default.half_at)}; with no further growth it stays at ${pc(model.no_growth.coverage)}; if the measured ${v.T2.ratio.toFixed(2)}× per 90 days never fades, ${qWhen(model.measured_growth_forever.quartersToHalf, model.measured_growth_forever.half_at)}. A scenario, not a forecast: the fade is our assumption.`;
+  const modelLine = model && `Model (\`node model.mjs\`, every assumption is a flag): starting from today's ${pc(model.default.coverage_now)} and assuming Intents' growth fades by half every 2 quarters, the buyback reaches half of net issuance ${qWhen(model.default.quartersToHalf, model.default.half_at)}; with no further growth it stays at ${pc(model.no_growth.coverage)}; if the measured ${v.T2.ratio.toFixed(2)}× per 90 days never fades, ${qWhen(model.measured_growth_forever.quartersToHalf, model.measured_growth_forever.half_at)}. A scenario, not a forecast. The measured quarter-on-quarter growth went ${model.history.quarters.map((q) => q.ratio.toFixed(1) + '×').join(' → ')}; fading from the oldest quarter to the latest four implies a half-life of about ${model.history.impliedHalfLife ? model.history.impliedHalfLife.toFixed(1) : '?'} quarters, so the 2-quarter default is ${model.history.impliedHalfLife && model.history.impliedHalfLife < 2 ? 'on the generous side' : 'not generous'}. The bought-back NEAR sits in a multisig (held, not burned); \`--resold\` models some of it returning to market.`;
 
   // F1–F3: forward tests (PREREG.md), scored only on 2026-11-02 → 11-12 against the 11 days before
   const daysIn = (from, n) => Array.from({ length: n }, (_, i) => addDays(from, i));
