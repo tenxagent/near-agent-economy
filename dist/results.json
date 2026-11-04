@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-04T17:05:20.014Z",
+ "built_at": "2026-11-04T20:23:45.208Z",
  "offline": true,
  "last_day": "2026-11-03",
  "conclusion": [
@@ -256,14 +256,14 @@
      "2026-10-28",
      "2026-11-03"
     ],
-    "counter_share_estimated": 0.03922803636815522,
+    "counter_share_estimated": 0.039262089108257715,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-04T16:07:04.506Z"
+     "2026-11-04T20:07:01.226Z"
     ],
-    "rpc_sample_share": 0.15879884605297667,
-    "rpc_sample_txs": 7626,
-    "rpc_samples": 102
+    "rpc_sample_share": 0.16847894013248343,
+    "rpc_sample_txs": 8001,
+    "rpc_samples": 106
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"

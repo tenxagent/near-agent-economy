@@ -89,7 +89,7 @@ Data through 2026-11-03; rebuilt by `node build.mjs`.
 | T2 | usage | PASS | Intents settled $11.65B in the 90 days to 2026-11-03, 1.80× the $6.45B of the 90 days before. Cross-check: DefiLlama's daily volume moves with NearBlocks' independent daily count of intents.near transactions (r = 0.65 for daily changes over 100 days). |
 | T3 | capture | FAIL | In the last 90 days the NEAR protocol earned $360.8K in fees, 2.1% of the $17.5M that NEAR Intents earned. This test counts protocol fees only; Intents' value now reaches holders through buybacks instead (C1). |
 | T4 | capture | FAIL | Over 95 weeks (2025-01-06 → 2026-10-26), weekly changes in NEAR's price and in Intents volume are uncorrelated (r = 0.00). |
-| T5 | usage | REPORT | Intents received 19% of NEAR's transactions on 2026-10-28 → 2026-11-03 by NearBlocks' daily stats, and 16% of the 7626 transactions in our 102 RPC block samples. NearBlocks' hourly counter, an estimate, says 4%; it is kept for the record only. |
+| T5 | usage | REPORT | Intents received 19% of NEAR's transactions on 2026-10-28 → 2026-11-03 by NearBlocks' daily stats, and 17% of the 8001 transactions in our 106 RPC block samples. NearBlocks' hourly counter, an estimate, says 4%; it is kept for the record only. |
 | T6 | agents | REPORT | The Agent Market's 567 listings had delivered 512 jobs at 2026-11-04 15:36Z, against 399 at 2026-10-31 12:50Z (+28.3%). Scored after 2026-11-12. |
 | T7 | agents | REPORT | Every Agent Market job ever delivered, at an assumed $5 each, comes to about $2.6K; NEAR Intents settled $3.97B in the last 30 days. |
 | T8 | agents | REPORT | The agent has sent 733 transactions (robinhood 690, bsc 4, hyperevm 1, near 38). 3 of them (0.4%; 0.4% of its 695 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 38 NEAR transactions are the companion project anchoring its records, not demand. |
@@ -115,7 +115,7 @@ Data through 2026-11-03; rebuilt by `node build.mjs`.
 
 **Not observable:** the Agent Market job board and competitions need a login (HTTP 401), so job prices and unfilled demand are unknown.
 
-**Source outage (2026-11-04):** `market.near.ai` stopped answering at about 08:00Z (the hourly collector logs the error and still writes the other sources). F3 uses the first snapshot that has Agent Market data within 3 hours of 2026-11-07 00:00Z and 2026-11-13 00:00Z, as PREREG.md fixes; in those two windows the operator's collector retries every 10 minutes. If the source is still down then, F3 is reported **not scorable**, never estimated.
+**Collector outage (2026-11-04, correction):** since about 08:00Z the operator's collector server cannot open a connection to `market.near.ai`. It times out on TCP to that host's network, and to `railway.com` itself, while every other source answers. So this is most likely our server's network path, not proven to be a fault at the Agent Market. An earlier version of this note blamed the source. The hourly collector logs the error and still writes the other sources. F3 uses the first snapshot that has Agent Market data within 3 hours of 2026-11-07 00:00Z and 2026-11-13 00:00Z, as PREREG.md fixes; in those two windows the operator's collector retries every 10 minutes, and the operator will take that snapshot from a second network if this server still cannot connect. If no snapshot with Agent Market data exists in time, F3 is reported **not scorable**, never estimated (PREREG.md: missing because our collector failed ⇒ said so here).
 
 ## Layout
 
