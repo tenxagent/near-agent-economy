@@ -16,7 +16,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - Run `node build.mjs --offline`.
    - Expect a PASS/FAIL/REPORT line per test (T1–T9, C1, F1–F3) in the terminal.
    - It writes `dist/index.html` (the dashboard), `dist/results.json` (every test with its inputs) and the results block of this README.
-   - `node --test` runs the unit tests, including the forward tests' scoring on synthetic window data.
+   - `node --test` runs the unit tests, including the forward tests' scoring on synthetic window data and golden tests for T1–T4 and C1: synthetic inputs whose right answers are worked out by hand in `test/build.test.mjs`, so each scored rule is shown to compute exactly as THESIS.md states.
    - `node build.mjs --check` recomputes offline without writing anything, and fails if this README's results block differs from the build, or if `PREREG.md`'s SHA-256 differs from its NEAR anchor (offline: the anchored value pinned in `build.mjs`; add `--online` to read it live from SocialDB on NEAR mainnet).
 2. **Rebuild from fresh public data.**
    - Run `node build.mjs`.
