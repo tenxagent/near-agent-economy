@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-05T01:05:51.403Z",
+ "built_at": "2026-11-05T01:10:00.738Z",
  "offline": false,
  "last_day": "2026-11-03",
  "conclusion": [
@@ -14,7 +14,7 @@
    "window_end": "2026-11-03",
    "captured_usd_per_year": 19471160.222222224,
    "captured_share": 0.27435964237016486,
-   "net_issuance_near_per_year": 32223968.969755486,
+   "net_issuance_near_per_year": 32224041.369767416,
    "near_price_usd": 4.01,
    "growth_90d": 1.8043104257419458
   },
@@ -30,13 +30,13 @@
    "quartersToFull": null,
    "half_at": "2027-Q4",
    "full_at": null,
-   "coverage_now": 0.15068444649981966,
-   "coverage_in_4q": 0.511297593484708,
-   "coverage_in_8q": 0.7230066365624827
+   "coverage_now": 0.1506841079465141,
+   "coverage_in_4q": 0.5112964447165742,
+   "coverage_in_8q": 0.7230050121328057
   },
   "no_growth": {
    "quartersToHalf": null,
-   "coverage": 0.15068444649981966
+   "coverage": 0.1506841079465141
   },
   "measured_growth_forever": {
    "quartersToHalf": 3,
@@ -302,16 +302,16 @@
    "half": "agents",
    "question": "What share of a live agent's money flow is cross-chain?",
    "value": {
-    "sent_txs": 736,
+    "sent_txs": 738,
     "chains_with_sent_txs": [
      "robinhood:691",
      "bsc:4",
      "hyperevm:1",
-     "near:40"
+     "near:42"
     ],
-    "nonces_read_at": "2026-11-05T01:05:33.995Z",
+    "nonces_read_at": "2026-11-05T01:09:42.962Z",
     "cross_chain_ops": 3,
-    "cross_chain_share": 0.004076086956521739,
+    "cross_chain_share": 0.0040650406504065045,
     "evm_sent_txs": 696,
     "cross_chain_share_evm_only": 0.004310344827586207,
     "cross_chain_cost_pct": [
@@ -325,8 +325,8 @@
      1
     ],
     "near_account_txs": {
-     "sent": 40,
-     "nearblocks_txns_only": 40,
+     "sent": 42,
+     "nearblocks_txns_only": 42,
      "what": "SocialDB set calls (receiver social.near) that anchor the companion project's records on NEAR mainnet; single-chain, not bridges"
     },
     "decisions": 2
@@ -339,7 +339,7 @@
    "half": "agents",
    "question": "What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent used?",
    "value": {
-    "quoted_at": "2026-11-05T01:05:35.501Z",
+    "quoted_at": "2026-11-05T01:09:44.444Z",
     "routes": [
      {
       "route": "Robinhood Chain ETH -> BSC BNB",
@@ -347,27 +347,27 @@
        {
         "usd": 0.47,
         "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-        "relay": "5.253%"
+        "relay": "5.263%"
        },
        {
         "usd": 2,
         "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-        "relay": "1.781%"
+        "relay": "1.793%"
        },
        {
         "usd": 30,
         "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-        "relay": "0.691%"
+        "relay": "0.798%"
        },
        {
         "usd": 1000,
-        "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
-        "relay": "0.614%"
+        "intents": "0.527%",
+        "relay": "0.73%"
        },
        {
         "usd": 5000,
-        "intents": "0.459%",
-        "relay": "0.614%"
+        "intents": "0.442%",
+        "relay": "0.716%"
        }
       ]
      },
@@ -376,27 +376,27 @@
       "rows": [
        {
         "usd": 0.47,
-        "intents": "0.435%",
+        "intents": "0.683%",
         "relay": "no route"
        },
        {
         "usd": 2,
-        "intents": "0.41%",
+        "intents": "0.683%",
         "relay": "no route"
        },
        {
         "usd": 30,
-        "intents": "0.435%",
+        "intents": "0.658%",
         "relay": "no route"
        },
        {
         "usd": 1000,
-        "intents": "0.484%",
+        "intents": "0.658%",
         "relay": "no route"
        },
        {
         "usd": 5000,
-        "intents": "0.484%",
+        "intents": "0.707%",
         "relay": "no route"
        }
       ]
@@ -421,18 +421,18 @@
     "buyback_share_of_intents_fees": 0.27435964237016486,
     "captured_share_of_intents_fees": 0.28879225784906076,
     "captured_usd_per_year": 20495435.388888888,
-    "market_cap_usd": 5255675587,
+    "market_cap_usd": 5260567586,
     "near_price_usd": 4.01,
-    "stats_fetched_at": "2026-11-05T01:05:33.193Z",
-    "capture_yield": 0.0038996766542411187,
-    "supply_span_days": 90.78059238128296,
-    "total_supply_near": 1310833127.503596,
-    "net_issuance_near_per_year": 32223968.969755486,
-    "net_issuance_rate": 0.02458281553436487,
-    "net_issuance_usd_per_year": 129218115.56871949,
-    "buyback_vs_net_issuance": 0.15068444649981963,
+    "stats_fetched_at": "2026-11-05T01:09:42.254Z",
+    "capture_yield": 0.0038960501987339905,
+    "supply_span_days": 90.78037302926222,
+    "total_supply_near": 1310833124.830585,
+    "net_issuance_near_per_year": 32224041.369767416,
+    "net_issuance_rate": 0.02458287081655197,
+    "net_issuance_usd_per_year": 129218405.89276733,
+    "buyback_vs_net_issuance": 0.1506841079465141,
     "buyback_wallet_near": 2174118.704866,
-    "supply_read_at": "2026-11-05T01:05:33.607Z",
+    "supply_read_at": "2026-11-05T01:09:42.617Z",
     "buyback_since_switch_usd": 7622575.05,
     "buyback_near_implied_at_daily_prices": 3180841.931856977,
     "buyback_wallet_vs_implied": 0.6835041638163858
