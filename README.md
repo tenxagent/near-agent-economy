@@ -46,7 +46,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - Expect the measured starting point, a quarter-by-quarter table of coverage (NEAR bought back per year ÷ net new NEAR per year) and a sensitivity grid: quarters until the buyback reaches half (THESIS.md's bar) and all of net issuance.
    - Change any assumption: `--half-life <quarters|inf>` (how fast Intents' growth fades; `0` = no growth), `--capture <0–1>` (share of Intents fees bought back), `--price-q <change per quarter>`, `--resold <0–1>` (share of the bought-back NEAR that returns to market; the buyback wallet is a multisig that holds it), `--quarters <horizon>`; `--json` prints the full projection. It also prints the measured quarter-on-quarter growth history and the half-life that history implies. Formulas: `lib/model.mjs`; tests: `test/model.test.mjs`.
 6. **Re-draw P1's sample yourself.**
-   - Run `node sample-intents.mjs` (300 random blocks over 7 days, public archival RPC, several minutes; read-only).
+   - Run `node sample-intents.mjs` (300 random blocks over 7 days, public archival RPC, about 2 hours: the registered sample ran 22:01Z → 00:09Z, and a rate-limited RPC can stall it; read-only).
    - It rewrites `data/raw/intents-sample.json` with a new seeded sample; `node build.mjs --offline` then reports your P1 (the shares move a few points between samples; the cutoffs stay as registered in THESIS.md).
 
 ## Pre-registration, anchored on NEAR mainnet
