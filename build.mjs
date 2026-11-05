@@ -259,11 +259,20 @@ async function main() {
 
   // The investment reading, written from the computed values only (shown on the dashboard and in the README)
   const v = Object.fromEntries(tests.map((t) => [t.id, t.value])), pc = (x, d = 0) => `${(100 * x).toFixed(d)}%`;
+  // T9 in one sentence, computed from the latest quotes (11-05: was a fixed string that went stale when Hood USDG → NEAR stopped quoting)
+  const t9Sentence = (() => {
+    const day = `${v.T9.quoted_at.slice(0, 16).replace('T', ' ')}Z`;
+    const rows = v.T9.routes.flatMap((rt) => rt.rows.filter((r) => r.usd < 50).map((r) => ({ into: /->\s*NEAR\b/.test(rt.route), ok: /^[\d.]+%$/.test(r.intents), pct: parseFloat(r.intents) })));
+    const into = rows.filter((r) => r.into), okInto = into.filter((r) => r.ok);
+    if (into.length && okInto.length === into.length) return `Agent-size tickets into NEAR get a 1Click quote: ${Math.min(...okInto.map((r) => r.pct))}–${Math.max(...okInto.map((r) => r.pct))}% under $50 (T9, quotes of ${day}).`;
+    if (okInto.length) return `${okInto.length} of ${into.length} agent-size tickets into NEAR got a 1Click quote (T9, quotes of ${day}).`;
+    return `But in the quotes of ${day}, 1Click refused all ${rows.length} agent-size tickets (under $50) on the agent's own routes (T9), so for now small agent tickets stay off Intents.`;
+  })();
   const conclusion = c1 && [
     `Usage moved to NEAR Intents: it settled ${pc(v.T1.intents_share_of_near_dex_volume_6m)} of NEAR's DEX volume over the last 6 full months and ${fmtUsd(v.T2.last90)} in the 90 days to ${v.T2.to}, ${v.T2.ratio.toFixed(2)}× the 90 days before (T1, T2).`,
     `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1).`,
     `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.`,
-    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: ${p1 ? `${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1), and ` : ''}agent-size tickets into NEAR do settle (T9).`,
+    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). ${p1 ? `Small tickets are not an edge case: ${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1). ` : ''}${t9Sentence}`,
     `Read as an investment case: the usage half is proven, value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,
   ];
 
