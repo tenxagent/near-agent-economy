@@ -190,3 +190,25 @@ test('golden: T4 is +1 when the weekly price moves exactly with weekly volume, â
   close(down.T4.value.r, -1, 'T4 r down');
   assert.equal(down.T4.pass, false);
 });
+
+// ---------- 11-05 (re-screen 3, X-1): the T9 sentence of the investment reading is computed from the quotes, never a fixed string
+test('golden: the T9 sentence follows the 1Click quotes (all quoted / some / none)', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'thesis-t9-'));
+  try {
+    for (const f of ['build.mjs', 'PREREG.md', 'README.md', 'lib', 'data']) fs.cpSync(path.join(ROOT, f), path.join(tmp, f), { recursive: true });
+    const qp = path.join(tmp, 'data', 'raw', 'cross-chain-quotes.json'), q0 = JSON.parse(fs.readFileSync(qp, 'utf8'));
+    const intoNear = q0.routes.find((r) => /->\s*NEAR\b/.test(r.route));
+    assert.ok(intoNear, 'the quotes file has a route into NEAR');
+    const run = (fn) => {
+      const q = structuredClone(q0); fn(q.routes.find((r) => r.route === intoNear.route).rows.filter((r) => r.usd < 50));
+      fs.writeFileSync(qp, JSON.stringify(q)); build(tmp, '--offline');
+      return JSON.parse(fs.readFileSync(path.join(tmp, 'dist', 'results.json'), 'utf8')).conclusion.join(' ');
+    };
+    const ok = (pct) => ({ ok: true, cost_pct: pct }), no = { ok: false, http: 400, message: 'Quoting for this pair is not available' };
+    assert.match(run((rows) => rows.forEach((r, i) => { r.near_intents_1click = ok([0.41, 0.52, 0.6][i] ?? 0.5); })), /Agent-size tickets into NEAR get a 1Click quote: 0\.41â€“0\.6% under \$50 \(T9/);
+    assert.match(run((rows) => rows.forEach((r, i) => { r.near_intents_1click = i === 0 ? ok(0.7) : no; })), new RegExp(`1 of ${intoNear.rows.filter((r) => r.usd < 50).length} agent-size tickets into NEAR got a 1Click quote`));
+    const none = run((rows) => rows.forEach((r) => { r.near_intents_1click = no; }));
+    assert.match(none, /1Click refused all \d+ agent-size tickets \(under \$50\) on the agent's own routes \(T9\)/);
+    assert.doesNotMatch(none, /do settle/);
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+});
