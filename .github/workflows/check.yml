@@ -1,0 +1,26 @@
+# Re-runs the judge path on GitHub's machines (no keys, no secrets): the committed build must reproduce exactly and every test must pass.
+name: check
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '17 7 * * *'   # daily: also re-reads the PREREG anchor live from NEAR
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild offline from the committed raw data and compare (README results block, PREREG anchor pinned)
+        run: node build.mjs --check
+      - name: PREREG.md against its live NEAR anchor (SocialDB)
+        run: node build.mjs --check --online
+      - name: Unit tests (scoring, model)
+        run: node --test
+      - name: Model re-run
+        run: node model.mjs | tail -3

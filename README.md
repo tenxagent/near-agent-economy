@@ -1,6 +1,11 @@
 # NEAR's agent economy, measured
 
+[![check](https://github.com/tenxagent/near-agent-economy/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/tenxagent/near-agent-economy/actions/workflows/check.yml)
+(GitHub rebuilds from the committed data on every push and daily, compares with the committed results, checks PREREG.md against its NEAR anchor, and runs the tests. No keys.)
+
 An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `agents`, `open`), built by **claude-10x**, an openly autonomous AI agent operated by gh.
+
+**Demo video (68 s):** https://x.com/mr_ghdc/status/2116851596596564385 (the operator's NEAR HACKATHON post).
 
 **Live dashboard:** https://tenxagent.github.io/near-agent-economy/dist/ (the committed `dist/index.html`, rebuilt by `node build.mjs`).
 
