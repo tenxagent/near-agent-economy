@@ -13,6 +13,7 @@ import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near } from './lib/capture.mjs';
 import { sentence } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
+import { marketControlled } from './lib/market.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
@@ -88,6 +89,19 @@ async function refresh() {
     fs.writeFileSync(path.join(RAW, 'hsp029-vote.json'), JSON.stringify({ fetched_at: new Date().toISOString(), source: 'NEAR RPC call_function vote.dao get_proposal {"proposal_id":29}', proposal: v }));
     console.log('fetched hsp029-vote.json');
   } catch (e) { console.warn(`kept committed hsp029-vote.json: ${e.message}`); }
+  try {   // 11-05 (T4m, post-lock REPORT): BTC's daily price, the market control for T4 (DefiLlama coins API, at most 500 days per call)
+    const out = new Map();
+    for (let s = Date.parse('2025-01-01T00:00:00Z') / 1000; s < Date.now() / 1000; s += 499 * 86400) {
+      const span = Math.max(1, Math.min(499, Math.floor((Date.now() / 1000 - s) / 86400)));
+      const j = await (await fetch(`https://coins.llama.fi/chart/coingecko:bitcoin?start=${s}&span=${span}&period=1d`, { signal: AbortSignal.timeout(30_000) })).json();
+      const pts = j.coins?.['coingecko:bitcoin']?.prices; if (!pts) throw new Error(JSON.stringify(j).slice(0, 120));
+      // timestamps sit within seconds of midnight UTC (23:59:5x or 00:00:0x) ⇒ round to the nearest midnight, one price per date
+      for (const p of pts) out.set(new Date(Math.round(p.timestamp / 86400) * 86400_000).toISOString().slice(0, 10), p.price);
+    }
+    if (out.size < 300) throw new Error(`only ${out.size} days`);
+    fs.writeFileSync(path.join(RAW, 'defillama-btc-price.json'), JSON.stringify({ fetched_at: new Date().toISOString(), source: 'https://coins.llama.fi/chart/coingecko:bitcoin (period=1d, chunks of at most 500 days from 2025-01-01)', prices: [...out].sort(([a], [b]) => (a < b ? -1 : 1)) }));
+    console.log('fetched defillama-btc-price.json');
+  } catch (e) { console.warn(`kept committed defillama-btc-price.json: ${e.message}`); }
   const gt = JSON.parse(fs.readFileSync(path.join(DIR, 'data', 'agent-ground-truth.json'), 'utf8'));
   fs.writeFileSync(path.join(RAW, 'agent-nonces.json'), JSON.stringify({ fetched_at: new Date().toISOString(), address: gt.address, nonces: await fetchNonces(gt.address),
     near: gt.near_account ? await fetchNearSent(gt.near_account.account) : undefined }));
@@ -167,6 +181,18 @@ async function main() {
   const r4 = corr(dlog(wk.map(([, w]) => w.px / 7)), dlog(wk.map(([, w]) => w.iv)));
   tests.push({ id: 'T4', half: 'capture', question: "Does NEAR's price move with the usage that grew?", value: { r: r4, weeks: wk.length, from: wk[0]?.[0], to: wk.at(-1)?.[0] },
     pass: r4 >= 0.2, rule: 'r >= 0.20 (expected FAIL)' });
+
+  // T4m (2026-11-05, post-lock REPORT; T4 itself is unchanged): the same weeks with the crypto market taken out. NEAR's weekly log change is
+  // regressed on BTC's; the residual is correlated with Intents volume's weekly log change. Two-sided permutation p (lib/market.mjs).
+  if (fs.existsSync(path.join(RAW, 'defillama-btc-price.json'))) {
+    const btc = new Map(readRaw('defillama-btc-price.json').prices);
+    const wkb = wk.filter(([monday]) => [0, 1, 2, 3, 4, 5, 6].every((i) => btc.has(addDays(monday, i))));
+    const btcW = wkb.map(([monday]) => [0, 1, 2, 3, 4, 5, 6].reduce((s, i) => s + btc.get(addDays(monday, i)), 0) / 7);
+    const m = marketControlled(dlog(wkb.map(([, w]) => w.px / 7)), dlog(btcW), dlog(wkb.map(([, w]) => w.iv)));
+    tests.push({ id: 'T4m', half: 'capture', question: "Does NEAR's price move with Intents volume once the crypto market (BTC) is taken out?",
+      value: { ...m, weeks: wkb.length, from: wkb[0]?.[0], to: wkb.at(-1)?.[0] }, pass: null,
+      rule: 'post-lock REPORT (2026-11-05), no threshold: OLS beta on BTC, residual vs Intents volume, two-sided permutation p (10,000 shuffles, seed 1)' });
+  }
 
   // T5: Intents share of NEAR traffic from our own snapshots (counter method and RPC-sample method)
   const ok = snaps.filter((s) => s.nearblocks?.network?.total_txns && s.nearblocks?.intents_txns_total);
@@ -293,7 +319,7 @@ async function main() {
     `Usage moved to NEAR Intents: it settled ${pc(v.T1.intents_share_of_near_dex_volume_6m)} of NEAR's DEX volume over the last 6 full months and ${fmtUsd(v.T2.last90)} in the 90 days to ${v.T2.to}, ${v.T2.ratio.toFixed(2)}× the 90 days before (T1, T2).`,
     `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1).`,
     `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.${c1.hsp029 ? ` If NEAR governance's HSP-029 cut (max issuance ${c1.hsp029.from_pct}% → ${c1.hsp029.to_pct}% over ${c1.hsp029.ramp_months} months) runs its full ramp, the same buyback would cover ${pc(c1.hsp029.buyback_vs_net_issuance_at_target)} of net issuance.` : ''}`,
-    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). ${p1 ? `Small tickets are not an edge case: ${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1). ` : ''}${t9Sentence}`,
+    `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4${v.T4m ? `; with BTC's moves taken out, r = ${v.T4m.r_controlled.toFixed(2)}, p = ${v.T4m.p_controlled.toFixed(2)}, T4m` : ''}), and agent commerce is tiny next to Intents (T7). ${p1 ? `Small tickets are not an edge case: ${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1). ` : ''}${t9Sentence}`,
     `Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,
   ];
 
