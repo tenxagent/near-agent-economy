@@ -12,7 +12,7 @@ import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.
 import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near } from './lib/capture.mjs';
 import { sentence } from './lib/sentences.mjs';
-import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel } from './lib/model.mjs';
+import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
@@ -80,6 +80,14 @@ async function refresh() {
     fs.writeFileSync(path.join(RAW, 'near-supply.json'), JSON.stringify({ fetched_at: new Date().toISOString(), ...(await fetchSupply()) }));
     console.log('fetched near-supply.json');
   } catch (e) { console.warn(`kept committed near-supply.json: ${e.message}`); }
+  try {   // 11-05: NEAR governance HSP-029 (issuance ramp 2.5% → 1.6%), its House of Stake record read from chain
+    const r = await (await fetch('https://rpc.mainnet.fastnear.com', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(20_000),
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'query', params: { request_type: 'call_function', finality: 'final', account_id: 'vote.dao', method_name: 'get_proposal', args_base64: Buffer.from('{"proposal_id":29}').toString('base64') } }) })).json();
+    if (!r.result?.result) throw new Error(JSON.stringify(r.error ?? r.result?.error ?? r).slice(0, 160));
+    const v = JSON.parse(Buffer.from(r.result.result).toString()); delete v.description;
+    fs.writeFileSync(path.join(RAW, 'hsp029-vote.json'), JSON.stringify({ fetched_at: new Date().toISOString(), source: 'NEAR RPC call_function vote.dao get_proposal {"proposal_id":29}', proposal: v }));
+    console.log('fetched hsp029-vote.json');
+  } catch (e) { console.warn(`kept committed hsp029-vote.json: ${e.message}`); }
   const gt = JSON.parse(fs.readFileSync(path.join(DIR, 'data', 'agent-ground-truth.json'), 'utf8'));
   fs.writeFileSync(path.join(RAW, 'agent-nonces.json'), JSON.stringify({ fetched_at: new Date().toISOString(), address: gt.address, nonces: await fetchNonces(gt.address),
     near: gt.near_account ? await fetchNearSent(gt.near_account.account) : undefined }));
@@ -237,6 +245,19 @@ async function main() {
       buyback_since_switch_usd: [...holders].reduce((a, [, x]) => a + x, 0),
       buyback_near_implied_at_daily_prices: bought.reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0) };
     c1.buyback_wallet_vs_implied = c1.buyback_wallet_near / c1.buyback_near_implied_at_daily_prices;
+    // 11-05 (post-lock REPORT, THESIS.md): HSP-029 lowers max issuance 2.5% → 1.6% over 24 months. Gross issuance = net supply growth +
+    // gas burn; at the target, gross scales by 1.6/2.5 and the burn is held. Same buyback, compared with that lower net issuance.
+    const burnNear = (burn90 * 365) / 90 / price, gross = issuedPerYear + burnNear, grossT = (gross * HSP029.toPct) / HSP029.fromPct;
+    let vote = null;
+    if (fs.existsSync(path.join(RAW, 'hsp029-vote.json'))) {
+      const pr = readRaw('hsp029-vote.json').proposal, tot = near(pr.total_votes.total_venear);
+      const end = Number(BigInt(pr.voting_start_time_ns) + BigInt(pr.voting_duration_ns)) / 1e6;
+      vote = { status: pr.status, for_share: near(pr.votes[0].total_venear) / tot, turnout: tot / near(pr.snapshot_and_state.total_venear), voting_ended: new Date(end).toISOString(),
+        timelock_ends: new Date(end + Number(BigInt(pr.timelock_duration_ns)) / 1e6).toISOString(), actions_attached: pr.actions !== null, read_at: readRaw('hsp029-vote.json').fetched_at };
+    }
+    c1.hsp029 = { from_pct: HSP029.fromPct, to_pct: HSP029.toPct, ramp_months: HSP029.rampQuarters * 3, source: HSP029.source, gross_issuance_near_per_year: gross,
+      gross_issuance_rate: gross / supNow, net_issuance_near_per_year_at_target: grossT - burnNear,
+      buyback_vs_net_issuance_at_target: ((buyback90 * 365) / 90) / ((grossT - burnNear) * price), vote };
   }
   tests.push({ id: 'C1', half: 'capture', question: "How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?", value: c1,
     pass: null, rule: 'reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)' });
@@ -271,7 +292,7 @@ async function main() {
   const conclusion = c1 && [
     `Usage moved to NEAR Intents: it settled ${pc(v.T1.intents_share_of_near_dex_volume_6m)} of NEAR's DEX volume over the last 6 full months and ${fmtUsd(v.T2.last90)} in the 90 days to ${v.T2.to}, ${v.T2.ratio.toFixed(2)}× the 90 days before (T1, T2).`,
     `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1).`,
-    `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.`,
+    `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.${c1.hsp029 ? ` If NEAR governance's HSP-029 cut (max issuance ${c1.hsp029.from_pct}% → ${c1.hsp029.to_pct}% over ${c1.hsp029.ramp_months} months) runs its full ramp, the same buyback would cover ${pc(c1.hsp029.buyback_vs_net_issuance_at_target)} of net issuance.` : ''}`,
     `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4), and agent commerce is tiny next to Intents (T7). ${p1 ? `Small tickets are not an edge case: ${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1). ` : ''}${t9Sentence}`,
     `Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,
   ];
@@ -281,9 +302,16 @@ async function main() {
   const qWhen = (q, at) => (q === null ? 'not within 10 years' : q === 0 ? 'already' : `in ${at} (${q} quarters)`);
   // 11-05 (re-screen X-6): lead with the fade the data implies, not the 2-quarter default flag that the same sentence calls generous
   const hlm = model?.history.impliedHalfLife, atMeasured = model && hlm > 0 ? project(model.base, { halfLife: hlm }) : null;
+  // 11-05 (HSP-029, post-lock REPORT): the same model with gross issuance ramping 2.5% → 1.6% over 8 quarters from now (start not scheduled)
+  const hspRun = (opts) => project(model.base, { ...opts, issuance: 'hsp029' });
+  const hsp = model && c1?.hsp029 ? { measured: hlm > 0 ? hspRun({ halfLife: hlm }) : null, def: hspRun({}) } : null;
+  const hv = c1?.hsp029?.vote;
+  const hspLine = hsp ? ` If HSP-029 (max issuance ${HSP029.fromPct}% → ${HSP029.toPct}% over 24 months${hv ? `; House of Stake vote ${(100 * hv.for_share).toFixed(2)}% for, ${hv.status.toLowerCase()} until ${hv.timelock_ends.slice(0, 10)}` : ''}; no start date set) began its ramp now: `
+    + `${hsp.measured ? `at the implied fade, ${qWhen(hsp.measured.quartersToHalf, quarterLabel(model.base.window_end, hsp.measured.quartersToHalf))}; ` : ''}`
+    + `at the 2-quarter default, ${qWhen(hsp.def.quartersToHalf, quarterLabel(model.base.window_end, hsp.def.quartersToHalf))}.` : '';
   const modelLine = model && `Model (\`node model.mjs\`, every assumption is a flag): starting from today's ${pc(model.default.coverage_now)}, ${atMeasured
     ? `at the fade the data implies (Intents' growth halving about every ${hlm.toFixed(1)} quarters, see below) the buyback reaches half of net issuance ${qWhen(atMeasured.quartersToHalf, quarterLabel(model.base.window_end, atMeasured.quartersToHalf))}; with a slower fade, halving every 2 quarters (the default flag), ${qWhen(model.default.quartersToHalf, model.default.half_at)};`
-    : `assuming Intents' growth fades by half every 2 quarters, the buyback reaches half of net issuance ${qWhen(model.default.quartersToHalf, model.default.half_at)};`} with no further growth it stays at ${pc(model.no_growth.coverage)}; if the measured ${v.T2.ratio.toFixed(2)}× per 90 days never fades, ${qWhen(model.measured_growth_forever.quartersToHalf, model.measured_growth_forever.half_at)}. A scenario, not a forecast. The measured quarter-on-quarter growth went ${model.history.quarters.map((q) => q.ratio.toFixed(1) + '×').join(' → ')}; fading from the oldest quarter to the latest four implies a half-life of about ${model.history.impliedHalfLife ? model.history.impliedHalfLife.toFixed(1) : '?'} quarters, so the 2-quarter default is ${model.history.impliedHalfLife && model.history.impliedHalfLife < 2 ? 'on the generous side' : 'not generous'}. The bought-back NEAR sits in a multisig (held, not burned); \`--resold\` models some of it returning to market.`;
+    : `assuming Intents' growth fades by half every 2 quarters, the buyback reaches half of net issuance ${qWhen(model.default.quartersToHalf, model.default.half_at)};`} with no further growth it stays at ${pc(model.no_growth.coverage)}; if the measured ${v.T2.ratio.toFixed(2)}× per 90 days never fades, ${qWhen(model.measured_growth_forever.quartersToHalf, model.measured_growth_forever.half_at)}. A scenario, not a forecast. The measured quarter-on-quarter growth went ${model.history.quarters.map((q) => q.ratio.toFixed(1) + '×').join(' → ')}; fading from the oldest quarter to the latest four implies a half-life of about ${model.history.impliedHalfLife ? model.history.impliedHalfLife.toFixed(1) : '?'} quarters, so the 2-quarter default is ${model.history.impliedHalfLife && model.history.impliedHalfLife < 2 ? 'on the generous side' : 'not generous'}. The bought-back NEAR sits in a multisig (held, not burned); \`--resold\` models some of it returning to market.${hspLine}`;
 
   // F1–F3: forward tests (PREREG.md), scored only on 2026-11-02 → 11-12 against the 11 days before
   const daysIn = (from, n) => Array.from({ length: n }, (_, i) => addDays(from, i));

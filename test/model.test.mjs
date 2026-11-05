@@ -76,3 +76,16 @@ test('growth history: quarter ratios oldest first, and the implied half-life of 
   assert.ok(Math.abs(h.quarters[0].ratio - 2) < 0.01);                        // oldest full quarter: 2×
   assert.ok(h.impliedHalfLife > 0 && h.impliedHalfLife < 10);                 // excess fell from 1.0 to 0.2 ⇒ a finite half-life
 });
+
+// 11-05: HSP-029 issuance ramp (post-lock REPORT). Hand-computed: net 40M + burn 4M = gross 44M NEAR/yr; buyback 10M NEAR/yr (20e6 $ / $2).
+test('HSP-029: gross issuance ramps to 1.6/2.5 over 8 quarters, burn held, coverage rises only through the denominator', () => {
+  const b = { ...base, burn_near_per_year: 4e6 };
+  const r = project(b, { halfLife: 0, issuance: 'hsp029' });   // no growth: only the issuance path moves coverage
+  assert.equal(r.rows[0].coverage, 0.25);                        // q0: 10M / 40M, unchanged
+  assert.ok(Math.abs(r.rows[4].coverage - 10e6 / (44e6 * 0.82 - 4e6)) < 1e-12);   // half way: factor 1 − 0.36 × 0.5
+  assert.ok(Math.abs(r.rows[8].coverage - 10e6 / 24.16e6) < 1e-12);               // end: 44M × 0.64 − 4M = 24.16M
+  assert.equal(r.rows[12].coverage, r.rows[8].coverage);                           // flat after the ramp
+  const late = project(b, { halfLife: 0, issuance: 'hsp029', rampStartQ: 2 });
+  assert.equal(late.rows[2].coverage, 0.25);                                       // nothing changes before the ramp starts
+  assert.equal(project(b, { halfLife: 0 }).rows[8].coverage, 0.25);                // default issuance 'current' is unchanged
+});
