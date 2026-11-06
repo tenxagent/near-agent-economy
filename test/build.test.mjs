@@ -37,6 +37,7 @@ test('committed results hold their internal invariants', () => {
   const v = Object.fromEntries(r.tests.map((t) => [t.id, t.value]));
   assert.deepEqual(r.tests.map((t) => t.id), ['T1', 'T2', 'T3', 'T4', 'T4m', 'T5', 'T6', 'T7', 'T8', 'T9', 'C1', 'P1', 'F1', 'F2', 'F3']);   // T4m: post-lock REPORT 2026-11-05
   if (v.T4m.weeks === v.T4.weeks) assert.ok(Math.abs(v.T4m.r_raw - v.T4.r) < 1e-9, 'T4m on the same weeks reproduces T4\'s r');
+  if (v.T4m.since_fee_switch) { const f = v.T4m.since_fee_switch; assert.ok(f.from >= '2026-02-23' && f.weeks < v.T4m.weeks && f.to === v.T4m.to, 'the fee-switch window is the tail of the T4m weeks'); }
   assert.ok(Math.abs(v.T3.ratio - v.T3.near_chain_fees_90d / v.T3.intents_fees_90d) < 1e-12);
   assert.equal(v.C1.intents_fees_90d, v.T3.intents_fees_90d); // C1 and T3 cover the same 90 days
   assert.ok(Math.abs(v.C1.burn_90d / v.T3.near_chain_fees_90d - 0.7) < 0.01); // NEAR burns 70% of gas fees

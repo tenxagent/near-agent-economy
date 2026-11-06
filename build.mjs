@@ -128,6 +128,7 @@ function corr(a, b) {
   for (let i = 0; i < n; i++) { c += (a[i] - ma) * (b[i] - mb); va += (a[i] - ma) ** 2; vb += (b[i] - mb) ** 2; }
   return c / Math.sqrt(va * vb);
 }
+const FEE_SWITCH = '2026-02-23';   // NEAR Intents' fee switch: from here Intents revenue buys NEAR back (C1, T3 notes, T4m second window)
 const fmtUsd = (v) => v >= 1e9 ? `$${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `$${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v / 1e3).toFixed(1)}K` : `$${v.toFixed(0)}`;
 
 // ---------- build
@@ -189,9 +190,14 @@ async function main() {
     const wkb = wk.filter(([monday]) => [0, 1, 2, 3, 4, 5, 6].every((i) => btc.has(addDays(monday, i))));
     const btcW = wkb.map(([monday]) => [0, 1, 2, 3, 4, 5, 6].reduce((s, i) => s + btc.get(addDays(monday, i)), 0) / 7);
     const m = marketControlled(dlog(wkb.map(([, w]) => w.px / 7)), dlog(btcW), dlog(wkb.map(([, w]) => w.iv)));
+    // 11-06 (re-screen 4): the same test on the weeks since the 2026-02-23 fee switch (the break point T3/C1 already use). Added after
+    // the reviewer had computed it (r +0.24, p ≈ 0.16 on 36 weeks), so it is not a blind test; reported, no threshold.
+    const sinceI = wkb.findIndex(([monday]) => monday >= FEE_SWITCH);
+    const rec = sinceI >= 0 && wkb.length - sinceI >= 11 ? (() => { const s = wkb.slice(sinceI), sb = btcW.slice(sinceI);
+      return { ...marketControlled(dlog(s.map(([, w]) => w.px / 7)), dlog(sb), dlog(s.map(([, w]) => w.iv))), weeks: s.length, from: s[0][0], to: s.at(-1)[0] }; })() : null;
     tests.push({ id: 'T4m', half: 'capture', question: "Does NEAR's price move with Intents volume once the crypto market (BTC) is taken out?",
-      value: { ...m, weeks: wkb.length, from: wkb[0]?.[0], to: wkb.at(-1)?.[0] }, pass: null,
-      rule: 'post-lock REPORT (2026-11-05), no threshold: OLS beta on BTC, residual vs Intents volume, two-sided permutation p (10,000 shuffles, seed 1)' });
+      value: { ...m, weeks: wkb.length, from: wkb[0]?.[0], to: wkb.at(-1)?.[0], since_fee_switch: rec }, pass: null,
+      rule: 'post-lock REPORT (2026-11-05), no threshold: OLS beta on BTC, residual vs Intents volume, two-sided permutation p (10,000 shuffles, seed 1) and a 4-week block-permutation p (2026-11-06); a second window from the 2026-02-23 fee switch (2026-11-06)' });
   }
 
   // T5: Intents share of NEAR traffic from our own snapshots (counter method and RPC-sample method)

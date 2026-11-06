@@ -2,7 +2,7 @@
 // with known answers.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { beta, corr, marketControlled, permP, rng } from '../lib/market.mjs';
+import { beta, blockPermP, corr, marketControlled, permP, rng } from '../lib/market.mjs';
 
 // 60 synthetic weeks: BTC moves dB; Intents volume moves dI, built ORTHOGONAL to dB (Gram-Schmidt) so the true beta is exact.
 const next = rng(7), n = 60;
@@ -39,4 +39,16 @@ test('permutation p is reproducible (same seed, same p) and two-sided', () => {
 test('refuses misaligned or too-short series', () => {
   assert.throws(() => marketControlled([1, 2], [1, 2], [1, 2]));
   assert.throws(() => marketControlled(dB, dB.slice(1), dI));
+});
+
+test('block permutation: block 1 is the plain permutation; it is reproducible; persistent series get a larger (more honest) p', () => {
+  const x = dB, y = dI.map((v, i) => v + 0.2 * dB[i]);
+  assert.equal(blockPermP(x, y, 1, 500, 3), permP(x, y, 500, 3));
+  assert.equal(blockPermP(x, y, 4, 500, 3), blockPermP(x, y, 4, 500, 3));
+  // two UNRELATED but highly persistent series (AR(1), phi 0.95): a plain permutation treats the weeks as exchangeable and is too sure
+  const ar = (seed) => { const r = rng(seed); let v = 0; return Array.from({ length: 96 }, () => (v = 0.95 * v + (r() - 0.5))); };
+  const a = ar(11), b = ar(12);
+  assert.ok(blockPermP(a, b, 8, 2000, 1) > permP(a, b, 2000, 1));
+  const m = marketControlled(dB.map((v, i) => 2 * v + 0.5 * dI[i]), dB, dI, { shuffles: 500 });
+  assert.equal(m.block, 4); assert.ok(m.p_controlled_block > 0 && m.p_controlled_block <= 1);
 });
