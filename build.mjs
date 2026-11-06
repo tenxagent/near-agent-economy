@@ -433,13 +433,13 @@ async function main() {
     vote && `- **HSP-029 on chain (vote.dao, read ${String(vote.read_at).slice(0, 16)}Z):** status ${vote.status}, ${pc(vote.for_share, 2)} of votes for, turnout ${pc(vote.turnout)}; timelock ends ${String(vote.timelock_ends).slice(0, 16)}Z; ${vote.actions_attached ? 'actions attached' : 'no actions attached, so no start date for the ramp yet'}.`,
     t4m && `- **T4m, T4 with the crypto market taken out:** ${sentence(t4m)}`,
     modelLine && `- ${modelLine.replace(/^Model /, '**Model** ')}`].filter(Boolean).join('\n');
-  const THESIS = path.join(DIR, 'THESIS.md'), thesisMd = fs.readFileSync(THESIS, 'utf8');
+  const THESIS = path.join(DIR, 'THESIS.md'), thesisMd = fs.existsSync(THESIS) ? fs.readFileSync(THESIS, 'utf8') : null;   // absent in the tests' synthetic builds
   const reS = /(<!-- status:start -->\n)[\s\S]*?(<!-- status:end -->)/;
   const prereg = crypto.createHash('sha256').update(fs.readFileSync(path.join(DIR, 'PREREG.md'))).digest('hex');
   if (CHECK) {
     const errs = [];
     if (!re.test(readme) || readme.match(re)[0] !== `<!-- results:start -->\n${block}\n<!-- results:end -->`) errs.push('README results block differs from this build (run node build.mjs --offline)');
-    if (!reS.test(thesisMd) || thesisMd.match(reS)[0] !== `<!-- status:start -->\n${statusBlock}\n<!-- status:end -->`) errs.push('THESIS.md status block differs from this build (run node build.mjs --offline)');
+    if (thesisMd !== null && (!reS.test(thesisMd) || thesisMd.match(reS)[0] !== `<!-- status:start -->\n${statusBlock}\n<!-- status:end -->`)) errs.push('THESIS.md status block differs from this build (run node build.mjs --offline)');
     if (prereg !== PREREG_SHA256) errs.push(`PREREG.md sha256 ${prereg} differs from the anchored ${PREREG_SHA256}`);
     let src = 'the anchored value pinned in build.mjs';
     if (ONLINE) { const a = await anchoredPreregSha(); src = `SocialDB live (block ${a.block}, ${a.url})`;
@@ -449,7 +449,7 @@ async function main() {
     if (errs.length) process.exit(1);
   } else {
     if (re.test(readme)) fs.writeFileSync(README, readme.replace(re, (_, a, b) => `${a}${block}\n${b}`)); // a function: block text contains '$'
-    if (reS.test(thesisMd)) fs.writeFileSync(THESIS, thesisMd.replace(reS, (_, a, b) => `${a}${statusBlock}\n${b}`));
+    if (thesisMd !== null && reS.test(thesisMd)) fs.writeFileSync(THESIS, thesisMd.replace(reS, (_, a, b) => `${a}${statusBlock}\n${b}`));
     if (prereg !== PREREG_SHA256) console.warn(`WARNING: PREREG.md sha256 ${prereg} differs from the anchored ${PREREG_SHA256}`);
   }
 }
