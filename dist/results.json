@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-06T22:45:04.940Z",
- "offline": false,
+ "built_at": "2026-11-06T23:06:44.531Z",
+ "offline": true,
  "last_day": "2026-11-05",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.76B in the 90 days to 2026-11-05, 1.81× the 90 days before (T1, T2).",
@@ -795,6 +795,74 @@
       "actions_attached": false,
       "read_at": "2026-11-06T22:44:45.508Z"
      }
+    },
+    "protocol_fee": {
+     "fee_pips": 1,
+     "fee_rate": 0.000001,
+     "collector": "7066024d3f20f94de601c003163367873cca78507eeca4df66d9be645f197f05",
+     "days": [
+      {
+       "from": "2026-10-30T00:00:00.574Z",
+       "to": "2026-10-31T00:00:00.464Z",
+       "intake_usd": 118.96302928089476,
+       "withdrawn_usd": 39.963250037772
+      },
+      {
+       "from": "2026-10-31T00:00:00.464Z",
+       "to": "2026-11-01T00:00:00.175Z",
+       "intake_usd": 34.49052344398079,
+       "withdrawn_usd": 9.241177516311021
+      },
+      {
+       "from": "2026-11-01T00:00:00.175Z",
+       "to": "2026-11-02T00:00:00.260Z",
+       "intake_usd": 54.42413498927137,
+       "withdrawn_usd": 20.00786388839969
+      },
+      {
+       "from": "2026-11-02T00:00:00.260Z",
+       "to": "2026-11-03T00:00:00.137Z",
+       "intake_usd": 89.79009743629034,
+       "withdrawn_usd": 32.62268752967491
+      },
+      {
+       "from": "2026-11-03T00:00:00.137Z",
+       "to": "2026-11-04T00:00:00.279Z",
+       "intake_usd": 36.51947223389813,
+       "withdrawn_usd": 12.077362127463914
+      },
+      {
+       "from": "2026-11-04T00:00:00.279Z",
+       "to": "2026-11-05T00:00:00.524Z",
+       "intake_usd": 14.579105940252463,
+       "withdrawn_usd": 4.670960937044978
+      },
+      {
+       "from": "2026-11-05T00:00:00.524Z",
+       "to": "2026-11-06T00:00:00.507Z",
+       "intake_usd": 20.39843785658248,
+       "withdrawn_usd": 17.139411056799535
+      }
+     ],
+     "intake_usd": 369.16480118117033,
+     "intake_usd_per_day": 52.73782874016719,
+     "implied_token_diff_volume_per_day": 26368914.370083597,
+     "unpriced_tokens": [
+      "nep141:bnb-0x2494b603319d4d9f9715c9f4496d9e0364b59d93.omdep.near",
+      "nep141:bnb-0x390a684ef9cade28a7ad0dfa61ab1eb3842618c4.omdep.near",
+      "nep141:fb3d3a9e8019d976a7c9ff900696b7b3b7fe3b3e67b14066160ed7d0b98fa1c8",
+      "nep141:bnb-0xa9ee28c80f960b889dfbd1902055218cba016f75.omdep.near",
+      "nep141:bnb-0x4553cfe1c09f37f38b12dc509f676964e392f8fc.omdep.near",
+      "nep141:bnb-0x091fc7778e6932d4009b087b191d1ee3bac5729a.omdep.near",
+      "nep141:bnb-0x0cde6936d305d5b34667fc46425e852efd73559a.omdep.near"
+     ],
+     "through_day": "2026-11-05",
+     "fetched_at": "2026-11-06T23:05:55.500Z",
+     "per_year_usd": 19249.307490161023,
+     "share_of_captured": 0.0009246799910959012,
+     "reported_volume_usd": 915466658,
+     "reported_days": 7,
+     "token_diff_share_of_reported": 0.20162656823989453
     }
    },
    "pass": null,

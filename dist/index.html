@@ -17,7 +17,7 @@ svg{width:100%;height:auto;border:1px solid #f3f4f6;border-radius:6px}
 </style></head><body>
 <h1>NEAR's agent economy, measured</h1>
 <p class="lede">NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software, including autonomous agents. We test the three halves of that bet separately, from public data only.</p>
-<p class="mut">Rebuilt by <code>node build.mjs</code> on 2026-11-06T22:45:04.940Z (data through 2026-11-05). Claim and tests: <a href="https://github.com/tenxagent/near-agent-economy/blob/main/THESIS.md">THESIS.md</a>; forward tests: <a href="https://github.com/tenxagent/near-agent-economy/blob/main/PREREG.md">PREREG.md</a>; code and raw data: <a href="https://github.com/tenxagent/near-agent-economy">github.com/tenxagent/near-agent-economy</a>.</p>
+<p class="mut">Rebuilt by <code>node build.mjs</code> on 2026-11-06T23:06:44.531Z (data through 2026-11-05, offline rebuild from the committed raw files). Claim and tests: <a href="https://github.com/tenxagent/near-agent-economy/blob/main/THESIS.md">THESIS.md</a>; forward tests: <a href="https://github.com/tenxagent/near-agent-economy/blob/main/PREREG.md">PREREG.md</a>; code and raw data: <a href="https://github.com/tenxagent/near-agent-economy">github.com/tenxagent/near-agent-economy</a>.</p>
 <div class="strip"><div class="half"><h3>Usage</h3><a href="#T1" class="chip">T1 <b class="b pass">PASS</b></a> <a href="#T2" class="chip">T2 <b class="b pass">PASS</b></a> <a href="#T5" class="chip">T5 <b class="b rep">REPORT</b></a> <a href="#F1" class="chip">F1 <b class="b pend">PENDING</b></a> <a href="#F2" class="chip">F2 <b class="b pend">PENDING</b></a></div><div class="half"><h3>Value capture</h3><a href="#T3" class="chip">T3 <b class="b fail">FAIL</b></a> <a href="#T4" class="chip">T4 <b class="b fail">FAIL</b></a> <a href="#T4m" class="chip">T4m <b class="b rep">REPORT</b></a> <a href="#C1" class="chip">C1 <b class="b rep">REPORT</b></a></div><div class="half"><h3>Agents</h3><a href="#T6" class="chip">T6 <b class="b rep">REPORT</b></a> <a href="#T7" class="chip">T7 <b class="b rep">REPORT</b></a> <a href="#T8" class="chip">T8 <b class="b rep">REPORT</b></a> <a href="#T9" class="chip">T9 <b class="b rep">REPORT</b></a> <a href="#P1" class="chip">P1 <b class="b rep">REPORT</b></a> <a href="#F3" class="chip">F3 <b class="b pend">PENDING</b></a></div></div>
 <section class="concl"><h2>What it means for a NEAR holder</h2><p>Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.76B in the 90 days to 2026-11-05, 1.81× the 90 days before (T1, T2).</p><p>Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-11-05 that was $4.9M, 27% of Intents' fees; NEAR's gas burn added $255.8K (C1). &quot;Buyback&quot; is DefiLlama's label for revenue swept as NEAR into NEAR's revenue wallets, held, not burned; on chain those wallets account for 98% of it, 33% in the front-end fund rather than the buyback multisig.</p><p>It is small next to the token. Annualized, captured value is $20.8M, 0.43% a year of NEAR's $4.86B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $119.5M a year at $3.71; the buyback is 17% of that. The bought-back NEAR is held (2.20M NEAR in buybacks.multisignature.near), not burned. If NEAR governance's HSP-029 cut (max issuance 2.5% → 1.6% over 24 months) runs its full ramp, the same buyback would cover 26% of net issuance.</p><p>NEAR's weekly price does not move with Intents volume (r = 0.00 over 95 weeks, T4; with BTC's moves taken out, r = -0.03, p = 0.79, T4m), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1). Agent-size tickets into NEAR get a 1Click quote: 0.277–0.514% under $50 (T9, quotes of 2026-11-06 22:44Z).</p><p>Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about 17% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.</p></section>
 <section class="concl" id="model"><h2>Model: when does the buyback reach half of new supply?</h2><p>Model (`node model.mjs`, every assumption is a flag): starting from today's 17%, at the fade the data implies (Intents' growth halving about every 1.0 quarters, see below) the buyback reaches half of net issuance not within 10 years; with a slower fade, halving every 2 quarters (the default flag), in 2027-Q4 (4 quarters); with no further growth it stays at 17%; if the measured 1.81× per 90 days never fades, in 2027-Q2 (2 quarters). A scenario, not a forecast. The measured quarter-on-quarter growth went 6.3× → 5.8× → 2.2× → 0.7× → 1.1× → 1.8×; fading from the oldest quarter to the latest four implies a half-life of about 1.0 quarters, so the 2-quarter default is on the generous side. The bought-back NEAR sits in a multisig (held, not burned); `--resold` models some of it returning to market. If HSP-029 (max issuance 2.5% → 1.6% over 24 months; House of Stake vote 99.97% for, timelock until 2026-11-16; no start date set) began its ramp now: at the implied fade, in 2028-Q4 (8 quarters); at the 2-quarter default, in 2027-Q3 (3 quarters).</p>
@@ -234,7 +234,7 @@ svg{width:100%;height:auto;border:1px solid #f3f4f6;border-radius:6px}
   }
  ]
 }</pre></details></article><article class="test" id="C1"><header><span class="tid">C1</span><b class="b rep">REPORT</b><span class="half-l">Value capture</span></header>
-<h3>How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?</h3><p>In the 90 days to 2026-11-05, $4.9M of Intents revenue bought NEAR back (27.1% of Intents' fees) and gas burn added $255.8K: $20.8M a year, 0.43% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($119.5M); the buyback is 17% of that. Cross-check: the buyback wallet holds 69% of the NEAR the series would have bought at daily prices. Its 2,900 receipts through 2026-10-25 (NearBlocks) close its balance on that day to within 0.015 NEAR (about its own transaction fees): 75% of the NEAR that arrived came from intents.near (first on 2026-04-23) and 24% from 1csfundsadmin.sputnik-dao.near (largest single transfer 502,793 NEAR on 2026-09-09), and 12,025 NEAR left it (largest: 12,000 NEAR on 2026-07-10). So the gap is not outflows: by the end of 2026-04 the wallet had received 4% of the NEAR implied since the fee switch, and by 2026-10-25 (its newest receipt here) 68%. In C1's own window (2026-07-28 to 2026-10-25) this wallet received 103% of the NEAR the series implies, 66% of it from intents.near and most of the rest as one 502,793 NEAR transfer from 1csfundsadmin.sputnik-dao.near on 2026-09-09 (a hop the series counted when the NEAR first reached that fund). The series is not one wallet: DefiLlama's adapter counts NEAR swept into three NEAR revenue wallets and labels all of it &quot;NEAR Buyback&quot; from 2026-02-23. Across all three (balances at the fee switch and on 2026-11-06, archival RPC), the NEAR gained plus the 12,025 NEAR the buyback wallet sent out comes to 3,129,171 NEAR, 98% of the 3,208,432 NEAR the series implies through 2026-11-05. 33% of it (1,053,253 NEAR) is in the front-end fund DAO, fefundsadmin.sputnik-dao.near; the rest reached the buyback multisig, directly or through the 1Click fund DAO.</p><p class="rule">Rule: reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)</p><p class="data">Data: <a href="../data/raw/defillama-near-intents-holders-revenue.json">defillama-near-intents-holders-revenue.json</a> · <a href="../data/raw/defillama-near-chain-revenue.json">defillama-near-chain-revenue.json</a> · <a href="../data/raw/defillama-near-intents-fees.json">defillama-near-intents-fees.json</a> · <a href="../data/raw/near-supply.json">near-supply.json</a> · <a href="../data/raw/nearblocks-buyback-receipts.json">nearblocks-buyback-receipts.json</a> · <a href="../data/raw/nearblocks-stats.json">nearblocks-stats.json</a> · <a href="../data/raw/hsp029-vote.json">hsp029-vote.json</a></p>
+<h3>How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?</h3><p>In the 90 days to 2026-11-05, $4.9M of Intents revenue bought NEAR back (27.1% of Intents' fees) and gas burn added $255.8K: $20.8M a year, 0.43% of NEAR's market cap. NEAR's supply grew 2.5% a year net of burns ($119.5M); the buyback is 17% of that. Cross-check: the buyback wallet holds 69% of the NEAR the series would have bought at daily prices. Its 2,900 receipts through 2026-10-25 (NearBlocks) close its balance on that day to within 0.015 NEAR (about its own transaction fees): 75% of the NEAR that arrived came from intents.near (first on 2026-04-23) and 24% from 1csfundsadmin.sputnik-dao.near (largest single transfer 502,793 NEAR on 2026-09-09), and 12,025 NEAR left it (largest: 12,000 NEAR on 2026-07-10). So the gap is not outflows: by the end of 2026-04 the wallet had received 4% of the NEAR implied since the fee switch, and by 2026-10-25 (its newest receipt here) 68%. In C1's own window (2026-07-28 to 2026-10-25) this wallet received 103% of the NEAR the series implies, 66% of it from intents.near and most of the rest as one 502,793 NEAR transfer from 1csfundsadmin.sputnik-dao.near on 2026-09-09 (a hop the series counted when the NEAR first reached that fund). The series is not one wallet: DefiLlama's adapter counts NEAR swept into three NEAR revenue wallets and labels all of it &quot;NEAR Buyback&quot; from 2026-02-23. Across all three (balances at the fee switch and on 2026-11-06, archival RPC), the NEAR gained plus the 12,025 NEAR the buyback wallet sent out comes to 3,129,171 NEAR, 98% of the 3,208,432 NEAR the series implies through 2026-11-05. 33% of it (1,053,253 NEAR) is in the front-end fund DAO, fefundsadmin.sputnik-dao.near; the rest reached the buyback multisig, directly or through the 1Click fund DAO. The contract's own protocol fee is small next to that: intents.near charges 1 pip (0.0001%) of each side's token_in in a token_diff and nothing on transfers, and its fee collector took in about $53 a day over the 7 days to 2026-11-05 (archival RPC, 3-hourly balances; a lower bound), about $19.2K a year, 0.09% of the captured value. The swaps that pay it come to about $26.4M a day, 20% of the volume NEAR reports for those days, so most of the reported volume pays no protocol fee (a 1Click swap can settle as transfers alone, as the agent's own did on 2026-11-05).</p><p class="rule">Rule: reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)</p><p class="data">Data: <a href="../data/raw/defillama-near-intents-holders-revenue.json">defillama-near-intents-holders-revenue.json</a> · <a href="../data/raw/defillama-near-chain-revenue.json">defillama-near-chain-revenue.json</a> · <a href="../data/raw/defillama-near-intents-fees.json">defillama-near-intents-fees.json</a> · <a href="../data/raw/near-supply.json">near-supply.json</a> · <a href="../data/raw/nearblocks-buyback-receipts.json">nearblocks-buyback-receipts.json</a> · <a href="../data/raw/nearblocks-stats.json">nearblocks-stats.json</a> · <a href="../data/raw/hsp029-vote.json">hsp029-vote.json</a></p>
 <details><summary>Queries and computed value</summary><ul><li><code><a href="https://api.llama.fi/summary/fees/near-intents?dataType=dailyHoldersRevenue">https://api.llama.fi/summary/fees/near-intents?dataType=dailyHoldersRevenue</a></code></li><li><code><a href="https://api.llama.fi/summary/fees/near?dataType=dailyRevenue">https://api.llama.fi/summary/fees/near?dataType=dailyRevenue</a></code></li><li><code><a href="https://api.llama.fi/summary/fees/near-intents?dataType=dailyFees">https://api.llama.fi/summary/fees/near-intents?dataType=dailyFees</a></code></li><li><code><a href="https://archival-rpc.mainnet.fastnear.com">https://archival-rpc.mainnet.fastnear.com</a> block (header.total_supply, now and ~90 days earlier) + view_account buybacks.multisignature.near (lib/capture.mjs)</code></li><li><code><a href="https://api.nearblocks.io/v1/account/buybacks.multisignature.near/receipts?per_page=100&amp;order=asc">https://api.nearblocks.io/v1/account/buybacks.multisignature.near/receipts?per_page=100&amp;order=asc</a> (cursor paging) + archival RPC view_account at the newest receipt's block (lib/buyback-ledger.mjs)</code></li><li><code><a href="https://api.nearblocks.io/v1/stats">https://api.nearblocks.io/v1/stats</a></code></li><li><code><a href="https://rpc.mainnet.fastnear.com">https://rpc.mainnet.fastnear.com</a> call_function vote.dao get_proposal {&quot;proposal_id&quot;:29} (HSP-029, text: https://gov.near.org/t/42644)</code></li></ul><pre>{
  &quot;window&quot;: [
   &quot;2026-08-08&quot;,
@@ -572,6 +572,74 @@ svg{width:100%;height:auto;border:1px solid #f3f4f6;border-radius:6px}
    &quot;actions_attached&quot;: false,
    &quot;read_at&quot;: &quot;2026-11-06T22:44:45.508Z&quot;
   }
+ },
+ &quot;protocol_fee&quot;: {
+  &quot;fee_pips&quot;: 1,
+  &quot;fee_rate&quot;: 0.000001,
+  &quot;collector&quot;: &quot;7066024d3f20f94de601c003163367873cca78507eeca4df66d9be645f197f05&quot;,
+  &quot;days&quot;: [
+   {
+    &quot;from&quot;: &quot;2026-10-30T00:00:00.574Z&quot;,
+    &quot;to&quot;: &quot;2026-10-31T00:00:00.464Z&quot;,
+    &quot;intake_usd&quot;: 118.96302928089476,
+    &quot;withdrawn_usd&quot;: 39.963250037772
+   },
+   {
+    &quot;from&quot;: &quot;2026-10-31T00:00:00.464Z&quot;,
+    &quot;to&quot;: &quot;2026-11-01T00:00:00.175Z&quot;,
+    &quot;intake_usd&quot;: 34.49052344398079,
+    &quot;withdrawn_usd&quot;: 9.241177516311021
+   },
+   {
+    &quot;from&quot;: &quot;2026-11-01T00:00:00.175Z&quot;,
+    &quot;to&quot;: &quot;2026-11-02T00:00:00.260Z&quot;,
+    &quot;intake_usd&quot;: 54.42413498927137,
+    &quot;withdrawn_usd&quot;: 20.00786388839969
+   },
+   {
+    &quot;from&quot;: &quot;2026-11-02T00:00:00.260Z&quot;,
+    &quot;to&quot;: &quot;2026-11-03T00:00:00.137Z&quot;,
+    &quot;intake_usd&quot;: 89.79009743629034,
+    &quot;withdrawn_usd&quot;: 32.62268752967491
+   },
+   {
+    &quot;from&quot;: &quot;2026-11-03T00:00:00.137Z&quot;,
+    &quot;to&quot;: &quot;2026-11-04T00:00:00.279Z&quot;,
+    &quot;intake_usd&quot;: 36.51947223389813,
+    &quot;withdrawn_usd&quot;: 12.077362127463914
+   },
+   {
+    &quot;from&quot;: &quot;2026-11-04T00:00:00.279Z&quot;,
+    &quot;to&quot;: &quot;2026-11-05T00:00:00.524Z&quot;,
+    &quot;intake_usd&quot;: 14.579105940252463,
+    &quot;withdrawn_usd&quot;: 4.670960937044978
+   },
+   {
+    &quot;from&quot;: &quot;2026-11-05T00:00:00.524Z&quot;,
+    &quot;to&quot;: &quot;2026-11-06T00:00:00.507Z&quot;,
+    &quot;intake_usd&quot;: 20.39843785658248,
+    &quot;withdrawn_usd&quot;: 17.139411056799535
+   }
+  ],
+  &quot;intake_usd&quot;: 369.16480118117033,
+  &quot;intake_usd_per_day&quot;: 52.73782874016719,
+  &quot;implied_token_diff_volume_per_day&quot;: 26368914.370083597,
+  &quot;unpriced_tokens&quot;: [
+   &quot;nep141:bnb-0x2494b603319d4d9f9715c9f4496d9e0364b59d93.omdep.near&quot;,
+   &quot;nep141:bnb-0x390a684ef9cade28a7ad0dfa61ab1eb3842618c4.omdep.near&quot;,
+   &quot;nep141:fb3d3a9e8019d976a7c9ff900696b7b3b7fe3b3e67b14066160ed7d0b98fa1c8&quot;,
+   &quot;nep141:bnb-0xa9ee28c80f960b889dfbd1902055218cba016f75.omdep.near&quot;,
+   &quot;nep141:bnb-0x4553cfe1c09f37f38b12dc509f676964e392f8fc.omdep.near&quot;,
+   &quot;nep141:bnb-0x091fc7778e6932d4009b087b191d1ee3bac5729a.omdep.near&quot;,
+   &quot;nep141:bnb-0x0cde6936d305d5b34667fc46425e852efd73559a.omdep.near&quot;
+  ],
+  &quot;through_day&quot;: &quot;2026-11-05&quot;,
+  &quot;fetched_at&quot;: &quot;2026-11-06T23:05:55.500Z&quot;,
+  &quot;per_year_usd&quot;: 19249.307490161023,
+  &quot;share_of_captured&quot;: 0.0009246799910959012,
+  &quot;reported_volume_usd&quot;: 915466658,
+  &quot;reported_days&quot;: 7,
+  &quot;token_diff_share_of_reported&quot;: 0.20162656823989453
  }
 }</pre></details></article><article class="test" id="P1"><header><span class="tid">P1</span><b class="b rep">REPORT</b><span class="half-l">Agents</span></header>
 <h3>How large are the intents NEAR Intents executes?</h3><p>From 300 random blocks over 7 days (163 transactions to intents.near): transfer (mostly fee payouts, see THESIS.md) n=204, 85% under $50, 79% under $10, median $0.29; token_diff n=98, 48% under $50, 26% under $10, median $65; withdraw n=55, 47% under $50, 21% under $10, median $68. Agent-size describes the ticket, not who sent it.</p><p class="rule">Rule: reported, no threshold (cutoffs &lt; $50 and &lt; $10 registered before sampling; THESIS.md)</p><p class="data">Data: <a href="../data/raw/intents-sample.json">intents-sample.json</a></p>

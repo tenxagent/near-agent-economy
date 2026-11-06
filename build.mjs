@@ -13,6 +13,7 @@ import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near, BUYBACK_WALLET } from './lib/capture.mjs';
 import { fetchReceipts, receiptCount, balanceAt, reconcile, inflowsBetween } from './lib/buyback-ledger.mjs';
 import { readRevenueWallets, crossCheck } from './lib/revenue-wallets.mjs';
+import { readProtocolFee, feeIntake } from './lib/protocol-fee.mjs';
 import { sentence } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 import { marketControlled } from './lib/market.mjs';
@@ -118,6 +119,18 @@ async function refresh() {
         fs.writeFileSync(file, JSON.stringify(raw, null, 1) + '\n');
         console.log(`fetched revenue-wallets.json (blocks ${raw.points.map((x) => x.block).join(' → ')})`);
       } catch (e) { console.warn(`kept committed revenue-wallets.json: ${e.message}`); }
+    }
+  }
+  {   // 11-07 (post-lock REPORT): intents.near's own protocol fee, 3-hourly collector balances over the last 7 complete UTC days
+    const file = path.join(RAW, 'protocol-fee.json');
+    const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
+    if (old && Date.now() - Date.parse(old.fetched_at) < 20 * 3600e3) console.log(`kept committed protocol-fee.json (fetched_at ${old.fetched_at}, refreshed at most daily)`);
+    else {
+      try {
+        const raw = await readProtocolFee(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`, 7);
+        fs.writeFileSync(file, JSON.stringify(raw) + '\n');
+        console.log(`fetched protocol-fee.json (${raw.points.length} snapshots, ${raw.points[0].time} → ${raw.points.at(-1).time})`);
+      } catch (e) { console.warn(`kept committed protocol-fee.json: ${e.message}`); }
     }
   }
   try {   // 11-05: NEAR governance HSP-029 (issuance ramp 2.5% → 1.6%), its House of Stake record read from chain
@@ -367,6 +380,15 @@ async function main() {
     c1.hsp029 = { from_pct: HSP029.fromPct, to_pct: HSP029.toPct, ramp_months: HSP029.rampQuarters * 3, source: HSP029.source, gross_issuance_near_per_year: gross,
       gross_issuance_rate: gross / supNow, net_issuance_near_per_year_at_target: grossT - burnNear,
       buyback_vs_net_issuance_at_target: ((buyback90 * 365) / 90) / ((grossT - burnNear) * price), vote };
+    // 11-07 (post-lock REPORT): the protocol's own fee next to the buyback, and the volume that pays it next to the volume NEAR reports
+    if (fs.existsSync(path.join(RAW, 'protocol-fee.json'))) {
+      const PF = readRaw('protocol-fee.json'), f = feeIntake(PF);
+      const pDays = f.days.map((d) => d.from.slice(0, 10)), reported = pDays.reduce((a, d) => a + (intentsVol.get(d) ?? 0), 0);
+      c1.protocol_fee = { ...f, through_day: pDays.at(-1), fetched_at: PF.fetched_at, per_year_usd: f.intake_usd_per_day * 365,
+        share_of_captured: (f.intake_usd_per_day * 365) / c1.captured_usd_per_year,
+        reported_volume_usd: reported, reported_days: pDays.filter((d) => intentsVol.has(d)).length,
+        token_diff_share_of_reported: (f.implied_token_diff_volume_per_day * pDays.length) / reported };
+    }
   }
   tests.push({ id: 'C1', half: 'capture', question: "How much of Intents' usage reaches NEAR holders, next to NEAR's issuance?", value: c1,
     pass: null, rule: 'reported, not scored (added 2026-10-31 after the lock: the 2026-02-23 fee switch, missed before the lock; see THESIS.md)' });
