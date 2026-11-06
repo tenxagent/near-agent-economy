@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-06T09:20:37.821Z",
+ "built_at": "2026-11-06T12:03:12.706Z",
  "offline": true,
  "last_day": "2026-11-05",
  "conclusion": [
@@ -309,9 +309,9 @@
      "2026-10-31T12:50:44.048Z",
      "2026-11-06T08:07:01.213Z"
     ],
-    "rpc_sample_share": 0.19709072563692928,
-    "rpc_sample_txs": 11893,
-    "rpc_samples": 143
+    "rpc_sample_share": 0.19644481190574617,
+    "rpc_sample_txs": 12095,
+    "rpc_samples": 145
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -326,9 +326,9 @@
     "growth": 0.3308270676691729,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T09:07:02.012Z"
+     "2026-11-06T11:07:01.533Z"
     ],
-    "agents_last": 630
+    "agents_last": 631
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
