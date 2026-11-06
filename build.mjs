@@ -10,7 +10,8 @@ import path from 'node:path';
 import { svgBars, svgLine, svgScatter } from './lib/charts.mjs';
 import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.mjs';
 import { fetchQuotes } from './lib/quotes.mjs';
-import { fetchSupply, near } from './lib/capture.mjs';
+import { fetchSupply, near, BUYBACK_WALLET } from './lib/capture.mjs';
+import { fetchReceipts, receiptCount, balanceAt, reconcile } from './lib/buyback-ledger.mjs';
 import { sentence } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 import { marketControlled } from './lib/market.mjs';
@@ -81,6 +82,30 @@ async function refresh() {
     fs.writeFileSync(path.join(RAW, 'near-supply.json'), JSON.stringify({ fetched_at: new Date().toISOString(), ...(await fetchSupply()) }));
     console.log('fetched near-supply.json');
   } catch (e) { console.warn(`kept committed near-supply.json: ${e.message}`); }
+  {   // 11-06 (C1 reconciliation): every receipt of the buyback wallet, paged forward from the committed copy, and the wallet's
+    // balance at the newest receipt's block, so the file is always a closed ledger up to a stated block (the indexer's lag or a
+    // rate limit mid-way cannot break the balance check). At most once a day: NearBlocks' free quota is shared with collect.mjs's
+    // hourly counters, and a 2026-11-06 back-fill used it up (THESIS.md, collector notes).
+    const file = path.join(RAW, 'nearblocks-buyback-receipts.json');
+    const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
+    if (old && Date.now() - Date.parse(old.fetched_at) < 20 * 3600e3) console.log(`kept committed nearblocks-buyback-receipts.json (fetched_at ${old.fetched_at}, refreshed at most daily)`);
+    else {
+      let rows = old?.rows ?? [], complete = false, count = old?.count_listed ?? null, err = null;
+      try {
+        count = await receiptCount(BUYBACK_WALLET);
+        rows = await fetchReceipts(BUYBACK_WALLET, { prev: rows, onPage: (r) => { rows = r; } });
+        complete = true;
+      } catch (e) { err = e; }
+      try {
+        if (rows.length > (old?.rows.length ?? 0) || (complete && !old?.complete)) {
+          const balance = await balanceAt(BUYBACK_WALLET, Math.max(...rows.map((r) => r.block)));
+          fs.writeFileSync(file, JSON.stringify({ fetched_at: new Date().toISOString(), account: BUYBACK_WALLET, count_listed: count, complete,
+            source: `https://api.nearblocks.io/v1/account/${BUYBACK_WALLET}/receipts (order=asc, cursor paging) + archival RPC view_account at the newest receipt's block`, balance, rows }));
+          console.log(`fetched nearblocks-buyback-receipts.json (${rows.length} receipts, ${rows.length - (old?.rows.length ?? 0)} new${complete ? '' : `, stopped early: ${err?.message}`})`);
+        } else console.warn(`kept committed nearblocks-buyback-receipts.json: ${err?.message ?? 'no new receipts'}`);
+      } catch (e) { console.warn(`kept committed nearblocks-buyback-receipts.json: ${e.message}`); }
+    }
+  }
   try {   // 11-05: NEAR governance HSP-029 (issuance ramp 2.5% → 1.6%), its House of Stake record read from chain
     const r = await (await fetch('https://rpc.mainnet.fastnear.com', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(20_000),
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'query', params: { request_type: 'call_function', finality: 'final', account_id: 'vote.dao', method_name: 'get_proposal', args_base64: Buffer.from('{"proposal_id":29}').toString('base64') } }) })).json();
@@ -277,6 +302,30 @@ async function main() {
       buyback_since_switch_usd: [...holders].reduce((a, [, x]) => a + x, 0),
       buyback_near_implied_at_daily_prices: bought.reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0) };
     c1.buyback_wallet_vs_implied = c1.buyback_wallet_near / c1.buyback_near_implied_at_daily_prices;
+    // 11-06 (C1 reconciliation, after re-screen 4): the wallet's full receipt history closes its balance, names who sent the
+    // NEAR and where any went, and sets the implied NEAR next to the NEAR that arrived, month by month (data/raw/nearblocks-buyback-receipts.json)
+    if (fs.existsSync(path.join(RAW, 'nearblocks-buyback-receipts.json'))) {
+      const L = readRaw('nearblocks-buyback-receipts.json');
+      const rc = reconcile(L.rows, L.balance.yocto, { account: BUYBACK_WALLET, uptoBlock: L.balance.block });
+      const impliedM = new Map();
+      for (const [d, x] of bought) impliedM.set(d.slice(0, 7), (impliedM.get(d.slice(0, 7)) ?? 0) + x / Number(nbDaily.get(d).near_price));
+      const recvM = new Map(rc.in_by_month.map(([m, y]) => [m, near(y)]));
+      const months = [...new Set([...impliedM.keys(), ...recvM.keys()])].sort();
+      let ci = 0, cr = 0;
+      const fromIntents = near(rc.in_by_sender.find(([k]) => k === 'intents.near')?.[1] ?? '0');
+      const through = new Date(Number(BigInt(L.rows.filter((r) => r.block <= L.balance.block).at(-1).ts) / 1_000_000n)).toISOString();
+      const impliedThrough = bought.filter(([d]) => d <= through.slice(0, 10)).reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0);
+      c1.ledger = { receipts: rc.rows, count_listed: L.count_listed, complete: L.complete, fetched_at: L.fetched_at, through, balance_block: L.balance.block, balance_near: near(rc.balance_yocto),
+        implied_through_near: impliedThrough, received_share_of_implied_through: near(rc.in_yocto) / impliedThrough,
+        in_near: near(rc.in_yocto), gas_refunds_near: near(rc.refunds_yocto), out_near: near(rc.out_yocto),
+        residual_near: Number(BigInt(rc.residual_yocto)) / 1e24,   // in − out − balance: the net fees the wallet paid for its own txs, less its contract reward
+        from_intents_near: fromIntents, from_intents_share: fromIntents / near(rc.in_yocto), first_intents_inflow: rc.first_in_by_sender['intents.near'] ?? null,
+        senders: rc.in_by_sender.map(([k, y]) => ({ account: k, near: near(y), share: near(y) / near(rc.in_yocto), first: rc.first_in_by_sender[k],
+          largest: { near: near(rc.largest_in_by_sender[k].yocto), at: rc.largest_in_by_sender[k].at, tx: rc.largest_in_by_sender[k].tx } })),
+        outs: rc.outs.map((o) => ({ to: o.to, near: near(o.yocto), at: new Date(Number(BigInt(o.ts) / 1_000_000n)).toISOString(), tx: o.tx })),
+        months: months.map((m) => { ci += impliedM.get(m) ?? 0; cr += recvM.get(m) ?? 0;
+          return { month: m, implied_near: impliedM.get(m) ?? 0, received_near: recvM.get(m) ?? 0, cum_implied_near: ci, cum_received_near: cr }; }) };
+    }
     // 11-05 (post-lock REPORT, THESIS.md): HSP-029 lowers max issuance 2.5% → 1.6% over 24 months. Gross issuance = net supply growth +
     // gas burn; at the target, gross scales by 1.6/2.5 and the burn is held. Same buyback, compared with that lower net issuance.
     const burnNear = (burn90 * 365) / 90 / price, gross = issuedPerYear + burnNear, grossT = (gross * HSP029.toPct) / HSP029.fromPct;

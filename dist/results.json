@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-06T06:34:45.726Z",
- "offline": false,
+ "built_at": "2026-11-06T09:20:37.821Z",
+ "offline": true,
  "last_day": "2026-11-05",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.76B in the 90 days to 2026-11-05, 1.81× the 90 days before (T1, T2).",
@@ -304,14 +304,14 @@
      "2026-10-30",
      "2026-11-05"
     ],
-    "counter_share_estimated": 0.03890855093417962,
+    "counter_share_estimated": 0.038900452923169064,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T06:07:01.409Z"
+     "2026-11-06T08:07:01.213Z"
     ],
-    "rpc_sample_share": 0.19906888524872834,
-    "rpc_sample_txs": 11599,
-    "rpc_samples": 140
+    "rpc_sample_share": 0.19709072563692928,
+    "rpc_sample_txs": 11893,
+    "rpc_samples": 143
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -326,7 +326,7 @@
     "growth": 0.3308270676691729,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T06:07:01.409Z"
+     "2026-11-06T09:07:02.012Z"
     ],
     "agents_last": 630
    },
@@ -484,6 +484,250 @@
     "buyback_since_switch_usd": 7729957.05,
     "buyback_near_implied_at_daily_prices": 3208176.67976577,
     "buyback_wallet_vs_implied": 0.6821042802797785,
+    "ledger": {
+     "receipts": 2900,
+     "count_listed": 3221,
+     "complete": false,
+     "fetched_at": "2026-11-06T08:31:54.366Z",
+     "through": "2026-10-25T22:21:53.162Z",
+     "balance_block": 221599759,
+     "balance_near": 2073428.658348,
+     "implied_through_near": 3058700.5860181106,
+     "received_share_of_implied_through": 0.6818103356127752,
+     "in_near": 2085453.673092,
+     "gas_refunds_near": 0.32763,
+     "out_near": 12025,
+     "residual_near": 0.014743650166471,
+     "from_intents_near": 1567093.263598,
+     "from_intents_share": 0.7514399786568011,
+     "first_intents_inflow": "2026-04-23T16:20:54.334Z",
+     "senders": [
+      {
+       "account": "intents.near",
+       "near": 1567093.263598,
+       "share": 0.7514399786568011,
+       "first": "2026-04-23T16:20:54.334Z",
+       "largest": {
+        "near": 8641.924799,
+        "at": "2026-10-15T00:36:49.375Z",
+        "tx": "BJ7DHhR6LhFunt9FPFC7StaPSV5fV3YNfCVJQfs4xC2V"
+       }
+      },
+      {
+       "account": "1csfundsadmin.sputnik-dao.near",
+       "near": 510068,
+       "share": 0.2445837117272172,
+       "first": "2026-07-14T16:01:22.281Z",
+       "largest": {
+        "near": 502793,
+        "at": "2026-09-09T10:39:10.545Z",
+        "tx": "CMfn15uTJF5DX9wFzV5G2JdHpy3qmHa5NJNUH9uj5Jp6"
+       }
+      },
+      {
+       "account": "clingy.near",
+       "near": 3595,
+       "share": 0.001723845533653054,
+       "first": "2026-09-13T17:31:05.757Z",
+       "largest": {
+        "near": 3595,
+        "at": "2026-09-13T17:31:05.757Z",
+        "tx": "9AnzYwb1GF5EBpEab646NzjiNFgmXeLGkGKVbCQAoijc"
+       }
+      },
+      {
+       "account": "52435fe912307fb3a088b8b8f3882781762fc1f0a404e8579c7fb1a964362c8d",
+       "near": 2152.88045,
+       "share": 0.0010323319466540965,
+       "first": "2026-09-02T18:38:22.866Z",
+       "largest": {
+        "near": 2151.88045,
+        "at": "2026-09-02T18:42:56.765Z",
+        "tx": "DfZsWZRdkAVuGm73uWN6t4bgpnvUQxhzPaJBKWU5m88X"
+       }
+      },
+      {
+       "account": "9c484fa5d2d069569ba063fc555c34e621ccd88fdbb0295fc79bad232621c5c1",
+       "near": 782.28,
+       "share": 0.00037511262421866784,
+       "first": "2026-09-03T13:27:23.754Z",
+       "largest": {
+        "near": 782.28,
+        "at": "2026-09-03T13:27:23.754Z",
+        "tx": "6a1YpSxzwTFADyg2zaj1t5xiqD4SmCw1BvMj2dcpdMEA"
+       }
+      },
+      {
+       "account": "5c33c6218d47e00ef229f60da78d0897e1ee9665312550b8afd5f9c7bc6957d2",
+       "near": 767.56,
+       "share": 0.00036805420801411346,
+       "first": "2026-09-11T06:35:23.454Z",
+       "largest": {
+        "near": 766.58,
+        "at": "2026-09-11T07:19:43.372Z",
+        "tx": "2KktrwbrCiJh6xFLrNjpNtRWRTVmFtBBzKJdrKYt9wk6"
+       }
+      },
+      {
+       "account": "35c78973c032aeb46eec96b9a7cd9bfbc01e53a3606dee0d08fe07344eaf9539",
+       "near": 463.544,
+       "share": 0.00022227489681548573,
+       "first": "2026-07-09T05:17:17.082Z",
+       "largest": {
+        "near": 463.544,
+        "at": "2026-07-09T05:17:17.082Z",
+        "tx": "8vxbJk21rsVJoDmu71uZfLwighSxvhALCQNMRahDoPfg"
+       }
+      },
+      {
+       "account": "enleap.near",
+       "near": 450,
+       "share": 0.00021578038668814304,
+       "first": "2026-08-24T14:10:18.564Z",
+       "largest": {
+        "near": 450,
+        "at": "2026-08-24T14:10:18.564Z",
+        "tx": "8yyKZ1pC8Hwd15Yq52uu2gnrZGeAbztQJGmccKjNEoGm"
+       }
+      },
+      {
+       "account": "nf-payments.near",
+       "near": 60,
+       "share": 0.00002877071822508574,
+       "first": "2026-03-18T12:45:58.063Z",
+       "largest": {
+        "near": 50,
+        "at": "2026-03-20T07:56:48.258Z",
+        "tx": "6ZLxAXqGtUJJdHkN1d5XoG5zTdabnESJqntTjwfFhuAs"
+       }
+      },
+      {
+       "account": "ccb91e1db61e8d7e1d4ae3e043001140132959a86ee35a548b6563a46284a6ea",
+       "near": 14.145044,
+       "share": 0.000006782717920090661,
+       "first": "2026-06-23T07:57:35.589Z",
+       "largest": {
+        "near": 14.145044,
+        "at": "2026-06-23T07:57:35.589Z",
+        "tx": "2qaFt75LR2SEuWNLmWY3vbB2mMMaaFuQY7oEzrREocwC"
+       }
+      },
+      {
+       "account": "multisignature.near",
+       "near": 5,
+       "share": 0.000002397559852090478,
+       "first": "2026-03-18T12:42:30.063Z",
+       "largest": {
+        "near": 5,
+        "at": "2026-03-18T12:42:30.063Z",
+        "tx": "FW2BpwusTDxipLa94yr6BCsdczTcgM94iatKQBS6NPzz"
+       }
+      },
+      {
+       "account": "nearlegion.tipbot.intear.near",
+       "near": 2,
+       "share": 9.590239408361912e-7,
+       "first": "2026-09-25T00:42:49.781Z",
+       "largest": {
+        "near": 2,
+        "at": "2026-09-25T00:42:49.781Z",
+        "tx": "7XMJR9RWqURzZivxwkoUWEEXyKypn9zghi6rTAr3XAiq"
+       }
+      }
+     ],
+     "outs": [
+      {
+       "to": "nf-payments.near",
+       "near": 20,
+       "at": "2026-03-20T10:20:23.337Z",
+       "tx": "Gkf6oJgjedkjbwXC9e3ZWjTS3fU4Rie7H9hXb9VWugT5"
+      },
+      {
+       "to": "nf-payments.near",
+       "near": 5,
+       "at": "2026-03-20T10:20:33.238Z",
+       "tx": "5vzS7vgbAMVF4YEtx7uJCptRRtxJwxnEzXVxGnzeZcQS"
+      },
+      {
+       "to": "508aa18569e5a59d63b0f4c445e02e7b5fc53b86337328e756b32745ebac50e7",
+       "near": 12000,
+       "at": "2026-07-10T12:04:14.148Z",
+       "tx": "ABTtANZpzNnxMHpHVSSuPkNZ6EvQhBtGjVmco9aJFRx4"
+      }
+     ],
+     "months": [
+      {
+       "month": "2026-02",
+       "implied_near": 173420.0648926263,
+       "received_near": 0,
+       "cum_implied_near": 173420.0648926263,
+       "cum_received_near": 0
+      },
+      {
+       "month": "2026-03",
+       "implied_near": 447790.1000507621,
+       "received_near": 65,
+       "cum_implied_near": 621210.1649433884,
+       "cum_received_near": 65
+      },
+      {
+       "month": "2026-04",
+       "implied_near": 194034.82800623635,
+       "received_near": 34608.55428,
+       "cum_implied_near": 815244.9929496248,
+       "cum_received_near": 34673.55428
+      },
+      {
+       "month": "2026-05",
+       "implied_near": 333434.54124798696,
+       "received_near": 227942.553511,
+       "cum_implied_near": 1148679.5341976117,
+       "cum_received_near": 262616.107791
+      },
+      {
+       "month": "2026-06",
+       "implied_near": 282534.5262600729,
+       "received_near": 223883.484658,
+       "cum_implied_near": 1431214.0604576846,
+       "cum_received_near": 486499.592449
+      },
+      {
+       "month": "2026-07",
+       "implied_near": 266972.95645061875,
+       "received_near": 188241.550885,
+       "cum_implied_near": 1698187.0169083034,
+       "cum_received_near": 674741.143334
+      },
+      {
+       "month": "2026-08",
+       "implied_near": 412180.3296863721,
+       "received_near": 278125.206675,
+       "cum_implied_near": 2110367.3465946754,
+       "cum_received_near": 952866.350009
+      },
+      {
+       "month": "2026-09",
+       "implied_near": 595067.3060583958,
+       "received_near": 906878.334381,
+       "cum_implied_near": 2705434.652653071,
+       "cum_received_near": 1859744.68439
+      },
+      {
+       "month": "2026-10",
+       "implied_near": 449450.8338908326,
+       "received_near": 225708.9887,
+       "cum_implied_near": 3154885.4865439036,
+       "cum_received_near": 2085453.6730900002
+      },
+      {
+       "month": "2026-11",
+       "implied_near": 53291.19322186511,
+       "received_near": 0,
+       "cum_implied_near": 3208176.679765769,
+       "cum_received_near": 2085453.6730900002
+      }
+     ]
+    },
     "hsp029": {
      "from_pct": 2.5,
      "to_pct": 1.6,
