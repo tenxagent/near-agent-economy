@@ -11,7 +11,7 @@ import { svgBars, svgLine, svgScatter } from './lib/charts.mjs';
 import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.mjs';
 import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near, BUYBACK_WALLET } from './lib/capture.mjs';
-import { fetchReceipts, receiptCount, balanceAt, reconcile } from './lib/buyback-ledger.mjs';
+import { fetchReceipts, receiptCount, balanceAt, reconcile, inflowsBetween } from './lib/buyback-ledger.mjs';
 import { sentence } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 import { marketControlled } from './lib/market.mjs';
@@ -325,6 +325,14 @@ async function main() {
         outs: rc.outs.map((o) => ({ to: o.to, near: near(o.yocto), at: new Date(Number(BigInt(o.ts) / 1_000_000n)).toISOString(), tx: o.tx })),
         months: months.map((m) => { ci += impliedM.get(m) ?? 0; cr += recvM.get(m) ?? 0;
           return { month: m, implied_near: impliedM.get(m) ?? 0, received_near: recvM.get(m) ?? 0, cum_implied_near: ci, cum_received_near: cr }; }) };
+      // screen 5 (Z-10): the same comparison inside C1's own 90-day window, ending where the receipts end (whichever is earlier)
+      const wTo = [lastDay, through.slice(0, 10)].sort()[0], wFrom = addDays(wTo, -89);
+      const wi = inflowsBetween(L.rows, { account: BUYBACK_WALLET, uptoBlock: L.balance.block, fromDay: wFrom, toDay: wTo });
+      const wImplied = bought.filter(([d]) => d >= wFrom && d <= wTo).reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0);
+      const wIntents = near(wi.by_sender.find(([k]) => k === 'intents.near')?.[1] ?? '0');
+      c1.ledger.window = { from: wFrom, to: wTo, implied_near: wImplied, received_near: near(wi.in_yocto), received_share: near(wi.in_yocto) / wImplied,
+        intents_near: wIntents, intents_share_of_implied: wIntents / wImplied,
+        largest: wi.largest ? { from: wi.largest.from, near: near(wi.largest.yocto), day: wi.largest.day, tx: wi.largest.tx } : null };
     }
     // 11-05 (post-lock REPORT, THESIS.md): HSP-029 lowers max issuance 2.5% → 1.6% over 24 months. Gross issuance = net supply growth +
     // gas burn; at the target, gross scales by 1.6/2.5 and the burn is held. Same buyback, compared with that lower net issuance.

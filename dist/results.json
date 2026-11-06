@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-06T14:34:48.221Z",
- "offline": false,
+ "built_at": "2026-11-06T17:46:44.702Z",
+ "offline": true,
  "last_day": "2026-11-05",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.76B in the 90 days to 2026-11-05, 1.81× the 90 days before (T1, T2).",
@@ -304,14 +304,14 @@
      "2026-10-30",
      "2026-11-05"
     ],
-    "counter_share_estimated": -0.009913461114554456,
+    "counter_share_estimated": -0.008211794347888763,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T14:07:00.405Z"
+     "2026-11-06T17:07:01.017Z"
     ],
-    "rpc_sample_share": 0.19381459818924765,
-    "rpc_sample_txs": 12481,
-    "rpc_samples": 148
+    "rpc_sample_share": 0.1926669780476413,
+    "rpc_sample_txs": 12846,
+    "rpc_samples": 151
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -322,11 +322,11 @@
    "question": "Is agent-native demand on NEAR growing?",
    "value": {
     "delivered_jobs_first": 399,
-    "delivered_jobs_last": 531,
-    "growth": 0.3308270676691729,
+    "delivered_jobs_last": 532,
+    "growth": 0.33333333333333326,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T14:07:00.405Z"
+     "2026-11-06T17:07:01.017Z"
     ],
     "agents_last": 631
    },
@@ -338,7 +338,7 @@
    "half": "agents",
    "question": "How big is agent commerce next to Intents?",
    "value": {
-    "agent_market_all_time_usd_at_assumed_price": 2655,
+    "agent_market_all_time_usd_at_assumed_price": 2660,
     "price_assumption_usd": 5,
     "intents_volume_30d": 4002196892
    },
@@ -726,7 +726,22 @@
        "cum_implied_near": 3208431.9399424763,
        "cum_received_near": 2085453.6730900002
       }
-     ]
+     ],
+     "window": {
+      "from": "2026-07-28",
+      "to": "2026-10-25",
+      "implied_near": 1396358.9307412247,
+      "received_near": 1435025.201577,
+      "received_share": 1.0276907820650742,
+      "intents_near": 924481.481127,
+      "intents_share_of_implied": 0.662065791806309,
+      "largest": {
+       "from": "1csfundsadmin.sputnik-dao.near",
+       "near": 502793,
+       "day": "2026-09-09",
+       "tx": "CMfn15uTJF5DX9wFzV5G2JdHpy3qmHa5NJNUH9uj5Jp6"
+      }
+     }
     },
     "hsp029": {
      "from_pct": 2.5,

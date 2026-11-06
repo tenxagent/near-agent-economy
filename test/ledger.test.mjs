@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { reconcile, trim } from '../lib/buyback-ledger.mjs';
+import { reconcile, trim, inflowsBetween } from '../lib/buyback-ledger.mjs';
 
 const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), '..');
 const W = 'buybacks.multisignature.near', Y = 10n ** 24n;
@@ -46,4 +46,22 @@ test('the committed receipts close the buyback wallet balance (residual = its ow
   const r = reconcile(L.rows, L.balance.yocto, { account: L.account, uptoBlock: L.balance.block });
   const residual = Number(BigInt(r.residual_yocto)) / 1e24;
   assert.ok(Math.abs(residual) < 0.1, `residual ${residual} NEAR: receipts are missing or misread`);
+});
+
+test('inflowsBetween: only successful deposits from others on the given UTC days, system refunds and outflows left out', () => {
+  const day = (iso) => String(BigInt(Date.parse(iso)) * 1_000_000n);
+  const rows = [
+    row(1, 'intents.near', W, 10, { ts: day('2026-07-27T23:59:59Z') }),   // the day before the window
+    row(2, 'intents.near', W, 20, { ts: day('2026-07-28T00:00:00Z') }),
+    row(3, 'dao.near', W, 500, { ts: day('2026-09-09T12:00:00Z') }),
+    row(4, 'system', W, 1, { ts: day('2026-09-10T00:00:00Z') }),
+    row(5, W, 'x.near', 7, { ts: day('2026-09-11T00:00:00Z') }),
+    row(6, 'intents.near', W, 30, { ok: false, ts: day('2026-09-12T00:00:00Z') }),
+    row(7, 'intents.near', W, 40, { ts: day('2026-10-25T23:00:00Z') }),
+    row(8, 'intents.near', W, 50, { ts: day('2026-10-26T00:00:00Z') }),   // the day after
+  ];
+  const r = inflowsBetween(rows, { account: W, fromDay: '2026-07-28', toDay: '2026-10-25' });
+  assert.equal(r.in_yocto, (560n * Y).toString());
+  assert.deepEqual(r.by_sender, [['dao.near', (500n * Y).toString()], ['intents.near', (60n * Y).toString()]]);
+  assert.equal(r.largest.from, 'dao.near'); assert.equal(r.largest.day, '2026-09-09');
 });
