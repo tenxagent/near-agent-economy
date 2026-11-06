@@ -49,6 +49,18 @@ test('the grid is monotone: a bigger buyback share never takes longer', () => {
   }
 });
 
+test('the grid answers the same question as the headline: every cell uses the run\'s price, resold and issuance settings', () => {
+  const opts = { priceQ: 0.05, resold: 0.3, issuance: 'hsp029', rampStartQ: 2 };
+  const g = grid({ ...base, burn_near_per_year: base.burn_near_per_year ?? 1e6 }, opts);
+  for (const row of g) for (const c of row.cells) {
+    const r = project({ ...base, burn_near_per_year: base.burn_near_per_year ?? 1e6 }, { ...opts, halfLife: row.halfLife, capture: c.capture });
+    assert.deepEqual([c.quartersToHalf, c.quartersToFull], [r.quartersToHalf, r.quartersToFull]);
+  }
+  assert.deepEqual(grid(base, 0.05), grid(base, { priceQ: 0.05 }));   // a bare number is still the price
+  const plain = grid(base), hsp = grid({ ...base, burn_near_per_year: 1e6 }, { issuance: 'hsp029' });
+  assert.ok(hsp.some((row, i) => row.cells.some((c, j) => c.quartersToHalf !== plain[i].cells[j].quartersToHalf)));   // the flag changes the grid
+});
+
 test('the committed build: model inputs come from C1/T2 and today matches C1 buyback ÷ issuance', () => {
   const r = JSON.parse(fs.readFileSync(new URL('../dist/results.json', import.meta.url), 'utf8'));
   const v = Object.fromEntries(r.tests.map((t) => [t.id, t.value]));

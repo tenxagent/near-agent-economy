@@ -328,6 +328,8 @@ async function main() {
   const qWhen = (q, at) => (q === null ? 'not within 10 years' : q === 0 ? 'already' : `in ${at} (${q} quarters)`);
   // 11-05 (re-screen X-6): lead with the fade the data implies, not the 2-quarter default flag that the same sentence calls generous
   const hlm = model?.history.impliedHalfLife, atMeasured = model && hlm > 0 ? project(model.base, { halfLife: hlm }) : null;
+  // 11-06 (re-screen 4 Y-14): the dashboard card leads with the fade the data implies, not only the generous default flag
+  if (model && atMeasured) model.measured = { half_life_q: +hlm.toFixed(2), coverage_in_4q: atMeasured.rows[4].coverage, coverage_in_8q: atMeasured.rows[8].coverage, quartersToHalf: atMeasured.quartersToHalf };
   // 11-05 (HSP-029, post-lock REPORT): the same model with gross issuance ramping 2.5% → 1.6% over 8 quarters from now (start not scheduled)
   const hspRun = (opts) => project(model.base, { ...opts, issuance: 'hsp029' });
   const hsp = model && c1?.hsp029 ? { measured: hlm > 0 ? hspRun({ halfLife: hlm }) : null, def: hspRun({}) } : null;

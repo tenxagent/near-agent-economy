@@ -33,7 +33,8 @@ console.log('\n quarter  growth   buyback/yr   coverage (bought-back NEAR ÷ net
 for (const r of run.rows.filter((r) => r.q <= 12)) console.log(` ${quarterLabel(base.window_end, r.q).padEnd(8)} ×${r.growth.toFixed(3)}  ${usd(r.captured_usd_per_year).padStart(10)}   ${pct(r.coverage)}${r.coverage >= 1 ? '  ≥ all of it' : r.coverage >= BAR ? '  ≥ half (the bar)' : ''}`);
 const when = (q) => (q === null ? `not within ${run.params.quarters} quarters` : `${quarterLabel(base.window_end, q)} (${q} quarters)`);
 console.log(`\nHalf of net issuance (THESIS.md's bar): ${when(run.quartersToHalf)}. All of it: ${when(run.quartersToFull)}.`);
-console.log(`\nSensitivity (quarters until ½ / all; "–" = not within 10 years; price ${run.params.priceQ >= 0 ? '+' : ''}${pct(run.params.priceQ)}/q):`);
-const g = grid(base, run.params.priceQ);
+const { priceQ, resold, issuance, rampStartQ } = run.params;
+console.log(`\nSensitivity (quarters until ½ / all; "–" = not within 10 years; same settings as above: price ${priceQ >= 0 ? '+' : ''}${pct(priceQ)}/q, resold ${pct(resold)}, issuance ${issuance}${issuance === 'hsp029' ? ` from quarter ${rampStartQ}` : ''}):`);
+const g = grid(base, { priceQ, resold, issuance, rampStartQ });
 console.log(`  growth fade        ${g[0].cells.map((c) => `share ${pct(c.capture)}`.padEnd(16)).join('')}`);
 for (const row of g) console.log(`  ${hl(row.halfLife).padEnd(18)} ${row.cells.map((c) => `${c.quartersToHalf ?? '–'} / ${c.quartersToFull ?? '–'}`.padEnd(16)).join('')}`);
