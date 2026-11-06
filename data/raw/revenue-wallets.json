@@ -1,0 +1,61 @@
+{
+ "fetched_at": "2026-11-06T19:08:37.631Z",
+ "source": "NEAR archival RPC (https://archival-rpc.mainnet.fastnear.com, https://archival-rpc.mainnet.near.org)",
+ "wallets": [
+  "buybacks.multisignature.near",
+  "1csfundsadmin.sputnik-dao.near",
+  "fefundsadmin.sputnik-dao.near"
+ ],
+ "points": [
+  {
+   "at": "2026-02-23T00:00:00Z",
+   "block": 186724357,
+   "block_time": "2026-02-23T00:00:00.222Z",
+   "balances": [
+    {
+     "account": "buybacks.multisignature.near",
+     "exists": false,
+     "near_yocto": "0",
+     "wnear_yocto": "0"
+    },
+    {
+     "account": "1csfundsadmin.sputnik-dao.near",
+     "exists": true,
+     "near_yocto": "123021081267383734075702420499",
+     "wnear_yocto": "0"
+    },
+    {
+     "account": "fefundsadmin.sputnik-dao.near",
+     "exists": true,
+     "near_yocto": "924285595718898162638699999990",
+     "wnear_yocto": "0"
+    }
+   ]
+  },
+  {
+   "at": "2026-11-06T00:00:00Z",
+   "block": 223237989,
+   "block_time": "2026-11-06T00:00:00.507Z",
+   "balances": [
+    {
+     "account": "buybacks.multisignature.near",
+     "exists": true,
+     "near_yocto": "2186643490726675341163852461050",
+     "wnear_yocto": "0"
+    },
+    {
+     "account": "1csfundsadmin.sputnik-dao.near",
+     "exists": true,
+     "near_yocto": "270875891412420848813311023",
+     "wnear_yocto": "0"
+    },
+    {
+     "account": "fefundsadmin.sputnik-dao.near",
+     "exists": true,
+     "near_yocto": "1977538111182586267177301850650",
+     "wnear_yocto": "0"
+    }
+   ]
+  }
+ ]
+}

@@ -12,6 +12,7 @@ import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.
 import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near, BUYBACK_WALLET } from './lib/capture.mjs';
 import { fetchReceipts, receiptCount, balanceAt, reconcile, inflowsBetween } from './lib/buyback-ledger.mjs';
+import { readRevenueWallets, crossCheck } from './lib/revenue-wallets.mjs';
 import { sentence } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 import { marketControlled } from './lib/market.mjs';
@@ -20,6 +21,7 @@ const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
 const DIST = path.join(DIR, 'dist');
 const OFFLINE = process.argv.includes('--offline');
+const FEE_SWITCH = '2026-02-23';   // NEAR Intents' fee switch: from here Intents revenue buys NEAR back (C1, T3 notes, T4m second window)
 // --check: build offline, then fail if README's results block or PREREG.md differ from what the build and the NEAR anchor say
 const CHECK = process.argv.includes('--check');
 // 11-03 (screening): `--check --online` reads the anchored SHA-256 live from SocialDB instead of trusting the pinned constant
@@ -106,6 +108,18 @@ async function refresh() {
       } catch (e) { console.warn(`kept committed nearblocks-buyback-receipts.json: ${e.message}`); }
     }
   }
+  {   // 11-06 (screen 5): the three NEAR revenue wallets DefiLlama's series counts, at the fee switch and at today's 00:00Z (archival RPC)
+    const file = path.join(RAW, 'revenue-wallets.json');
+    const old = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : null;
+    if (old && Date.now() - Date.parse(old.fetched_at) < 20 * 3600e3) console.log(`kept committed revenue-wallets.json (fetched_at ${old.fetched_at}, refreshed at most daily)`);
+    else {
+      try {
+        const raw = await readRevenueWallets(`${FEE_SWITCH}T00:00:00Z`, `${new Date().toISOString().slice(0, 10)}T00:00:00Z`);
+        fs.writeFileSync(file, JSON.stringify(raw, null, 1) + '\n');
+        console.log(`fetched revenue-wallets.json (blocks ${raw.points.map((x) => x.block).join(' → ')})`);
+      } catch (e) { console.warn(`kept committed revenue-wallets.json: ${e.message}`); }
+    }
+  }
   try {   // 11-05: NEAR governance HSP-029 (issuance ramp 2.5% → 1.6%), its House of Stake record read from chain
     const r = await (await fetch('https://rpc.mainnet.fastnear.com', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(20_000),
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'query', params: { request_type: 'call_function', finality: 'final', account_id: 'vote.dao', method_name: 'get_proposal', args_base64: Buffer.from('{"proposal_id":29}').toString('base64') } }) })).json();
@@ -153,7 +167,6 @@ function corr(a, b) {
   for (let i = 0; i < n; i++) { c += (a[i] - ma) * (b[i] - mb); va += (a[i] - ma) ** 2; vb += (b[i] - mb) ** 2; }
   return c / Math.sqrt(va * vb);
 }
-const FEE_SWITCH = '2026-02-23';   // NEAR Intents' fee switch: from here Intents revenue buys NEAR back (C1, T3 notes, T4m second window)
 const fmtUsd = (v) => v >= 1e9 ? `$${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `$${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v / 1e3).toFixed(1)}K` : `$${v.toFixed(0)}`;
 
 // ---------- build
@@ -330,6 +343,13 @@ async function main() {
       const wi = inflowsBetween(L.rows, { account: BUYBACK_WALLET, uptoBlock: L.balance.block, fromDay: wFrom, toDay: wTo });
       const wImplied = bought.filter(([d]) => d >= wFrom && d <= wTo).reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0);
       const wIntents = near(wi.by_sender.find(([k]) => k === 'intents.near')?.[1] ?? '0');
+      // screen 5: the series counts three revenue wallets, not one ⇒ compare it with all three (lib/revenue-wallets.mjs)
+      if (fs.existsSync(path.join(RAW, 'revenue-wallets.json'))) {
+        const RW = readRaw('revenue-wallets.json'), toDay = addDays(RW.points[1].at.slice(0, 10), -1);
+        const implied = bought.filter(([d]) => d >= FEE_SWITCH && d <= toDay).reduce((a, [d, x]) => a + x / Number(nbDaily.get(d).near_price), 0);
+        const outBefore = rc.outs.filter((o) => Number(BigInt(o.ts) / 1_000_000n) < Date.parse(RW.points[1].at)).reduce((a, o) => a + near(o.yocto), 0);
+        c1.wallets = { ...crossCheck(RW, implied, outBefore), through_day: toDay, fetched_at: RW.fetched_at };
+      }
       c1.ledger.window = { from: wFrom, to: wTo, implied_near: wImplied, received_near: near(wi.in_yocto), received_share: near(wi.in_yocto) / wImplied,
         intents_near: wIntents, intents_share_of_implied: wIntents / wImplied,
         largest: wi.largest ? { from: wi.largest.from, near: near(wi.largest.yocto), day: wi.largest.day, tx: wi.largest.tx } : null };
@@ -380,7 +400,7 @@ async function main() {
   })();
   const conclusion = c1 && [
     `Usage moved to NEAR Intents: it settled ${pc(v.T1.intents_share_of_near_dex_volume_6m)} of NEAR's DEX volume over the last 6 full months and ${fmtUsd(v.T2.last90)} in the 90 days to ${v.T2.to}, ${v.T2.ratio.toFixed(2)}× the 90 days before (T1, T2).`,
-    `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1).`,
+    `Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to ${c1.window[1]} that was ${fmtUsd(c1.buyback_90d)}, ${pc(c1.buyback_share_of_intents_fees)} of Intents' fees; NEAR's gas burn added ${fmtUsd(c1.burn_90d)} (C1). "Buyback" is DefiLlama's label for revenue swept as NEAR into NEAR's revenue wallets, held, not burned${c1.wallets ? `; on chain those wallets account for ${pc(c1.wallets.ratio)} of it, ${pc(c1.wallets.frontend_share)} in the front-end fund rather than the buyback multisig` : ''}.`,
     `It is small next to the token. Annualized, captured value is ${fmtUsd(c1.captured_usd_per_year)}, ${pc(c1.capture_yield, 2)} a year of NEAR's ${fmtUsd(c1.market_cap_usd)} market cap. Over the same months NEAR's total supply grew ${pc(c1.net_issuance_rate, 1)} a year net of burns, about ${fmtUsd(c1.net_issuance_usd_per_year)} a year at $${c1.near_price_usd}; the buyback is ${pc(c1.buyback_vs_net_issuance)} of that. The bought-back NEAR is held (${(c1.buyback_wallet_near / 1e6).toFixed(2)}M NEAR in buybacks.multisignature.near), not burned.${c1.hsp029 ? ` If NEAR governance's HSP-029 cut (max issuance ${c1.hsp029.from_pct}% → ${c1.hsp029.to_pct}% over ${c1.hsp029.ramp_months} months) runs its full ramp, the same buyback would cover ${pc(c1.hsp029.buyback_vs_net_issuance_at_target)} of net issuance.` : ''}`,
     `NEAR's weekly price does not move with Intents volume (r = ${Math.abs(v.T4.r) < 0.005 ? '0.00' : v.T4.r.toFixed(2)} over ${v.T4.weeks} weeks, T4${v.T4m ? `; with BTC's moves taken out, r = ${v.T4m.r_controlled.toFixed(2)}, p = ${v.T4m.p_controlled.toFixed(2)}, T4m` : ''}), and agent commerce is tiny next to Intents (T7). ${p1 ? `Small tickets are not an edge case: ${pc(p1.kinds.token_diff.share_under_50)} of sampled swap legs and ${pc(p1.kinds.withdraw.share_under_50)} of withdrawals were under $50 (P1). ` : ''}${t9Sentence}`,
     `Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about ${pc(c1.buyback_vs_net_issuance)} of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window.`,

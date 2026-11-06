@@ -1,10 +1,10 @@
 {
- "built_at": "2026-11-06T17:46:44.702Z",
+ "built_at": "2026-11-06T19:13:05.452Z",
  "offline": true,
  "last_day": "2026-11-05",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 82% of NEAR's DEX volume over the last 6 full months and $11.76B in the 90 days to 2026-11-05, 1.81× the 90 days before (T1, T2).",
-  "Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-11-05 that was $4.9M, 27% of Intents' fees; NEAR's gas burn added $255.8K (C1).",
+  "Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-11-05 that was $4.9M, 27% of Intents' fees; NEAR's gas burn added $255.8K (C1). \"Buyback\" is DefiLlama's label for revenue swept as NEAR into NEAR's revenue wallets, held, not burned; on chain those wallets account for 98% of it, 33% in the front-end fund rather than the buyback multisig.",
   "It is small next to the token. Annualized, captured value is $20.8M, 0.43% a year of NEAR's $4.87B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $119.9M a year at $3.72; the buyback is 17% of that. The bought-back NEAR is held (2.19M NEAR in buybacks.multisignature.near), not burned. If NEAR governance's HSP-029 cut (max issuance 2.5% → 1.6% over 24 months) runs its full ramp, the same buyback would cover 26% of net issuance.",
   "NEAR's weekly price does not move with Intents volume (r = 0.00 over 95 weeks, T4; with BTC's moves taken out, r = -0.03, p = 0.79, T4m), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1). Agent-size tickets into NEAR get a 1Click quote: 0.188–0.458% under $50 (T9, quotes of 2026-11-06 14:34Z).",
   "Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about 17% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window."
@@ -304,14 +304,14 @@
      "2026-10-30",
      "2026-11-05"
     ],
-    "counter_share_estimated": -0.008211794347888763,
+    "counter_share_estimated": -0.007396665322535894,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T17:07:01.017Z"
+     "2026-11-06T19:07:00.716Z"
     ],
-    "rpc_sample_share": 0.1926669780476413,
-    "rpc_sample_txs": 12846,
-    "rpc_samples": 151
+    "rpc_sample_share": 0.19321669736034378,
+    "rpc_sample_txs": 13032,
+    "rpc_samples": 153
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -326,7 +326,7 @@
     "growth": 0.33333333333333326,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T17:07:01.017Z"
+     "2026-11-06T19:07:00.716Z"
     ],
     "agents_last": 631
    },
@@ -742,6 +742,40 @@
        "tx": "CMfn15uTJF5DX9wFzV5G2JdHpy3qmHa5NJNUH9uj5Jp6"
       }
      }
+    },
+    "wallets": {
+     "from": "2026-02-23T00:00:00Z",
+     "to": "2026-11-06T00:00:00Z",
+     "from_block": 186724357,
+     "to_block": 223237989,
+     "wallets": [
+      {
+       "account": "buybacks.multisignature.near",
+       "from_near": 0,
+       "to_near": 2186643.4907266754,
+       "gain_near": 2186643.4907266754
+      },
+      {
+       "account": "1csfundsadmin.sputnik-dao.near",
+       "from_near": 123021.08126738374,
+       "to_near": 270.87589141242086,
+       "gain_near": -122750.20537597132
+      },
+      {
+       "account": "fefundsadmin.sputnik-dao.near",
+       "from_near": 924285.5957188981,
+       "to_near": 1977538.1111825863,
+       "gain_near": 1053252.5154636882
+      }
+     ],
+     "gain_near": 3117145.8008143925,
+     "known_out_near": 12025,
+     "accounted_near": 3129170.8008143925,
+     "implied_near": 3208431.9399424777,
+     "ratio": 0.9752959886287922,
+     "frontend_share": 0.3282764089060189,
+     "through_day": "2026-11-05",
+     "fetched_at": "2026-11-06T19:08:37.631Z"
     },
     "hsp029": {
      "from_pct": 2.5,

@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { reconcile, trim, inflowsBetween } from '../lib/buyback-ledger.mjs';
+import { crossCheck, REVENUE_WALLETS } from '../lib/revenue-wallets.mjs';
 
 const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), '..');
 const W = 'buybacks.multisignature.near', Y = 10n ** 24n;
@@ -64,4 +65,16 @@ test('inflowsBetween: only successful deposits from others on the given UTC days
   assert.equal(r.in_yocto, (560n * Y).toString());
   assert.deepEqual(r.by_sender, [['dao.near', (500n * Y).toString()], ['intents.near', (60n * Y).toString()]]);
   assert.equal(r.largest.from, 'dao.near'); assert.equal(r.largest.day, '2026-09-09');
+});
+
+test('crossCheck: the three revenue wallets\' combined gain + known outflows against the series (synthetic), and the committed file reproduces the series within 5%', () => {
+  const pt = (at, vals) => ({ at, block: 1, balances: REVENUE_WALLETS.map((a, i) => ({ account: a, exists: true, near_yocto: (BigInt(vals[i]) * Y).toString(), wnear_yocto: '0' })) });
+  const raw = { points: [pt('2026-02-23T00:00:00Z', [0, 100, 900]), pt('2026-11-06T00:00:00Z', [600, 0, 1300])] };
+  const r = crossCheck(raw, 1000, 100);
+  assert.equal(r.gain_near, 900); assert.equal(r.accounted_near, 1000); assert.equal(r.ratio, 1);
+  assert.equal(r.frontend_share, 0.4);
+  const file = path.join(ROOT, 'data', 'raw', 'revenue-wallets.json');
+  if (!fs.existsSync(file)) return;
+  const res = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'results.json'), 'utf8')).tests.find((t) => t.id === 'C1').value.wallets;
+  assert.ok(res && Math.abs(res.ratio - 1) < 0.05, `three-wallet cross-check off by more than 5%: ${res?.ratio}`);
 });
