@@ -101,3 +101,16 @@ test('HSP-029: gross issuance ramps to 1.6/2.5 over 8 quarters, burn held, cover
   assert.equal(late.rows[2].coverage, 0.25);                                       // nothing changes before the ramp starts
   assert.equal(project(b, { halfLife: 0 }).rows[8].coverage, 0.25);                // default issuance 'current' is unchanged
 });
+
+// screen 5: the build must say when growth re-accelerates at the end (the implied half-life is then a two-point fit)
+test('growthHistory: risingTail lists the latest rising ratios (3+ points), else []', () => {
+  const day = (i) => new Date(Date.UTC(2025, 0, 1) + i * 864e5).toISOString().slice(0, 10);
+  // 90-day blocks with volumes 100, 600, 1800, 1300, 1450, 2600 ⇒ ratios ×6, ×3, ×0.72, ×1.12, ×1.79 (the last three rise)
+  const blocks = [100, 600, 1800, 1300, 1450, 2600], daily = [];
+  blocks.forEach((v, b) => { for (let i = 0; i < 90; i++) daily.push([day(b * 90 + i), v / 90]); });
+  const h = growthHistory(daily, daily.at(-1)[0]);
+  assert.deepEqual(h.risingTail.map((r) => +r.toFixed(2)), [0.72, 1.12, 1.79]);
+  const fading = [100, 600, 1800, 2700, 3200, 3500], d2 = [];
+  fading.forEach((v, b) => { for (let i = 0; i < 90; i++) d2.push([day(b * 90 + i), v / 90]); });
+  assert.deepEqual(growthHistory(d2, d2.at(-1)[0]).risingTail, []);
+});

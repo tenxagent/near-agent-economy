@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-06T23:16:03.424Z",
+ "built_at": "2026-11-07T00:05:14.643Z",
  "offline": true,
  "last_day": "2026-11-05",
  "conclusion": [
@@ -174,7 +174,12 @@
      "ratio": 1.8061322674393379
     }
    ],
-   "impliedHalfLife": 0.9976274625801972
+   "impliedHalfLife": 0.9976274625801972,
+   "risingTail": [
+    0.7216898141453619,
+    1.1123454254669431,
+    1.8061322674393379
+   ]
   },
   "measured": {
    "half_life_q": 1,
@@ -182,7 +187,7 @@
    "coverage_in_8q": 0.3372054946367996,
    "quartersToHalf": null
   },
-  "sentence": "Model (`node model.mjs`, every assumption is a flag): starting from today's 17%, at the fade the data implies (Intents' growth halving about every 1.0 quarters, see below) the buyback reaches half of net issuance not within 10 years; with a slower fade, halving every 2 quarters (the default flag), in 2027-Q4 (4 quarters); with no further growth it stays at 17%; if the measured 1.81× per 90 days never fades, in 2027-Q2 (2 quarters). A scenario, not a forecast. The measured quarter-on-quarter growth went 6.3× → 5.8× → 2.2× → 0.7× → 1.1× → 1.8×; fading from the oldest quarter to the latest four implies a half-life of about 1.0 quarters, so the 2-quarter default is on the generous side. The bought-back NEAR sits in a multisig (held, not burned); `--resold` models some of it returning to market. If HSP-029 (max issuance 2.5% → 1.6% over 24 months; House of Stake vote 99.97% for, timelock until 2026-11-16; no start date set) began its ramp now: at the implied fade, in 2028-Q4 (8 quarters); at the 2-quarter default, in 2027-Q3 (3 quarters)."
+  "sentence": "Model (`node model.mjs`, every assumption is a flag): starting from today's 17%, at the fade the data implies (Intents' growth halving about every 1.0 quarters, see below) the buyback reaches half of net issuance not within 10 years; with a slower fade, halving every 2 quarters (the default flag), in 2027-Q4 (4 quarters); with no further growth it stays at 17%; if the measured 1.81× per 90 days never fades, in 2027-Q2 (2 quarters). A scenario, not a forecast. The measured quarter-on-quarter growth went 6.3× → 5.8× → 2.2× → 0.7× → 1.1× → 1.8×; fading from the oldest quarter to the latest four implies a half-life of about 1.0 quarters, but the last 2 quarters re-accelerated (0.7× → 1.1× → 1.8×), so one steady fade fits this series poorly: that half-life is a two-point fit, and the sensitivity grid (`node model.mjs`, and the dashboard's model section) shows how much the choice matters. The bought-back NEAR sits in a multisig (held, not burned); `--resold` models some of it returning to market. If HSP-029 (max issuance 2.5% → 1.6% over 24 months; House of Stake vote 99.97% for, timelock until 2026-11-16; no start date set) began its ramp now: at the implied fade, in 2028-Q4 (8 quarters); at the 2-quarter default, in 2027-Q3 (3 quarters)."
  },
  "tests": [
   {
@@ -304,14 +309,14 @@
      "2026-10-30",
      "2026-11-05"
     ],
-    "counter_share_estimated": -0.006050707375934697,
+    "counter_share_estimated": -0.005878109565150442,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T23:07:01.934Z"
+     "2026-11-07T00:00:01.377Z"
     ],
-    "rpc_sample_share": 0.19274495138369485,
-    "rpc_sample_txs": 13370,
-    "rpc_samples": 157
+    "rpc_sample_share": 0.1916092209621229,
+    "rpc_sample_txs": 13491,
+    "rpc_samples": 158
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -326,7 +331,7 @@
     "growth": 0.33333333333333326,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-06T23:07:01.934Z"
+     "2026-11-07T00:00:01.377Z"
     ],
     "agents_last": 631
    },
@@ -953,10 +958,10 @@
     "status": "pending",
     "snapshots": [
      "2026-11-02T00:07:00.331Z",
-     null,
+     "2026-11-07T00:00:01.377Z",
      null
     ],
-    "jobs_per_day_first": null,
+    "jobs_per_day_first": 25.8,
     "jobs_per_day_second": null
    },
    "pass": null,
