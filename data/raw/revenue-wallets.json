@@ -1,5 +1,5 @@
 {
- "fetched_at": "2026-11-06T19:08:37.631Z",
+ "fetched_at": "2026-11-07T22:34:34.274Z",
  "source": "NEAR archival RPC (https://archival-rpc.mainnet.fastnear.com, https://archival-rpc.mainnet.near.org)",
  "wallets": [
   "buybacks.multisignature.near",
@@ -33,14 +33,14 @@
    ]
   },
   {
-   "at": "2026-11-06T00:00:00Z",
-   "block": 223237989,
-   "block_time": "2026-11-06T00:00:00.507Z",
+   "at": "2026-11-07T00:00:00Z",
+   "block": 223387847,
+   "block_time": "2026-11-07T00:00:00.214Z",
    "balances": [
     {
      "account": "buybacks.multisignature.near",
      "exists": true,
-     "near_yocto": "2186643490726675341163852461050",
+     "near_yocto": "2202267809503735848483139335761",
      "wnear_yocto": "0"
     },
     {
@@ -52,7 +52,7 @@
     {
      "account": "fefundsadmin.sputnik-dao.near",
      "exists": true,
-     "near_yocto": "1977538111182586267177301850650",
+     "near_yocto": "1985550223967981937987121889406",
      "wnear_yocto": "0"
     }
    ]
