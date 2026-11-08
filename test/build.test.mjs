@@ -207,7 +207,7 @@ test('golden: the T9 sentence follows the 1Click quotes (all quoted / some / non
       return JSON.parse(fs.readFileSync(path.join(tmp, 'dist', 'results.json'), 'utf8')).conclusion.join(' ');
     };
     const ok = (pct) => ({ ok: true, cost_pct: pct }), no = { ok: false, http: 400, message: 'Quoting for this pair is not available' };
-    assert.match(run((rows) => rows.forEach((r, i) => { r.near_intents_1click = ok([0.41, 0.52, 0.6][i] ?? 0.5); })), /Agent-size tickets into NEAR get a 1Click quote: 0\.41–0\.6% under \$50 \(T9/);
+    assert.match(run((rows) => rows.forEach((r, i) => { r.near_intents_1click = ok([0.41, 0.52, 0.6][i] ?? 0.5); })), /Agent-size tickets into NEAR get a 1Click quote: 0\.41–0\.60% under \$50 \(T9/);
     assert.match(run((rows) => rows.forEach((r, i) => { r.near_intents_1click = i === 0 ? ok(0.7) : no; })), new RegExp(`1 of ${intoNear.rows.filter((r) => r.usd < 50).length} agent-size tickets into NEAR got a 1Click quote`));
     const none = run((rows) => rows.forEach((r) => { r.near_intents_1click = no; }));
     assert.match(none, /1Click refused all \d+ agent-size tickets \(under \$50\) on the agent's own routes \(T9\)/);

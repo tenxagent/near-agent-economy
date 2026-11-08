@@ -1,12 +1,12 @@
 {
- "built_at": "2026-11-08T22:39:12.805Z",
- "offline": false,
+ "built_at": "2026-11-08T23:20:57.584Z",
+ "offline": true,
  "last_day": "2026-11-07",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 83% of NEAR's DEX volume over the last 6 full months and $11.92B in the 90 days to 2026-11-07, 1.83× the 90 days before (T1, T2).",
   "Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-11-07 that was $5.0M, 27% of Intents' fees; NEAR's gas burn added $258.2K (C1). \"Buyback\" is DefiLlama's label for revenue swept as NEAR into NEAR's revenue wallets, held, not burned; on chain those wallets account for 98% of it, 33% in the front-end fund rather than the buyback multisig.",
   "It is small next to the token. Annualized, captured value is $21.2M, 0.46% a year of NEAR's $4.63B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $113.8M a year at $3.53; the buyback is 18% of that. The bought-back NEAR is held (2.22M NEAR in buybacks.multisignature.near), not burned. If NEAR governance's HSP-029 cut (max issuance 2.5% → 1.6% over 24 months) runs its full ramp, the same buyback would cover 28% of net issuance.",
-  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 95 weeks, T4; with BTC's moves taken out, r = -0.03, p = 0.79, T4m), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1). Agent-size tickets into NEAR get a 1Click quote: 0.606–0.775% under $50 (T9, quotes of 2026-11-08 22:38Z).",
+  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 95 weeks, T4; with BTC's moves taken out, r = -0.03, p = 0.79, T4m), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1). Agent-size tickets into NEAR get a 1Click quote: 0.61–0.78% under $50 (T9, quotes of 2026-11-08 22:38Z).",
   "Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about 18% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window."
  ],
  "model": {
@@ -309,14 +309,14 @@
      "2026-11-01",
      "2026-11-07"
     ],
-    "counter_share_estimated": 0.003778447048293634,
+    "counter_share_estimated": 0.003974362953251744,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-08T22:07:01.023Z"
+     "2026-11-08T23:07:01.926Z"
     ],
-    "rpc_sample_share": 0.18566112338644028,
-    "rpc_sample_txs": 17198,
-    "rpc_samples": 205
+    "rpc_sample_share": 0.18607616949742045,
+    "rpc_sample_txs": 17251,
+    "rpc_samples": 206
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -331,7 +331,7 @@
     "growth": 0.33834586466165417,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-08T22:07:01.023Z"
+     "2026-11-08T23:07:01.926Z"
     ],
     "agents_last": 643
    },
@@ -782,6 +782,7 @@
      "through_day": "2026-11-07",
      "fetched_at": "2026-11-08T22:35:18.441Z"
     },
+    "buyback_vs_net_issuance_direct": 0.11877655810155173,
     "hsp029": {
      "from_pct": 2.5,
      "to_pct": 1.6,
