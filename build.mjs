@@ -423,6 +423,30 @@ async function main() {
   tests.push({ id: 'P1', half: 'agents', question: 'How large are the intents NEAR Intents executes?', value: p1,
     pass: null, rule: 'reported, no threshold (cutoffs < $50 and < $10 registered before sampling; THESIS.md)' });
 
+  // P2 (added 2026-11-09, after the lock; a REPORT, not scored): who signs NEAR's transactions, and how many NEAR Intents
+  // accounts do signer counts miss? The sample is drawn by sample-accounts.mjs (neardata.xyz), not by this build.
+  let p2 = null;
+  if (fs.existsSync(path.join(RAW, 'accounts-sample.json'))) {
+    const S = readRaw('accounts-sample.json'), N = S.now, B = S.windows?.before, A = S.windows?.after;
+    if (N && B && A) {
+      const win = (w) => ({ from: w.from, to: w.to, blocks: w.blocks_ok, txs: w.txs, txs_per_block: w.txs / w.blocks_ok, signers: w.distinct_signers, bounds_match_dates: w.bounds_match_dates });
+      const drop = B.txs / B.blocks_ok - A.txs / A.blocks_ok, after = new Map(A.top_parents.map((p) => [p.parent, p.txs]));
+      // Parents listed in the "before" week, by how much of the per-block drop they account for. A parent missing from the
+      // "after" list fell below the listing floor (sample-accounts.mjs), so its "after" rate is at most the floor; counted as 0.
+      const left = B.top_parents.map((p) => {
+        const b = p.txs / B.blocks_ok, a = after.has(p.parent) ? after.get(p.parent) / A.blocks_ok : null;
+        return { parent: p.parent, signers_before: p.signers, before_per_block: b, after_per_block: a, after_below_floor: a === null, share_of_drop: drop > 0 ? (b - (a ?? 0)) / drop : null };
+      }).sort((x, y) => (y.share_of_drop ?? 0) - (x.share_of_drop ?? 0)).slice(0, 3);
+      p2 = { sampled_at: S.fetched_at, source: S.source,
+        now: { blocks: N.blocks_ok, days: N.days, head: N.head, txs: N.txs, signers: N.distinct_signers, intents_txs: N.intents_txs, intents_tx_signers: N.intents_tx_signers,
+          intents_top_signers_share: N.intents_top_signers_share, intent_events: N.intent_events, intent_accounts: N.intent_accounts,
+          intent_accounts_also_signers: N.intent_accounts_also_signers, intent_account_kinds: N.intent_account_kinds, accounts_per_signer: N.intents_tx_signers ? N.intent_accounts / N.intents_tx_signers : null },
+        spring: { before: win(B), after: win(A), drop_per_block: drop, left } };
+    }
+  }
+  tests.push({ id: 'P2', half: 'usage', question: "Who signs NEAR's transactions, and how many NEAR Intents accounts do signer counts miss?", value: p2,
+    pass: null, rule: 'post-lock REPORT (added 2026-11-09 after the lock; a sample, no threshold; THESIS.md)' });
+
   // The investment reading, written from the computed values only (shown on the dashboard and in the README)
   const v = Object.fromEntries(tests.map((t) => [t.id, t.value])), pc = (x, d = 0) => `${(100 * x).toFixed(d)}%`;
   // T9 in one sentence, computed from the latest quotes (11-05: was a fixed string that went stale when Hood USDG → NEAR stopped quoting)
@@ -523,6 +547,13 @@ async function main() {
     source: 'NEAR archival RPC (blocks, chunks, tx outcomes of intents.near); 1Click /v0/tokens prices', svg: svgBars({ unit: '%', categories: P1_KINDS.map((k) => `${k} (n=${p1.kinds[k].n})`),
       series: [{ name: 'under $50', color: '#7c3aed', values: P1_KINDS.map((k) => (p1.kinds[k].share_under_50 ?? NaN) * 100) },
         { name: 'under $10', color: '#c4b5fd', values: P1_KINDS.map((k) => (p1.kinds[k].share_under_10 ?? NaN) * 100) }] }) });
+  if (p2) {
+    const sp = p2.spring, L = sp.left, rest = (w, key) => w.txs_per_block - L.reduce((x, l) => x + (l[key] ?? 0), 0);
+    charts.push({ id: 'c12', title: "Who left NEAR's transaction count in spring 2026", sentence: `Transactions a block by signer parent, ${sp.before.blocks} random blocks in each week (P2). A parent below the listing floor in the later week is drawn at 0.`,
+      source: 'neardata.xyz blocks (every chunk\'s transactions, grouped by the signer\'s parent account)', svg: svgBars({ unit: '', categories: [...L.map((l) => l.parent), 'everyone else'],
+        series: [{ name: `${sp.before.from}..${sp.before.to.slice(5)}`, color: '#7c3aed', values: [...L.map((l) => l.before_per_block), rest(sp.before, 'before_per_block')] },
+          { name: `${sp.after.from}..${sp.after.to.slice(5)}`, color: '#c4b5fd', values: [...L.map((l) => l.after_per_block ?? 0), rest(sp.after, 'after_per_block')] }] }) });
+  }
   if (c1) charts.push({ id: 'c10', title: 'Value captured for NEAR holders vs new NEAR supply, per year', sentence: `Annualized from the 90 days to ${c1.window[1]}: Intents fees ${fmtUsd((c1.intents_fees_90d * 365) / 90)}, of which ${fmtUsd((c1.buyback_90d * 365) / 90)} bought NEAR back; gas burn ${fmtUsd((c1.burn_90d * 365) / 90)}; net new NEAR supply ${fmtUsd(c1.net_issuance_usd_per_year)} at $${c1.near_price_usd} (C1).`,
     source: 'DefiLlama fees/near-intents (dailyFees, dailyHoldersRevenue), fees/near (dailyRevenue); NEAR archival RPC block headers; NearBlocks /v1/stats', svg: svgBars({ unit: '$',
       categories: ['Intents fees', 'bought back', 'gas burn', 'new NEAR supply'],
@@ -546,13 +577,14 @@ async function main() {
   const re = /(<!-- results:start -->\n)[\s\S]*?(<!-- results:end -->)/;
   // 11-06 (re-screen 4 Y-10/Y-12): THESIS.md's current-status lines are generated too, so the document the track asks for cannot drift
   // from the build. The dated notes elsewhere in THESIS.md are history; this block is the present.
-  const byId = (id) => tests.find((t) => t.id === id), t9 = byId('T9'), t4m = byId('T4m'), t4l = byId('T4L'), vote = c1?.hsp029?.vote;
+  const byId = (id) => tests.find((t) => t.id === id), t9 = byId('T9'), t4m = byId('T4m'), t4l = byId('T4L'), p2t = byId('P2'), vote = c1?.hsp029?.vote;
   const statusBlock = [`Generated by \`node build.mjs\` from the data through ${lastDay}; \`node build.mjs --check\` fails if this block differs from the build.`, '',
     t9 && `- **T9, agent-size tickets into NEAR:** ${sentence(t9)}`,
     c1 && `- **C1, buyback vs new NEAR supply:** the buyback covers ${pc(c1.buyback_vs_net_issuance)} of net issuance (90 days to ${c1.window[1]})${c1.hsp029 ? `; with HSP-029's cut to ${c1.hsp029.to_pct}% fully ramped, the same buyback would cover ${pc(c1.hsp029.buyback_vs_net_issuance_at_target)} (burn and buyback held constant)` : ''}.${c1.buyback_vs_net_issuance_direct ? ` Counting only the NEAR that reached the buyback multisig straight from intents.near in the same window (${pc(c1.ledger.window.intents_share_of_implied)} of what the series implies), it is ${pc(c1.buyback_vs_net_issuance_direct)}, a lower bound.` : ''} The bar in "What would change our mind" is 50% and is read on the series figure (${pc(c1.buyback_vs_net_issuance)}), as preregistered.`,
     vote && `- **HSP-029 on chain (vote.dao, read ${String(vote.read_at).slice(0, 16)}Z):** status ${vote.status}, ${pc(vote.for_share, 2)} of votes for, turnout ${pc(vote.turnout)}; timelock ends ${String(vote.timelock_ends).slice(0, 16)}Z; ${vote.actions_attached ? 'actions attached' : 'no actions attached, so no start date for the ramp yet'}.`,
     t4m && `- **T4m, T4 with the crypto market taken out:** ${sentence(t4m)}`,
     t4l && `- **T4L, the same at lags up to 8 weeks:** ${sentence(t4l)}`,
+    p2t?.value && `- **P2, who signs NEAR's transactions:** ${sentence(p2t)}`,
     modelLine && `- ${modelLine.replace(/^Model /, '**Model** ')}`].filter(Boolean).join('\n');
   const THESIS = path.join(DIR, 'THESIS.md'), thesisMd = fs.existsSync(THESIS) ? fs.readFileSync(THESIS, 'utf8') : null;   // absent in the tests' synthetic builds
   const reS = /(<!-- status:start -->\n)[\s\S]*?(<!-- status:end -->)/;

@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-09T22:43:21.209Z",
- "offline": false,
+ "built_at": "2026-11-09T23:49:24.720Z",
+ "offline": true,
  "last_day": "2026-11-08",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 83% of NEAR's DEX volume over the last 6 full months and $11.93B in the 90 days to 2026-11-08, 1.83× the 90 days before (T1, T2).",
@@ -434,14 +434,14 @@
      "2026-11-02",
      "2026-11-08"
     ],
-    "counter_share_estimated": 0.008368567221149946,
+    "counter_share_estimated": 0.008524132115763972,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-09T22:07:02.007Z"
+     "2026-11-09T23:07:01.504Z"
     ],
-    "rpc_sample_share": 0.17770841723721306,
-    "rpc_sample_txs": 19864,
-    "rpc_samples": 229
+    "rpc_sample_share": 0.1780396089245425,
+    "rpc_sample_txs": 19945,
+    "rpc_samples": 230
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -452,11 +452,11 @@
    "question": "Is agent-native demand on NEAR growing?",
    "value": {
     "delivered_jobs_first": 399,
-    "delivered_jobs_last": 550,
-    "growth": 0.3784461152882206,
+    "delivered_jobs_last": 551,
+    "growth": 0.38095238095238093,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-09T22:07:02.007Z"
+     "2026-11-09T23:07:01.504Z"
     ],
     "agents_last": 653
    },
@@ -468,7 +468,7 @@
    "half": "agents",
    "question": "How big is agent commerce next to Intents?",
    "value": {
-    "agent_market_all_time_usd_at_assumed_price": 2750,
+    "agent_market_all_time_usd_at_assumed_price": 2755,
     "price_assumption_usd": 5,
     "intents_volume_30d": 3714703671
    },
@@ -1035,6 +1035,83 @@
    },
    "pass": null,
    "rule": "reported, no threshold (cutoffs < $50 and < $10 registered before sampling; THESIS.md)"
+  },
+  {
+   "id": "P2",
+   "half": "usage",
+   "question": "Who signs NEAR's transactions, and how many NEAR Intents accounts do signer counts miss?",
+   "value": {
+    "sampled_at": "2026-11-09T23:46:55.651Z",
+    "source": "https://mainnet.neardata.xyz/v0/block",
+    "now": {
+     "blocks": 300,
+     "days": 7,
+     "head": 223809361,
+     "txs": 1353,
+     "signers": 302,
+     "intents_txs": 284,
+     "intents_tx_signers": 7,
+     "intents_top_signers_share": 0.9859154929577465,
+     "intent_events": 726,
+     "intent_accounts": 166,
+     "intent_accounts_also_signers": 3,
+     "intent_account_kinds": {
+      "implicit": 154,
+      "named": 9,
+      "eth": 3
+     },
+     "accounts_per_signer": 23.714285714285715
+    },
+    "spring": {
+     "before": {
+      "from": "2026-03-09",
+      "to": "2026-03-16",
+      "blocks": 150,
+      "txs": 5049,
+      "txs_per_block": 33.66,
+      "signers": 288,
+      "bounds_match_dates": true
+     },
+     "after": {
+      "from": "2026-04-13",
+      "to": "2026-04-20",
+      "blocks": 149,
+      "txs": 943,
+      "txs_per_block": 6.328859060402684,
+      "signers": 237,
+      "bounds_match_dates": true
+     },
+     "drop_per_block": 27.33114093959731,
+     "left": [
+      {
+       "parent": "kaiching",
+       "signers_before": 2,
+       "before_per_block": 26.446666666666665,
+       "after_per_block": null,
+       "after_below_floor": true,
+       "share_of_drop": 0.9676385894432522
+      },
+      {
+       "parent": "relay.tg",
+       "signers_before": 1,
+       "before_per_block": 1.0933333333333333,
+       "after_per_block": null,
+       "after_below_floor": true,
+       "share_of_drop": 0.04000320863844047
+      },
+      {
+       "parent": "hot.tg",
+       "signers_before": 3,
+       "before_per_block": 1.2266666666666666,
+       "after_per_block": 0.7315436241610739,
+       "after_below_floor": false,
+       "share_of_drop": 0.01811571070522926
+      }
+     ]
+    }
+   },
+   "pass": null,
+   "rule": "post-lock REPORT (added 2026-11-09 after the lock; a sample, no threshold; THESIS.md)"
   },
   {
    "id": "F1",

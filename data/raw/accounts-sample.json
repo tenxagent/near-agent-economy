@@ -1,0 +1,217 @@
+{
+ "fetched_at": "2026-11-09T23:46:55.651Z",
+ "source": "https://mainnet.neardata.xyz/v0/block",
+ "calls": 643,
+ "now": {
+  "blocks_ok": 300,
+  "blocks_missing": 0,
+  "blocks_failed": 0,
+  "txs": 1353,
+  "distinct_signers": 302,
+  "top_parents": [
+   {
+    "parent": "sweat-relayer.near",
+    "txs": 269,
+    "signers": 1
+   },
+   {
+    "parent": "intents.near",
+    "txs": 248,
+    "signers": 1
+   },
+   {
+    "parent": "0here.tg",
+    "txs": 185,
+    "signers": 1
+   },
+   {
+    "parent": "(implicit, 64 hex)",
+    "txs": 84,
+    "signers": 38
+   },
+   {
+    "parent": "bridge.near",
+    "txs": 46,
+    "signers": 1
+   },
+   {
+    "parent": "meteor-relayer.near",
+    "txs": 35,
+    "signers": 1
+   },
+   {
+    "parent": "abound.near",
+    "txs": 35,
+    "signers": 1
+   },
+   {
+    "parent": "ai.near",
+    "txs": 30,
+    "signers": 1
+   },
+   {
+    "parent": "bridge-mng.near",
+    "txs": 28,
+    "signers": 1
+   },
+   {
+    "parent": "closemeat6237.near",
+    "txs": 24,
+    "signers": 1
+   },
+   {
+    "parent": "ref-watchdog.near",
+    "txs": 23,
+    "signers": 7
+   },
+   {
+    "parent": "aurora",
+    "txs": 17,
+    "signers": 1
+   }
+  ],
+  "others_txs": 329,
+  "seed": 223809361,
+  "head": 223809361,
+  "head_pinned": true,
+  "days": 7,
+  "heights_sampled": 300,
+  "intents_txs": 284,
+  "intents_tx_signers": 7,
+  "intents_top_signers_share": 0.9859154929577465,
+  "intents_top_signer_parents": [
+   {
+    "parent": "intents.near",
+    "txs": 248
+   },
+   {
+    "parent": "ai.near",
+    "txs": 30
+   }
+  ],
+  "intent_events": 726,
+  "intent_accounts": 166,
+  "intent_accounts_also_signers": 3,
+  "intent_account_kinds": {
+   "implicit": 154,
+   "named": 9,
+   "eth": 3
+  }
+ },
+ "windows": {
+  "before": {
+   "from": "2026-03-09",
+   "to": "2026-03-16",
+   "height_from": 188711799,
+   "height_to": 189714875,
+   "bounds_match_dates": true,
+   "seed": 188711799,
+   "heights_sampled": 150,
+   "blocks_ok": 150,
+   "blocks_missing": 0,
+   "blocks_failed": 0,
+   "txs": 5049,
+   "distinct_signers": 288,
+   "top_parents": [
+    {
+     "parent": "kaiching",
+     "txs": 3967,
+     "signers": 2
+    },
+    {
+     "parent": "sweat-relayer.near",
+     "txs": 305,
+     "signers": 1
+    },
+    {
+     "parent": "hot.tg",
+     "txs": 184,
+     "signers": 3
+    },
+    {
+     "parent": "relay.tg",
+     "txs": 164,
+     "signers": 1
+    }
+   ],
+   "others_txs": 429
+  },
+  "after": {
+   "from": "2026-04-13",
+   "to": "2026-04-20",
+   "height_from": 193749316,
+   "height_to": 194749351,
+   "bounds_match_dates": true,
+   "seed": 193749316,
+   "heights_sampled": 150,
+   "blocks_ok": 149,
+   "blocks_missing": 1,
+   "blocks_failed": 0,
+   "txs": 943,
+   "distinct_signers": 237,
+   "top_parents": [
+    {
+     "parent": "sweat-relayer.near",
+     "txs": 282,
+     "signers": 1
+    },
+    {
+     "parent": "hot.tg",
+     "txs": 109,
+     "signers": 3
+    },
+    {
+     "parent": "abel1.near",
+     "txs": 40,
+     "signers": 1
+    },
+    {
+     "parent": "intents.near",
+     "txs": 39,
+     "signers": 1
+    },
+    {
+     "parent": "fredrik1.near",
+     "txs": 38,
+     "signers": 1
+    },
+    {
+     "parent": "derek1.near",
+     "txs": 36,
+     "signers": 1
+    },
+    {
+     "parent": "zoe1.near",
+     "txs": 25,
+     "signers": 1
+    },
+    {
+     "parent": "jolene1.near",
+     "txs": 24,
+     "signers": 1
+    },
+    {
+     "parent": "meteor-relayer.near",
+     "txs": 19,
+     "signers": 1
+    },
+    {
+     "parent": "(implicit, 64 hex)",
+     "txs": 19,
+     "signers": 13
+    },
+    {
+     "parent": "bridge-mng.near",
+     "txs": 15,
+     "signers": 1
+    },
+    {
+     "parent": "aurora",
+     "txs": 12,
+     "signers": 1
+    }
+   ],
+   "others_txs": 285
+  }
+ }
+}
