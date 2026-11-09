@@ -32,7 +32,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
    - "What it means for a NEAR holder", written from the computed values;
    - one card per test with its result, one plain sentence, its rule, and its exact queries and computed value;
    - eleven charts, each with one sentence, its source and its queries;
-   - the model card (see step 5).
+   - the model card (see step 5), with controls under its grid ("Try your own assumptions"). They run `lib/model.mjs` in the browser through `lib/model-ui.mjs`, the same code as `node model.mjs`, and print the matching command. Opened from disk, a browser blocks the module import; use the hosted copy, or `python3 -m http.server` in the repo folder and open http://localhost:8000/dist/.
 4. **Add a data point to our own time series.**
    - Run `node collect.mjs` (~5 min).
    - Expect one new line in `data/snapshots.jsonl`, with:
@@ -41,7 +41,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
      - a 20-block × 10-shard RPC sample;
      - dry $30 NEAR Intents quotes on two of the agent's routes (is an agent-size ticket accepted?).
    - It runs hourly from 2026-10-31.
-5. **Re-run the model with your own assumptions.**
+5. **Re-run the model with your own assumptions.** (In the browser: the dashboard's controls; `test/model-ui.test.mjs` runs the command they print and checks the answer matches.)
    - Run `node model.mjs` (reads `dist/results.json`; no network, no keys).
    - Expect the measured starting point, a quarter-by-quarter table of coverage (NEAR bought back per year ÷ net new NEAR per year) and a sensitivity grid: quarters until the buyback reaches half (THESIS.md's bar) and all of net issuance.
    - NEAR's governance issuance cut: `node model.mjs --issuance hsp029` ramps max issuance 2.5% → 1.6% over 24 months as HSP-029 sets out (passed, start not scheduled; `--ramp-start-q <n>` delays it). Sources: THESIS.md.
@@ -96,8 +96,8 @@ Data through 2026-11-08; rebuilt by `node build.mjs`.
 | T3 | capture | FAIL | In the last 90 days the NEAR protocol earned $370.0K in fees, 2.0% of the $18.2M that NEAR Intents earned. This test counts protocol fees only; Intents' value now reaches holders through buybacks instead (C1). |
 | T4 | capture | FAIL | Over 96 weeks (2025-01-06 → 2026-11-02), weekly changes in NEAR's price and in Intents volume are uncorrelated (r = 0.00). |
 | T4m | capture | REPORT | Over 96 weeks, BTC explains 35% of NEAR's weekly price moves (beta 1.43). What is left after that does not track Intents volume (r = -0.03, p = 0.81, 4-week block p = 0.79; before removing BTC, r = -0.00, p = 0.98). Since the 2026-02-23 fee switch (37 weeks): r = +0.23, p = 0.17, block p = 0.19, not significant. Added after the lock; T4 itself is unchanged. |
-| T5 | usage | REPORT | Intents received 23% of NEAR's transactions on 2026-11-02 → 2026-11-08 by NearBlocks' daily stats, and 18% of the 18056 transactions in our 213 RPC block samples. NearBlocks' hourly counter, an estimate, says 1%; it is kept for the record only. |
-| T6 | agents | REPORT | The Agent Market's 646 listings had delivered 534 jobs at 2026-11-09 06:07Z, against 399 at 2026-10-31 12:50Z (+33.8%). Scored after 2026-11-12. |
+| T5 | usage | REPORT | Intents received 23% of NEAR's transactions on 2026-11-02 → 2026-11-08 by NearBlocks' daily stats, and 18% of the 18516 transactions in our 218 RPC block samples. NearBlocks' hourly counter, an estimate, says 1%; it is kept for the record only. |
+| T6 | agents | REPORT | The Agent Market's 647 listings had delivered 547 jobs at 2026-11-09 11:07Z, against 399 at 2026-10-31 12:50Z (+37.1%). Scored after 2026-11-12. |
 | T7 | agents | REPORT | Every Agent Market job ever delivered, at an assumed $5 each, comes to about $2.7K; NEAR Intents settled $3.71B in the last 30 days. |
 | T8 | agents | REPORT | The agent has sent 852 transactions (robinhood 760, bsc 4, hyperevm 1, near 87). 3 of them (0.4%; 0.4% of its 765 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 87 NEAR transactions are the companion project anchoring its records, not demand. |
 | T9 | agents | REPORT | Robinhood Chain ETH → BSC BNB: NEAR Intents refused $0.47, $2, $30 and accepted the rest at 0.17%. Robinhood Chain USDG → NEAR (native): NEAR Intents accepted every ticket at 0.42–0.58%. (quotes of 2026-11-09 06:36Z) |
@@ -129,7 +129,7 @@ Data through 2026-11-08; rebuilt by `node build.mjs`.
 ## Layout
 
 - `build.mjs`: one-command rebuild. `lib/charts.mjs` holds the hand-written SVG charts, `lib/page.mjs` the dashboard, `lib/sentences.mjs` the plain sentence and exact queries for every test and chart, `lib/ledger.mjs` T8, `lib/quotes.mjs` T9, `lib/capture.mjs` C1's chain reads and `lib/buyback-ledger.mjs` C1's reconciliation (the buyback wallet's receipts, closed against its balance).
-- `model.mjs` + `lib/model.mjs`: the re-runnable value-capture model (default run in the results block and on the dashboard).
+- `model.mjs` + `lib/model.mjs`: the re-runnable value-capture model (default run in the results block and on the dashboard). `lib/model-ui.mjs`: the dashboard controls' wording and printed command, on top of `lib/model.mjs`.
 - `PREREG.md`: the forward tests, unchanged since their NEAR anchor. `LICENSE`: MIT.
 - Committing: run `node build.mjs --offline && node build.mjs --check` right before each commit, and commit `data/snapshots.jsonl` and `data/nearblocks-charts.json` with it, so the README results block always matches the committed data.
 - `collect.mjs`: the hourly snapshot collector.
