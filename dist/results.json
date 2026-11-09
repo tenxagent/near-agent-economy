@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-09T14:36:52.520Z",
- "offline": false,
+ "built_at": "2026-11-09T15:20:51.367Z",
+ "offline": true,
  "last_day": "2026-11-08",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 83% of NEAR's DEX volume over the last 6 full months and $11.93B in the 90 days to 2026-11-08, 1.83× the 90 days before (T1, T2).",
@@ -300,6 +300,131 @@
    "rule": "post-lock REPORT (2026-11-05), no threshold: OLS beta on BTC, residual vs Intents volume, two-sided permutation p (10,000 shuffles, seed 1) and a 4-week block-permutation p (2026-11-06); a second window from the 2026-02-23 fee switch (2026-11-06)"
   },
   {
+   "id": "T4L",
+   "half": "capture",
+   "question": "Does Intents volume lead or lag NEAR's own price move (BTC taken out) by up to 8 weeks?",
+   "value": {
+    "max_lag": 8,
+    "lags": [
+     {
+      "k": -8,
+      "r": 0.0876263645402584,
+      "n": 87
+     },
+     {
+      "k": -7,
+      "r": -0.028152094179798328,
+      "n": 88
+     },
+     {
+      "k": -6,
+      "r": -0.018530156459250855,
+      "n": 89
+     },
+     {
+      "k": -5,
+      "r": -0.04910767636119006,
+      "n": 90
+     },
+     {
+      "k": -4,
+      "r": -0.08481223500568129,
+      "n": 91
+     },
+     {
+      "k": -3,
+      "r": -0.2702067177173718,
+      "n": 92
+     },
+     {
+      "k": -2,
+      "r": -0.056529738541804146,
+      "n": 93
+     },
+     {
+      "k": -1,
+      "r": 0.005745990999643583,
+      "n": 94
+     },
+     {
+      "k": 0,
+      "r": -0.025676991639349334,
+      "n": 95
+     },
+     {
+      "k": 1,
+      "r": 0.03914481840668386,
+      "n": 94
+     },
+     {
+      "k": 2,
+      "r": -0.05471740532964448,
+      "n": 93
+     },
+     {
+      "k": 3,
+      "r": -0.05550161913473759,
+      "n": 92
+     },
+     {
+      "k": 4,
+      "r": 0.0004932176016010411,
+      "n": 91
+     },
+     {
+      "k": 5,
+      "r": 0.012873138307885897,
+      "n": 90
+     },
+     {
+      "k": 6,
+      "r": 0.012753494162870312,
+      "n": 89
+     },
+     {
+      "k": 7,
+      "r": -0.0936622871596943,
+      "n": 88
+     },
+     {
+      "k": 8,
+      "r": -0.04003985501997611,
+      "n": 87
+     }
+    ],
+    "best": {
+     "k": -3,
+     "r": -0.2702067177173718,
+     "n": 92
+    },
+    "band95": 0.2096406231877764,
+    "p_fw": 0.015873015873015872,
+    "shifts": 62,
+    "above_band": [
+     -3
+    ],
+    "volume_leads_best": {
+     "k": 7,
+     "r": -0.0936622871596943,
+     "n": 88
+    },
+    "rank": {
+     "best": {
+      "k": -3,
+      "r": -0.22979929758652093,
+      "n": 92
+     },
+     "band95": 0.27714605702595757,
+     "p_fw": 0.31746031746031744
+    },
+    "weeks": 96,
+    "from": "2025-01-06",
+    "to": "2026-11-02"
+   },
+   "pass": null,
+   "rule": "post-lock REPORT (2026-11-09), no threshold: corr(NEAR residual at week t, Intents volume change at week t - k) for k = -8..+8; family-wise p = share of circular shifts of the volume series (all shifts s with 16 < s < n - 16, exact, no seed) whose max |r| over the 17 lags is >= the observed max; the same scan on ranks as a check against a few extreme weeks"
+  },
+  {
    "id": "T5",
    "half": "usage",
    "question": "How much of NEAR's on-chain traffic is Intents right now?",
@@ -309,14 +434,14 @@
      "2026-11-02",
      "2026-11-08"
     ],
-    "counter_share_estimated": 0.006731770780967854,
+    "counter_share_estimated": 0.006960488950074154,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-09T14:07:00.620Z"
+     "2026-11-09T15:07:00.929Z"
     ],
-    "rpc_sample_share": 0.17937314697162218,
-    "rpc_sample_txs": 18888,
-    "rpc_samples": 221
+    "rpc_sample_share": 0.17958263422818793,
+    "rpc_sample_txs": 19072,
+    "rpc_samples": 222
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -331,9 +456,9 @@
     "growth": 0.37092731829573933,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-09T14:07:00.620Z"
+     "2026-11-09T15:07:00.929Z"
     ],
-    "agents_last": 648
+    "agents_last": 650
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"

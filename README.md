@@ -19,7 +19,7 @@ The claim, nine pre-registered tests and what would change our mind are in [`THE
 
 1. **Rebuild everything from the committed raw data.**
    - Run `node build.mjs --offline`.
-   - Expect a PASS/FAIL/REPORT line per test (T1–T9, T4m, C1, P1, F1–F3) in the terminal.
+   - Expect a PASS/FAIL/REPORT line per test (T1–T9, T4m, T4L, C1, P1, F1–F3) in the terminal.
    - It writes `dist/index.html` (the dashboard), `dist/results.json` (every test with its inputs) and the results block of this README.
    - `node --test` runs the unit tests, including the forward tests' scoring on synthetic window data and golden tests for T1–T4 and C1: synthetic inputs whose right answers are worked out by hand in `test/build.test.mjs`, so each scored rule is shown to compute exactly as THESIS.md states.
    - `node build.mjs --check` recomputes offline without writing anything, and fails if this README's results block differs from the build, or if `PREREG.md`'s SHA-256 differs from its NEAR anchor (offline: the anchored value pinned in `build.mjs`; add `--online` to read it live from SocialDB on NEAR mainnet).
@@ -96,8 +96,9 @@ Data through 2026-11-08; rebuilt by `node build.mjs`.
 | T3 | capture | FAIL | In the last 90 days the NEAR protocol earned $370.0K in fees, 2.0% of the $18.4M that NEAR Intents earned. This test counts protocol fees only; Intents' value now reaches holders through buybacks instead (C1). |
 | T4 | capture | FAIL | Over 96 weeks (2025-01-06 → 2026-11-02), weekly changes in NEAR's price and in Intents volume are uncorrelated (r = 0.00). |
 | T4m | capture | REPORT | Over 96 weeks, BTC explains 35% of NEAR's weekly price moves (beta 1.43). What is left after that does not track Intents volume (r = -0.03, p = 0.81, 4-week block p = 0.79; before removing BTC, r = -0.00, p = 0.98). Since the 2026-02-23 fee switch (37 weeks): r = +0.23, p = 0.17, block p = 0.19, not significant. Added after the lock; T4 itself is unchanged. |
-| T5 | usage | REPORT | Intents received 23% of NEAR's transactions on 2026-11-02 → 2026-11-08 by NearBlocks' daily stats, and 18% of the 18888 transactions in our 221 RPC block samples. NearBlocks' hourly counter, an estimate, says 1%; it is kept for the record only. |
-| T6 | agents | REPORT | The Agent Market's 648 listings had delivered 547 jobs at 2026-11-09 14:07Z, against 399 at 2026-10-31 12:50Z (+37.1%). Scored after 2026-11-12. |
+| T4L | capture | REPORT | Over 96 weeks, with BTC's moves taken out, Intents volume does not lead NEAR's price at any lag from 1 to 8 weeks (strongest r = -0.09, at +7). The strongest link at any lag is r = -0.27, NEAR's price leading by 3 weeks; it clears the family-wise band (0.21 from all 62 allowed circular shifts of the volume series, p = 0.02) but not on ranks (Spearman -0.23 vs its band 0.28, p = 0.32), so we read it as fragile. Added after the lock; T4 and T4m are unchanged. |
+| T5 | usage | REPORT | Intents received 23% of NEAR's transactions on 2026-11-02 → 2026-11-08 by NearBlocks' daily stats, and 18% of the 19072 transactions in our 222 RPC block samples. NearBlocks' hourly counter, an estimate, says 1%; it is kept for the record only. |
+| T6 | agents | REPORT | The Agent Market's 650 listings had delivered 547 jobs at 2026-11-09 15:07Z, against 399 at 2026-10-31 12:50Z (+37.1%). Scored after 2026-11-12. |
 | T7 | agents | REPORT | Every Agent Market job ever delivered, at an assumed $5 each, comes to about $2.7K; NEAR Intents settled $3.71B in the last 30 days. |
 | T8 | agents | REPORT | The agent has sent 880 transactions (robinhood 782, bsc 4, hyperevm 1, near 93). 3 of them (0.3%; 0.4% of its 787 EVM transactions) moved money across chains, at a cost of 5.42%, 4.92%, 0.38%. Its 93 NEAR transactions are the companion project anchoring its records, not demand. |
 | T9 | agents | REPORT | Robinhood Chain ETH → BSC BNB: NEAR Intents refused $0.47, $2, $30 and accepted the rest at 0.21–0.22%. Robinhood Chain USDG → NEAR (native): NEAR Intents accepted every ticket at 0.66–0.97%. (quotes of 2026-11-09 14:36Z) |
