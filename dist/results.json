@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-09T23:49:24.720Z",
+ "built_at": "2026-11-10T03:27:30.204Z",
  "offline": true,
  "last_day": "2026-11-08",
  "conclusion": [
@@ -434,14 +434,14 @@
      "2026-11-02",
      "2026-11-08"
     ],
-    "counter_share_estimated": 0.008524132115763972,
+    "counter_share_estimated": 0.00903753156226548,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-09T23:07:01.504Z"
+     "2026-11-10T03:07:01.124Z"
     ],
-    "rpc_sample_share": 0.1780396089245425,
-    "rpc_sample_txs": 19945,
-    "rpc_samples": 230
+    "rpc_sample_share": 0.17778214320793634,
+    "rpc_sample_txs": 20362,
+    "rpc_samples": 234
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -456,9 +456,9 @@
     "growth": 0.38095238095238093,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-09T23:07:01.504Z"
+     "2026-11-10T03:07:01.124Z"
     ],
-    "agents_last": 653
+    "agents_last": 654
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
@@ -1112,6 +1112,259 @@
    },
    "pass": null,
    "rule": "post-lock REPORT (added 2026-11-09 after the lock; a sample, no threshold; THESIS.md)"
+  },
+  {
+   "id": "P3",
+   "half": "agents",
+   "question": "What do NEAR Intents and Relay charge on mainstream corridors at $100, $1,000 and $10,000?",
+   "value": {
+    "quoted_at": "2026-11-10T03:24:10.074Z",
+    "method": "same raw input amount to both; cost = 1 - out/in in token units (same asset each side); expected output, not minimum; origin-chain deposit gas excluded from both (Relay origin_gas_usd recorded)",
+    "summary": {
+     "tickets": 15,
+     "quoted_both": 14,
+     "intents_cheaper": 7,
+     "intents_refused": [
+      {
+       "corridor": "eth-usdc-to-bsc-usdc",
+       "usd": 100,
+       "message": "Temporary swap limits: minimum swap amount is $1,000"
+      }
+     ],
+     "relay_refused": [],
+     "by_size": {
+      "100": {
+       "quoted_both": 4,
+       "intents_cheaper": 3,
+       "intents_median_pct": 0.01435,
+       "relay_median_pct": 0.03925
+      },
+      "1000": {
+       "quoted_both": 5,
+       "intents_cheaper": 2,
+       "intents_median_pct": 0.0167,
+       "relay_median_pct": 0.0227
+      },
+      "10000": {
+       "quoted_both": 5,
+       "intents_cheaper": 2,
+       "intents_median_pct": 0.0177,
+       "relay_median_pct": 0.0203
+      }
+     }
+    },
+    "corridors": [
+     {
+      "id": "eth-usdc-to-base-usdc",
+      "route": "Ethereum USDC -> Base USDC",
+      "rows": [
+       {
+        "usd": 100,
+        "intents": "0.0161%",
+        "relay": "0.0312%",
+        "intents_pct": 0.0161,
+        "relay_pct": 0.0312,
+        "intents_eta_s": 47,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 1000,
+        "intents": "0.0167%",
+        "relay": "0.0121%",
+        "intents_pct": 0.0167,
+        "relay_pct": 0.0121,
+        "intents_eta_s": 47,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 10000,
+        "intents": "0.0177%",
+        "relay": "0.0102%",
+        "intents_pct": 0.0177,
+        "relay_pct": 0.0102,
+        "intents_eta_s": 47,
+        "relay_eta_s": 24
+       }
+      ]
+     },
+     {
+      "id": "arb-usdc-to-base-usdc",
+      "route": "Arbitrum USDC -> Base USDC",
+      "rows": [
+       {
+        "usd": 100,
+        "intents": "0.012%",
+        "relay": "0.0311%",
+        "intents_pct": 0.012,
+        "relay_pct": 0.0311,
+        "intents_eta_s": 27,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 1000,
+        "intents": "0.0129%",
+        "relay": "0.0121%",
+        "intents_pct": 0.0129,
+        "relay_pct": 0.0121,
+        "intents_eta_s": 27,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 10000,
+        "intents": "0.0136%",
+        "relay": "0.0102%",
+        "intents_pct": 0.0136,
+        "relay_pct": 0.0102,
+        "intents_eta_s": 27,
+        "relay_eta_s": 1
+       }
+      ]
+     },
+     {
+      "id": "eth-eth-to-arb-eth",
+      "route": "Ethereum ETH -> Arbitrum ETH",
+      "rows": [
+       {
+        "usd": 100,
+        "intents": "0.0126%",
+        "relay": "0.0712%",
+        "intents_pct": 0.0126,
+        "relay_pct": 0.0712,
+        "intents_eta_s": 44,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 1000,
+        "intents": "0.0104%",
+        "relay": "0.0521%",
+        "intents_pct": 0.0104,
+        "relay_pct": 0.0521,
+        "intents_eta_s": 44,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 10000,
+        "intents": "0.0101%",
+        "relay": "0.0502%",
+        "intents_pct": 0.0101,
+        "relay_pct": 0.0502,
+        "intents_eta_s": 44,
+        "relay_eta_s": 24
+       }
+      ]
+     },
+     {
+      "id": "base-eth-to-eth-eth",
+      "route": "Base ETH -> Ethereum ETH",
+      "rows": [
+       {
+        "usd": 100,
+        "intents": "0.0944%",
+        "relay": "0.0473%",
+        "intents_pct": 0.0944,
+        "relay_pct": 0.0473,
+        "intents_eta_s": 42,
+        "relay_eta_s": 4.5
+       },
+       {
+        "usd": 1000,
+        "intents": "0.0276%",
+        "relay": "0.0227%",
+        "intents_pct": 0.0276,
+        "relay_pct": 0.0227,
+        "intents_eta_s": 42,
+        "relay_eta_s": 4.5
+       },
+       {
+        "usd": 10000,
+        "intents": "0.0209%",
+        "relay": "0.0203%",
+        "intents_pct": 0.0209,
+        "relay_pct": 0.0203,
+        "intents_eta_s": 42,
+        "relay_eta_s": 4.5
+       }
+      ]
+     },
+     {
+      "id": "eth-usdc-to-bsc-usdc",
+      "route": "Ethereum USDC -> BSC USDC",
+      "rows": [
+       {
+        "usd": 100,
+        "intents": "refused: Temporary swap limits: minimum swap amount is $1,000",
+        "relay": "0.233%",
+        "intents_pct": null,
+        "relay_pct": 0.233,
+        "intents_eta_s": null,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 1000,
+        "intents": "0.0201%",
+        "relay": "0.2123%",
+        "intents_pct": 0.0201,
+        "relay_pct": 0.2123,
+        "intents_eta_s": 48,
+        "relay_eta_s": 1
+       },
+       {
+        "usd": 10000,
+        "intents": "0.0203%",
+        "relay": "0.2102%",
+        "intents_pct": 0.0203,
+        "relay_pct": 0.2102,
+        "intents_eta_s": 48,
+        "relay_eta_s": 24
+       }
+      ]
+     }
+    ],
+    "minimum_probe": [
+     {
+      "route": "into BSC (USDC)",
+      "usd": 100,
+      "quoted": false,
+      "message": "Temporary swap limits: minimum swap amount is $1,000"
+     },
+     {
+      "route": "into BSC (BNB)",
+      "usd": 100,
+      "quoted": false,
+      "message": "Temporary swap limits: minimum swap amount is $1,000"
+     },
+     {
+      "route": "out of BSC (USDC)",
+      "usd": 100,
+      "quoted": false,
+      "message": "Temporary swap limits: minimum swap amount is $1,000"
+     },
+     {
+      "route": "into Optimism (USDC, HOT Omni)",
+      "usd": 100,
+      "quoted": true,
+      "message": null
+     },
+     {
+      "route": "into Polygon (USDC, HOT Omni)",
+      "usd": 100,
+      "quoted": true,
+      "message": null
+     },
+     {
+      "route": "out of Robinhood Chain (ETH -> Ethereum ETH)",
+      "usd": 100,
+      "quoted": true,
+      "message": null
+     }
+    ],
+    "relay_origin_gas_usd": [
+     0.000452,
+     0.021635
+    ]
+   },
+   "pass": null,
+   "rule": "post-lock REPORT (added 2026-11-10 after the lock; dry quotes, no threshold; THESIS.md)"
   },
   {
    "id": "F1",

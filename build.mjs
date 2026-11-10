@@ -17,6 +17,7 @@ import { readProtocolFee, feeIntake } from './lib/protocol-fee.mjs';
 import { sentence, sentenceParts } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 import { marketControlled, leadLag, ranks, residual } from './lib/market.mjs';
+import { summarizeCorridors } from './lib/corridors.mjs';
 
 const DIR = path.dirname(new URL(import.meta.url).pathname);
 const RAW = path.join(DIR, 'data', 'raw');
@@ -447,6 +448,23 @@ async function main() {
   tests.push({ id: 'P2', half: 'usage', question: "Who signs NEAR's transactions, and how many NEAR Intents accounts do signer counts miss?", value: p2,
     pass: null, rule: 'post-lock REPORT (added 2026-11-09 after the lock; a sample, no threshold; THESIS.md)' });
 
+  // P3 (added 2026-11-10, after the lock; a REPORT, not scored): NEAR Intents (1Click) vs Relay on mainstream corridors at $100 /
+  // $1,000 / $10,000, next to T9's agent routes. Quoted by quote-corridors.mjs (dry, public APIs), not by this build; corridors and
+  // the cost method (same asset each side, token units, origin gas left out of both) in lib/corridors.mjs.
+  let p3 = null;
+  if (fs.existsSync(path.join(RAW, 'corridor-quotes.json'))) {
+    const K = readRaw('corridor-quotes.json'), cell = (x) => (x?.ok ? `${x.cost_pct}%` : `refused: ${x?.message ?? x?.error ?? 'no answer'}`);
+    const gas = K.corridors.flatMap((c) => c.rows.map((r) => r.relay?.origin_gas_usd)).filter(Number.isFinite);
+    p3 = { quoted_at: K.fetched_at, method: K.method, summary: summarizeCorridors(K.corridors),
+      corridors: K.corridors.map((c) => ({ id: c.id, route: c.route, rows: c.rows.map((r) => ({ usd: r.usd, intents: cell(r.near_intents_1click), relay: cell(r.relay),
+        intents_pct: r.near_intents_1click?.ok ? r.near_intents_1click.cost_pct : null, relay_pct: r.relay?.ok ? r.relay.cost_pct : null,
+        intents_eta_s: r.near_intents_1click?.eta_s ?? null, relay_eta_s: r.relay?.eta_s ?? null })) })),
+      minimum_probe: (K.minimum_probe ?? []).map((m) => ({ route: m.route, usd: m.usd, quoted: m.ok, message: m.message })),
+      relay_origin_gas_usd: gas.length ? [Math.min(...gas), Math.max(...gas)] : null };
+  }
+  tests.push({ id: 'P3', half: 'agents', question: 'What do NEAR Intents and Relay charge on mainstream corridors at $100, $1,000 and $10,000?', value: p3,
+    pass: null, rule: 'post-lock REPORT (added 2026-11-10 after the lock; dry quotes, no threshold; THESIS.md)' });
+
   // The investment reading, written from the computed values only (shown on the dashboard and in the README)
   const v = Object.fromEntries(tests.map((t) => [t.id, t.value])), pc = (x, d = 0) => `${(100 * x).toFixed(d)}%`;
   // T9 in one sentence, computed from the latest quotes (11-05: was a fixed string that went stale when Hood USDG → NEAR stopped quoting)
@@ -535,6 +553,15 @@ async function main() {
         values: rt.rows.map((r) => costOf(r.near_intents_1click)), notes: rt.rows.map((r) => noteOf(r.near_intents_1click)) })),
       ...qRoutes.filter((rt) => rt.rows.some((r) => r.relay)).map((rt) => ({ name: `Relay: ${rt.route.replace('Robinhood Chain ', 'hood ').replace(' -> ', ' → ')}`, color: '#f59e0b',
         values: rt.rows.map((r) => costOf(r.relay)), notes: rt.rows.map(() => null) }))] }) });
+  if (p3) {
+    const short = (r) => r.replace(' -> ', ' → ').replace(/ (USDC|ETH)$/, '').replace(/Ethereum/g, 'Eth').replace(/Arbitrum/g, 'Arb');
+    const at = (usd, key) => p3.corridors.map((c) => { const r = c.rows.find((x) => x.usd === usd); return r?.[key] != null ? r[key] * 100 : null; });
+    const no = (usd, key) => p3.corridors.map((c) => { const r = c.rows.find((x) => x.usd === usd); return r && r[key] == null ? 'refused' : null; });
+    charts.push({ id: 'c13', title: 'Mainstream corridors: what NEAR Intents and Relay charge', sentence: `Cost in basis points (1 bp = 0.01%) of the amount sent, read in token units, at $100 and $10,000; dry quotes of ${p3.quoted_at.slice(0, 16).replace('T', ' ')}Z. A missing bar marked "refused" got no quote (P3).`,
+      source: 'NEAR Intents 1Click /v0/quote (dry) and Relay /quote, same raw input to both (quote-corridors.mjs)', svg: svgBars({ unit: 'bp', categories: p3.corridors.map((c) => short(c.route)), series: [
+        { name: 'NEAR Intents, $100', color: '#2563eb', values: at(100, 'intents_pct'), notes: no(100, 'intents_pct') }, { name: 'Relay, $100', color: '#f59e0b', values: at(100, 'relay_pct'), notes: no(100, 'relay_pct') },
+        { name: 'NEAR Intents, $10,000', color: '#93c5fd', values: at(10000, 'intents_pct'), notes: no(10000, 'intents_pct') }, { name: 'Relay, $10,000', color: '#fcd34d', values: at(10000, 'relay_pct'), notes: no(10000, 'relay_pct') }] }) });
+  }
   const perChain = t8.chains_with_sent_txs.map((c) => c.split(':'));
   charts.push({ id: 'c8', title: "The agent's own transactions, by chain", sentence: `${t8.sent_txs} transactions sent, ${t8.cross_chain_ops} of them cross-chain (${(100 * t8.cross_chain_share).toFixed(1)}%). Log scale (T8).`,
     source: 'eth_getTransactionCount on 12 EVM chains; NEAR access-key nonce; data/agent-ground-truth.json', svg: svgBars({ log: true, categories: [...perChain.map(([c]) => c), 'cross-chain'],
@@ -577,7 +604,7 @@ async function main() {
   const re = /(<!-- results:start -->\n)[\s\S]*?(<!-- results:end -->)/;
   // 11-06 (re-screen 4 Y-10/Y-12): THESIS.md's current-status lines are generated too, so the document the track asks for cannot drift
   // from the build. The dated notes elsewhere in THESIS.md are history; this block is the present.
-  const byId = (id) => tests.find((t) => t.id === id), t9 = byId('T9'), t4m = byId('T4m'), t4l = byId('T4L'), p2t = byId('P2'), vote = c1?.hsp029?.vote;
+  const byId = (id) => tests.find((t) => t.id === id), t9 = byId('T9'), t4m = byId('T4m'), t4l = byId('T4L'), p2t = byId('P2'), p3t = byId('P3'), vote = c1?.hsp029?.vote;
   const statusBlock = [`Generated by \`node build.mjs\` from the data through ${lastDay}; \`node build.mjs --check\` fails if this block differs from the build.`, '',
     t9 && `- **T9, agent-size tickets into NEAR:** ${sentence(t9)}`,
     c1 && `- **C1, buyback vs new NEAR supply:** the buyback covers ${pc(c1.buyback_vs_net_issuance)} of net issuance (90 days to ${c1.window[1]})${c1.hsp029 ? `; with HSP-029's cut to ${c1.hsp029.to_pct}% fully ramped, the same buyback would cover ${pc(c1.hsp029.buyback_vs_net_issuance_at_target)} (burn and buyback held constant)` : ''}.${c1.buyback_vs_net_issuance_direct ? ` Counting only the NEAR that reached the buyback multisig straight from intents.near in the same window (${pc(c1.ledger.window.intents_share_of_implied)} of what the series implies), it is ${pc(c1.buyback_vs_net_issuance_direct)}, a lower bound.` : ''} The bar in "What would change our mind" is 50% and is read on the series figure (${pc(c1.buyback_vs_net_issuance)}), as preregistered.`,
@@ -585,6 +612,7 @@ async function main() {
     t4m && `- **T4m, T4 with the crypto market taken out:** ${sentence(t4m)}`,
     t4l && `- **T4L, the same at lags up to 8 weeks:** ${sentence(t4l)}`,
     p2t?.value && `- **P2, who signs NEAR's transactions:** ${sentence(p2t)}`,
+    p3t?.value && `- **P3, mainstream corridors next to T9:** ${sentence(p3t)}`,
     modelLine && `- ${modelLine.replace(/^Model /, '**Model** ')}`].filter(Boolean).join('\n');
   const THESIS = path.join(DIR, 'THESIS.md'), thesisMd = fs.existsSync(THESIS) ? fs.readFileSync(THESIS, 'utf8') : null;   // absent in the tests' synthetic builds
   const reS = /(<!-- status:start -->\n)[\s\S]*?(<!-- status:end -->)/;

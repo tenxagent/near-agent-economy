@@ -1,0 +1,436 @@
+{
+ "fetched_at": "2026-11-10T03:24:10.074Z",
+ "sources": [
+  "https://1click.chaindefuser.com/v0/quote (dry: true)",
+  "https://api.relay.link/quote"
+ ],
+ "method": "same raw input amount to both; cost = 1 - out/in in token units (same asset each side); expected output, not minimum; origin-chain deposit gas excluded from both (Relay origin_gas_usd recorded)",
+ "corridors": [
+  {
+   "id": "eth-usdc-to-base-usdc",
+   "route": "Ethereum USDC -> Base USDC",
+   "origin_price_usd": 0.999461,
+   "rows": [
+    {
+     "usd": 100,
+     "amount_in": "100053929",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "100053929",
+      "amount_out": "100037854",
+      "cost_pct": 0.0161,
+      "in_usd": 99.999999932269,
+      "out_usd": 99.983933596694,
+      "eta_s": 47
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "100053929",
+      "amount_out": "100022746",
+      "cost_pct": 0.0312,
+      "in_usd": 100.023913,
+      "out_usd": 100.005142,
+      "eta_s": 1,
+      "origin_gas_usd": 0.021631
+     }
+    },
+    {
+     "usd": 1000,
+     "amount_in": "1000539291",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "1000539291",
+      "amount_out": "1000372275",
+      "cost_pct": 0.0167,
+      "in_usd": 1000.000000322151,
+      "out_usd": 999.833074343775,
+      "eta_s": 47
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "1000539291",
+      "amount_out": "1000418086",
+      "cost_pct": 0.0121,
+      "in_usd": 1000.239129,
+      "out_usd": 1000.242012,
+      "eta_s": 1,
+      "origin_gas_usd": 0.021626
+     }
+    },
+    {
+     "usd": 10000,
+     "amount_in": "10005392907",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "10005392907",
+      "amount_out": "10003618801",
+      "cost_pct": 0.0177,
+      "in_usd": 10000.000000223126,
+      "out_usd": 9998.226850466262,
+      "eta_s": 47
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "10005392907",
+      "amount_out": "10004371216",
+      "cost_pct": 0.0102,
+      "in_usd": 10002.391289,
+      "out_usd": 10002.610447,
+      "eta_s": 24,
+      "origin_gas_usd": 0.021635
+     }
+    }
+   ]
+  },
+  {
+   "id": "arb-usdc-to-base-usdc",
+   "route": "Arbitrum USDC -> Base USDC",
+   "origin_price_usd": 0.999461,
+   "rows": [
+    {
+     "usd": 100,
+     "amount_in": "100053929",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "100053929",
+      "amount_out": "100041889",
+      "cost_pct": 0.012,
+      "in_usd": 99.999999932269,
+      "out_usd": 99.987966421829,
+      "eta_s": 27
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "100053929",
+      "amount_out": "100022774",
+      "cost_pct": 0.0311,
+      "in_usd": 100.030917,
+      "out_usd": 100.00517,
+      "eta_s": 1,
+      "origin_gas_usd": 0.003577
+     }
+    },
+    {
+     "usd": 1000,
+     "amount_in": "1000539291",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "1000539291",
+      "amount_out": "1000410581",
+      "cost_pct": 0.0129,
+      "in_usd": 1000.000000322151,
+      "out_usd": 999.871359696841,
+      "eta_s": 27
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "1000539291",
+      "amount_out": "1000418088",
+      "cost_pct": 0.0121,
+      "in_usd": 1000.309167,
+      "out_usd": 1000.242014,
+      "eta_s": 1,
+      "origin_gas_usd": 0.003575
+     }
+    },
+    {
+     "usd": 10000,
+     "amount_in": "10005392907",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "10005392907",
+      "amount_out": "10004028588",
+      "cost_pct": 0.0136,
+      "in_usd": 10000.000000223126,
+      "out_usd": 9998.636416591067,
+      "eta_s": 27
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "10005392907",
+      "amount_out": "10004371130",
+      "cost_pct": 0.0102,
+      "in_usd": 10003.091667,
+      "out_usd": 10002.610361,
+      "eta_s": 1,
+      "origin_gas_usd": 0.003576
+     }
+    }
+   ]
+  },
+  {
+   "id": "eth-eth-to-arb-eth",
+   "route": "Ethereum ETH -> Arbitrum ETH",
+   "origin_price_usd": 2120.51,
+   "rows": [
+    {
+     "usd": 100,
+     "amount_in": "47158467000000000",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "47158467000000000",
+      "amount_out": "47152504008979574",
+      "cost_pct": 0.0126,
+      "in_usd": 100.00000085817,
+      "out_usd": 99.987356276081,
+      "eta_s": 44
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "47158467000000000",
+      "amount_out": "47124878557940157",
+      "cost_pct": 0.0712,
+      "in_usd": 99.912727,
+      "out_usd": 99.793141,
+      "eta_s": 1,
+      "origin_gas_usd": 0.009441
+     }
+    },
+    {
+     "usd": 1000,
+     "amount_in": "471584666000000000",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "471584666000000000",
+      "amount_out": "471535836090199753",
+      "cost_pct": 0.0104,
+      "in_usd": 1000.00000009966,
+      "out_usd": 999.89645578763,
+      "eta_s": 44
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "471584666000000000",
+      "amount_out": "471338864405640157",
+      "cost_pct": 0.0521,
+      "in_usd": 999.127262,
+      "out_usd": 998.122161,
+      "eta_s": 1,
+      "origin_gas_usd": 0.009446
+     }
+    },
+    {
+     "usd": 10000,
+     "amount_in": "4715846660000000000",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "4715846660000000000",
+      "amount_out": "4715369160901997543",
+      "cost_pct": 0.0101,
+      "in_usd": 10000.000000996602,
+      "out_usd": 9998.987459384296,
+      "eta_s": 44
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "4715846660000000000",
+      "amount_out": "4713478726392092317",
+      "cost_pct": 0.0502,
+      "in_usd": 9991.272619,
+      "out_usd": 9981.412374,
+      "eta_s": 24,
+      "origin_gas_usd": 0.009441
+     }
+    }
+   ]
+  },
+  {
+   "id": "base-eth-to-eth-eth",
+   "route": "Base ETH -> Ethereum ETH",
+   "origin_price_usd": 2120.51,
+   "rows": [
+    {
+     "usd": 100,
+     "amount_in": "47158467000000000",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "47158467000000000",
+      "amount_out": "47113941480160261",
+      "cost_pct": 0.0944,
+      "in_usd": 100.00000085817,
+      "out_usd": 99.905584048095,
+      "eta_s": 42
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "47158467000000000",
+      "amount_out": "47136154771794490",
+      "cost_pct": 0.0473,
+      "in_usd": 99.864269,
+      "out_usd": 99.865455,
+      "eta_s": 4.5,
+      "origin_gas_usd": 0.000459
+     }
+    },
+    {
+     "usd": 1000,
+     "amount_in": "471584666000000000",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "471584666000000000",
+      "amount_out": "471454410802410584",
+      "cost_pct": 0.0276,
+      "in_usd": 1000.00000009966,
+      "out_usd": 999.72379265062,
+      "eta_s": 42
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "471584666000000000",
+      "amount_out": "471477468531994490",
+      "cost_pct": 0.0227,
+      "in_usd": 998.642679,
+      "out_usd": 998.900147,
+      "eta_s": 4.5,
+      "origin_gas_usd": 0.000452
+     }
+    },
+    {
+     "usd": 10000,
+     "amount_in": "4715846660000000000",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "4715846660000000000",
+      "amount_out": "4714859108024105851",
+      "cost_pct": 0.0209,
+      "in_usd": 10000.000000996602,
+      "out_usd": 9997.905887156197,
+      "eta_s": 42
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "4715846660000000000",
+      "amount_out": "4714890696757438490",
+      "cost_pct": 0.0203,
+      "in_usd": 9986.426785,
+      "out_usd": 9989.247259,
+      "eta_s": 4.5,
+      "origin_gas_usd": 0.000452
+     }
+    }
+   ]
+  },
+  {
+   "id": "eth-usdc-to-bsc-usdc",
+   "route": "Ethereum USDC -> BSC USDC",
+   "origin_price_usd": 0.999461,
+   "rows": [
+    {
+     "usd": 100,
+     "amount_in": "100053929",
+     "near_intents_1click": {
+      "ok": false,
+      "http": 400,
+      "message": "Temporary swap limits: minimum swap amount is $1,000"
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "100053929",
+      "amount_out": "99820803000000000000",
+      "cost_pct": 0.233,
+      "in_usd": 100.023913,
+      "out_usd": 99.796247,
+      "eta_s": 1,
+      "origin_gas_usd": 0.021501
+     }
+    },
+    {
+     "usd": 1000,
+     "amount_in": "1000539291",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "1000539291",
+      "amount_out": "1000338055201422332098",
+      "cost_pct": 0.0201,
+      "in_usd": 1000.000000322151,
+      "out_usd": 999.798872989669,
+      "eta_s": 48
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "1000539291",
+      "amount_out": "998415065000000000000",
+      "cost_pct": 0.2123,
+      "in_usd": 1000.239129,
+      "out_usd": 998.169455,
+      "eta_s": 1,
+      "origin_gas_usd": 0.021501
+     }
+    },
+    {
+     "usd": 10000,
+     "amount_in": "10005392907",
+     "near_intents_1click": {
+      "ok": true,
+      "amount_in": "10005392907",
+      "amount_out": "10003362779608934990858",
+      "cost_pct": 0.0203,
+      "in_usd": 10000.000000223126,
+      "out_usd": 9997.970967070727,
+      "eta_s": 48
+     },
+     "relay": {
+      "ok": true,
+      "amount_in": "10005392907",
+      "amount_out": "9984358487000000000000",
+      "cost_pct": 0.2102,
+      "in_usd": 10003.081661,
+      "out_usd": 9981.902335,
+      "eta_s": 24,
+      "origin_gas_usd": 0.021506
+     }
+    }
+   ]
+  }
+ ],
+ "minimum_probe": [
+  {
+   "route": "into BSC (USDC)",
+   "usd": 100,
+   "origin": "nep141:eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near",
+   "destination": "nep245:v2_1.omni.hot.tg:56_2w93GqMcEmQFDru84j3HZZWt557r",
+   "ok": false,
+   "message": "Temporary swap limits: minimum swap amount is $1,000"
+  },
+  {
+   "route": "into BSC (BNB)",
+   "usd": 100,
+   "origin": "nep141:eth.omft.near",
+   "destination": "nep245:v2_1.omni.hot.tg:56_11111111111111111111",
+   "ok": false,
+   "message": "Temporary swap limits: minimum swap amount is $1,000"
+  },
+  {
+   "route": "out of BSC (USDC)",
+   "usd": 100,
+   "origin": "nep245:v2_1.omni.hot.tg:56_2w93GqMcEmQFDru84j3HZZWt557r",
+   "destination": "nep141:eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near",
+   "ok": false,
+   "message": "Temporary swap limits: minimum swap amount is $1,000"
+  },
+  {
+   "route": "into Optimism (USDC, HOT Omni)",
+   "usd": 100,
+   "origin": "nep141:eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near",
+   "destination": "nep245:v2_1.omni.hot.tg:10_A2ewyUyDp6qsue1jqZsGypkCxRJ",
+   "ok": true,
+   "message": null
+  },
+  {
+   "route": "into Polygon (USDC, HOT Omni)",
+   "usd": 100,
+   "origin": "nep141:eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near",
+   "destination": "nep245:v2_1.omni.hot.tg:137_qiStmoQJDQPTebaPjgx5VBxZv6L",
+   "ok": true,
+   "message": null
+  },
+  {
+   "route": "out of Robinhood Chain (ETH -> Ethereum ETH)",
+   "usd": 100,
+   "origin": "nep141:hood.omft.near",
+   "destination": "nep141:eth.omft.near",
+   "ok": true,
+   "message": null
+  }
+ ]
+}
