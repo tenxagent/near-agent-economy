@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-10T11:01:35.430Z",
+ "built_at": "2026-11-10T11:17:56.206Z",
  "offline": true,
  "last_day": "2026-11-09",
  "conclusion": [
@@ -434,14 +434,14 @@
      "2026-11-03",
      "2026-11-09"
     ],
-    "counter_share_estimated": 0.009887579793974291,
+    "counter_share_estimated": 0.010026925843492365,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-10T10:07:00.229Z"
+     "2026-11-10T11:07:01.732Z"
     ],
-    "rpc_sample_share": 0.17451497457148238,
-    "rpc_sample_txs": 21236,
-    "rpc_samples": 241
+    "rpc_sample_share": 0.1745376021030889,
+    "rpc_sample_txs": 21302,
+    "rpc_samples": 242
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -456,7 +456,7 @@
     "growth": 0.38596491228070184,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-10T10:07:00.229Z"
+     "2026-11-10T11:07:01.732Z"
     ],
     "agents_last": 655
    },
