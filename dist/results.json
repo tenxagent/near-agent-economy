@@ -1,6 +1,6 @@
 {
- "built_at": "2026-11-10T06:40:05.436Z",
- "offline": false,
+ "built_at": "2026-11-10T11:01:35.430Z",
+ "offline": true,
  "last_day": "2026-11-09",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 83% of NEAR's DEX volume over the last 6 full months and $12.02B in the 90 days to 2026-11-09, 1.83× the 90 days before (T1, T2).",
@@ -434,14 +434,14 @@
      "2026-11-03",
      "2026-11-09"
     ],
-    "counter_share_estimated": 0.009367783246590647,
+    "counter_share_estimated": 0.009887579793974291,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-10T06:07:01.619Z"
+     "2026-11-10T10:07:00.229Z"
     ],
-    "rpc_sample_share": 0.17675838015888393,
-    "rpc_sample_txs": 20644,
-    "rpc_samples": 237
+    "rpc_sample_share": 0.17451497457148238,
+    "rpc_sample_txs": 21236,
+    "rpc_samples": 241
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -452,13 +452,13 @@
    "question": "Is agent-native demand on NEAR growing?",
    "value": {
     "delivered_jobs_first": 399,
-    "delivered_jobs_last": 551,
-    "growth": 0.38095238095238093,
+    "delivered_jobs_last": 553,
+    "growth": 0.38596491228070184,
     "window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-10T06:07:01.619Z"
+     "2026-11-10T10:07:00.229Z"
     ],
-    "agents_last": 654
+    "agents_last": 655
    },
    "pass": null,
    "rule": "delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)"
@@ -468,7 +468,7 @@
    "half": "agents",
    "question": "How big is agent commerce next to Intents?",
    "value": {
-    "agent_market_all_time_usd_at_assumed_price": 2755,
+    "agent_market_all_time_usd_at_assumed_price": 2765,
     "price_assumption_usd": 5,
     "intents_volume_30d": 3727751510
    },
@@ -1089,24 +1089,30 @@
        "signers_before": 2,
        "before_per_block": 26.446666666666665,
        "after_per_block": null,
-       "after_below_floor": true,
-       "share_of_drop": 0.9676385894432522
+       "after_unlisted": true,
+       "after_max_per_block": 0.08053691275167785,
+       "share_of_drop": 0.9676385894432522,
+       "share_of_drop_min": 0.9646918806713912
       },
       {
        "parent": "relay.tg",
        "signers_before": 1,
        "before_per_block": 1.0933333333333333,
        "after_per_block": null,
-       "after_below_floor": true,
-       "share_of_drop": 0.04000320863844047
+       "after_unlisted": true,
+       "after_max_per_block": 0.08053691275167785,
+       "share_of_drop": 0.04000320863844047,
+       "share_of_drop_min": 0.037056499866579586
       },
       {
        "parent": "hot.tg",
        "signers_before": 3,
        "before_per_block": 1.2266666666666666,
        "after_per_block": 0.7315436241610739,
-       "after_below_floor": false,
-       "share_of_drop": 0.01811571070522926
+       "after_unlisted": false,
+       "after_max_per_block": 0.7315436241610739,
+       "share_of_drop": 0.01811571070522926,
+       "share_of_drop_min": 0.01811571070522926
       }
      ]
     }

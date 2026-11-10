@@ -432,11 +432,15 @@ async function main() {
     if (N && B && A) {
       const win = (w) => ({ from: w.from, to: w.to, blocks: w.blocks_ok, txs: w.txs, txs_per_block: w.txs / w.blocks_ok, signers: w.distinct_signers, bounds_match_dates: w.bounds_match_dates });
       const drop = B.txs / B.blocks_ok - A.txs / A.blocks_ok, after = new Map(A.top_parents.map((p) => [p.parent, p.txs]));
-      // Parents listed in the "before" week, by how much of the per-block drop they account for. A parent missing from the
-      // "after" list fell below the listing floor (sample-accounts.mjs), so its "after" rate is at most the floor; counted as 0.
+      // Parents listed in the "before" week, by how much of the per-block drop they account for. sample-accounts.mjs lists at
+      // most the 12 largest parents that clear its floor (>= 5 txs and >= 1% of the sample). A parent missing from the "after"
+      // list is out of that list: when 12 are listed it has at most the 12th one's txs, else it is under the floor. Its share is
+      // reported as a range: share_of_drop counts it at 0, share_of_drop_min at that bound.
+      const unlistedMax = (A.top_parents.length >= 12 ? A.top_parents.at(-1).txs : Math.max(5, 0.01 * A.txs)) / A.blocks_ok;
       const left = B.top_parents.map((p) => {
         const b = p.txs / B.blocks_ok, a = after.has(p.parent) ? after.get(p.parent) / A.blocks_ok : null;
-        return { parent: p.parent, signers_before: p.signers, before_per_block: b, after_per_block: a, after_below_floor: a === null, share_of_drop: drop > 0 ? (b - (a ?? 0)) / drop : null };
+        return { parent: p.parent, signers_before: p.signers, before_per_block: b, after_per_block: a, after_unlisted: a === null, after_max_per_block: a ?? unlistedMax,
+          share_of_drop: drop > 0 ? (b - (a ?? 0)) / drop : null, share_of_drop_min: drop > 0 ? (b - (a ?? unlistedMax)) / drop : null };
       }).sort((x, y) => (y.share_of_drop ?? 0) - (x.share_of_drop ?? 0)).slice(0, 3);
       p2 = { sampled_at: S.fetched_at, source: S.source,
         now: { blocks: N.blocks_ok, days: N.days, head: N.head, txs: N.txs, signers: N.distinct_signers, intents_txs: N.intents_txs, intents_tx_signers: N.intents_tx_signers,
@@ -576,7 +580,7 @@ async function main() {
         { name: 'under $10', color: '#c4b5fd', values: P1_KINDS.map((k) => (p1.kinds[k].share_under_10 ?? NaN) * 100) }] }) });
   if (p2) {
     const sp = p2.spring, L = sp.left, rest = (w, key) => w.txs_per_block - L.reduce((x, l) => x + (l[key] ?? 0), 0);
-    charts.push({ id: 'c12', title: "Who left NEAR's transaction count in spring 2026", sentence: `Transactions a block by signer parent, ${sp.before.blocks} random blocks in each week (P2). A parent below the listing floor in the later week is drawn at 0.`,
+    charts.push({ id: 'c12', title: "Who left NEAR's transaction count in spring 2026", sentence: `Transactions a block by signer parent, ${sp.before.blocks} random blocks in each week (P2). A parent out of the later week's top-12 list is drawn at 0 (at most 12 transactions in that sample).`,
       source: 'neardata.xyz blocks (every chunk\'s transactions, grouped by the signer\'s parent account)', svg: svgBars({ unit: '', categories: [...L.map((l) => l.parent), 'everyone else'],
         series: [{ name: `${sp.before.from}..${sp.before.to.slice(5)}`, color: '#7c3aed', values: [...L.map((l) => l.before_per_block), rest(sp.before, 'before_per_block')] },
           { name: `${sp.after.from}..${sp.after.to.slice(5)}`, color: '#c4b5fd', values: [...L.map((l) => l.after_per_block ?? 0), rest(sp.after, 'after_per_block')] }] }) });

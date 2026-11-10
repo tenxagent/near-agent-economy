@@ -84,7 +84,7 @@ async function signersIn(heights, { intents = false } = {}) {
 }
 
 const top = (m, n, f = (v) => v) => [...m].map(([k, v]) => [k, f(v)]).sort((a, b) => b[1] - a[1]).slice(0, n);
-// Only parents big enough to be an app, relayer or bot are named: >= 5 txs and >= 1% of the sample (in 300 random blocks of a
+// Only parents big enough to be an app, relayer or bot are named: at most the 12 largest, and only those with >= 5 txs and >= 1% of the sample (in 300 random blocks of a
 // week that is tens of thousands of transactions a week). A named .near/.tg account is its own parent, so smaller ones could
 // be one person; they are counted in others_txs, never listed.
 const named = (txs, total) => txs >= 5 && txs >= 0.01 * total;
