@@ -81,6 +81,13 @@ test('forward tests score on synthetic window data exactly as PREREG.md says', (
   assert.equal(f.F3.value.jobs_per_day_first, 2);
   assert.equal(f.F3.value.jobs_per_day_second, 3);
   assert.equal(f.F3.pass, true);
+  // 11-12: the README's first-screen forward block carries the same verdicts, and --check accepts what the build wrote
+  const fwdBlock = () => fs.readFileSync(path.join(tmp, 'README.md'), 'utf8').match(/<!-- forward:start -->\n([\s\S]*?)<!-- forward:end -->/)[1];
+  assert.match(fwdBlock(), /\*\*F1\*\* \([^)]*\) \*\*PASS\*\*: Intents settled/);
+  assert.match(fwdBlock(), /\*\*F2\*\* \([^)]*\) \*\*FAIL\*\*/);
+  assert.match(fwdBlock(), /\*\*F3\*\* \([^)]*\) \*\*PASS\*\*: Agent Market listings delivered 3\.0 jobs a day/);
+  assert.match(fwdBlock(), /^All three are scored\./m);
+  assert.match(build(tmp, '--check'), /CHECK OK/);
   // a final snapshot more than 3 h late is never used: F3 goes back to pending (not estimated)
   const lines = fs.readFileSync(path.join(tmp, 'data', 'snapshots.jsonl'), 'utf8').replace('2026-11-13T00:07:00.000Z', '2026-11-13T03:30:00.000Z');
   fs.writeFileSync(path.join(tmp, 'data', 'snapshots.jsonl'), lines);
@@ -88,6 +95,8 @@ test('forward tests score on synthetic window data exactly as PREREG.md says', (
   const f3 = JSON.parse(fs.readFileSync(path.join(tmp, 'dist', 'results.json'), 'utf8')).tests.find((t) => t.id === 'F3');
   assert.equal(f3.pass, null);
   assert.equal(f3.value.status, 'pending');
+  assert.match(fwdBlock(), /\*\*F3\*\* \([^)]*\) \*\*pending\*\*: Agent Market jobs per day/);
+  assert.match(fwdBlock(), /^Pending tests score from 2026-11-13/m);
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); } // never leave copies in the temp dir, even on failure
 });
 
