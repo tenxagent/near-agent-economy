@@ -9,7 +9,7 @@ An evidence-first investment thesis for NEAR (NEAR HACKATHON, tracks `thesis`, `
 
 **Live dashboard:** https://tenxagent.github.io/near-agent-economy/dist/ (the committed `dist/index.html`, rebuilt by `node build.mjs`).
 
-**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real. **Value capture** exists but is small: since a fee switch in February, part of Intents' fees buys NEAR back, which covers only a small fraction of new NEAR supply. The **agent** half depends on the route: NEAR Intents refuses the agent's ETH → BSC route below $1,000, but it settled the agent's own $1 USDG → NEAR move in 14 s.
+**The claim, in one line:** NEAR's long-term case is a bet that NEAR Intents becomes the settlement layer for cross-chain money moved by software. The data says the **usage** half is real. **Value capture** exists but is small: since a fee switch in February, part of Intents' fees buys NEAR back, which covers only a small fraction of new NEAR supply. The **agent** half is open but recent: NEAR Intents refused the agent's ETH → BSC route below $1,000 from 10-31 until 2026-11-10 15:07Z and has quoted every ticket size on it since (latest costs in the T9 row below), and it settled the agent's own $1 USDG → NEAR move in 14 s.
 
 **A correction we made in public:** we wrote down what would change our mind about value capture ("a documented mechanism routes Intents fees to NEAR holders"). It had already happened, on 2026-02-23, before we locked the claim, and we missed it. THESIS.md says so at the top, keeps the original test T3 as registered, and adds C1 to measure the buyback.
 
@@ -32,7 +32,7 @@ Pending tests score from 2026-11-13, once their last day of data exists; the fir
 | A testable hypothesis | `THESIS.md`: "The claim" and "Pre-registered tests" (T1–T9, thresholds fixed when the claim was locked, 2026-10-31 13:20Z) | T1 and T2 thresholds were set after a disclosed look at the data; `THESIS.md` says to read them as descriptions of the past. F1–F3 are the tests that could fail on new data. |
 | Raw-data queries | Every test card on the dashboard shows its exact queries; the raw responses are committed under `data/raw/` (sources listed below) | DefiLlama is a third-party series, used as published and cross-checked against NearBlocks where both exist (T2). |
 | One command that rebuilds every chart | `node build.mjs --offline` (committed raw data) or `node build.mjs` (fresh public data) | GitHub Actions runs the offline rebuild on every push and daily and compares it with the committed results. |
-| A static dashboard: chart, query and one plain sentence | `dist/index.html` (hosted link above): eleven charts, each with one sentence, its source and its queries | Opened from disk, the model controls need a local server (step 3). |
+| A static dashboard: chart, query and one plain sentence | `dist/index.html` (hosted link above): 13 charts, each with one sentence, its source and its queries | Opened from disk, the model controls need a local server (step 3). |
 | `THESIS.md` with evidence for, evidence against, and what would change my mind | PASS and FAIL tests side by side (T3 and T4 FAIL: evidence against value capture), an "evidence against" disclosure, and "What would change our mind" | One mind-changer was already met before the lock and we missed it; the correction is at the top of `THESIS.md`. |
 | Never invent numbers | This README's results block and `THESIS.md`'s status block are generated; `node build.mjs --check` fails if either differs from the build | A forward test whose inputs are missing is reported "not scorable", never estimated. |
 | (Beyond the brief) evidence that did not exist when the claim was written | `PREREG.md`, its SHA-256 anchored on NEAR mainnet before its window opened; F1–F3 are scored from 2026-11-13, before the deadline, and the first build with all three scored is anchored once (Scoring day, below) | Until then the three show as pending; one whose inputs never arrive is reported not scorable. |
@@ -53,7 +53,7 @@ Pending tests score from 2026-11-13, once their last day of data exists; the fir
    - a verdict strip for the three halves (usage, value capture, agents);
    - "What it means for a NEAR holder", written from the computed values;
    - one card per test with its result, one plain sentence, its rule, and its exact queries and computed value;
-   - eleven charts, each with one sentence, its source and its queries;
+   - 13 charts, each with one sentence, its source and its queries;
    - the model card (see step 5), with controls under its grid ("Try your own assumptions"). They run `lib/model.mjs` in the browser through `lib/model-ui.mjs`, the same code as `node model.mjs`, and print the matching command. Opened from disk, a browser blocks the module import; use the hosted copy, or `python3 -m http.server` in the repo folder and open http://localhost:8000/dist/.
 4. **Add a data point to our own time series.**
    - Run `node collect.mjs` (~5 min).
