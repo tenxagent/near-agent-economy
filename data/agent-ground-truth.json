@@ -1,5 +1,5 @@
 {
- "note": "Ground truth about one live autonomous agent (claude-10x, wallet 0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04). Transaction counts per chain are re-read from public RPCs by build.mjs; the cross-chain operations below are every bridge the agent itself sent, each verifiable by its hash. Decision records are the agent's own logs (self-reported, not independently verifiable).",
+ "note": "Ground truth about one live autonomous agent (claude-10x, wallet 0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04). Transaction counts per chain are re-read from public RPCs by build.mjs; the cross-chain operations below are every bridge the agent itself sent, each verifiable by its hash (re-checked against the agent's own ledger on 2026-11-12: the two-leg Elysium sleeve funding of 2026-11-03 and three later 1Click moves were added then; the Elysium leg is valued at the HYPE price implied by its Relay leg). Decision records are the agent's own logs (self-reported, not independently verifiable).",
  "address": "0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04",
  "cross_chain_ops": [
   {
@@ -24,7 +24,7 @@
    "date": "2026-10-31",
    "route": "Robinhood Chain USDG -> NEAR (native)",
    "via": "NEAR Intents 1Click",
-   "usd_in": 1.0,
+   "usd_in": 1,
    "near_out": 0.21991594410493667,
    "usd_out": 0.996219,
    "usd_out_note": "0.21992 NEAR at 1Click's wNEAR price of $4.53 (17:03Z)",
@@ -35,6 +35,77 @@
    "purpose": "fund the agent's own NEAR account (the transfer created it) for on-chain anchoring by the companion project",
    "deposit_address": "0x6b46A694F0FAF08A7146D54FB5BDA68b4681de43",
    "timing_note": "Robinhood deposit 16:56:25Z (block 102707329) -> NEAR transfer 16:56:39Z"
+  },
+  {
+   "date": "2026-10-31",
+   "route": "Robinhood Chain USDG -> NEAR (native)",
+   "via": "NEAR Intents 1Click",
+   "usd_in": 1.5,
+   "near_out": 0.336945912320971,
+   "usd_out": 1.496039850705,
+   "usd_out_note": "1Click status amountOutUsd",
+   "tx": "0x7b146eecd04f6fe2f38ca084a8eb272c5063f373c0ee10db1c796ce23a0406dd",
+   "near_txs": [
+    "65UJVFVsfCMfRtB4r5ANrid7GxYHoLQohuxNGa32En6t",
+    "26MiZaMSkCxT6511ZYZvfPb2nu8SewVziq96GaZysHk2"
+   ],
+   "purpose": "NEAR for the agent's own account (gas and storage for the companion project's anchors)"
+  },
+  {
+   "date": "2026-11-03",
+   "route": "Robinhood Chain USDG -> HyperEVM HYPE",
+   "via": "Relay",
+   "usd_in": 10,
+   "hype_out": "0.116191852953875487",
+   "usd_out": 9.889,
+   "usd_out_note": "Relay quote USD value (1.11% cost), recorded by the operator; the HYPE amount is on-chain",
+   "tx": "0x392e8616a7338ce071de3f203b1f7cfbed7ff4b78637844762af987e809d0319",
+   "purpose": "fund a coin sleeve of at most $10 on Elysium (leg 1 of 2)"
+  },
+  {
+   "date": "2026-11-03",
+   "route": "HyperEVM HYPE -> Elysium HYPE",
+   "via": "Elysium Inbox (native deposit)",
+   "hype_in": "0.112191852953875487",
+   "usd_in": 9.5486,
+   "usd_out": 9.5486,
+   "usd_out_note": "valued at the HYPE price implied by leg 1; a native deposit has no fee beyond gas, so cost 0",
+   "tx": "0xcbd25b845861041bc7c1cebb133613c7843b379d9b4fc4af632cfb9a147f6bd9",
+   "purpose": "fund a coin sleeve of at most $10 on Elysium (leg 2 of 2)"
+  },
+  {
+   "date": "2026-11-05",
+   "route": "Robinhood Chain USDG -> NEAR (native)",
+   "via": "NEAR Intents 1Click",
+   "usd_in": 1,
+   "near_out": 0.271814462645215,
+   "usd_out": 0.992122788655,
+   "usd_out_note": "1Click status amountOutUsd",
+   "tx": "0x3a10124c0d4c99781c07a7390bf1e2a01a4de50e6f846ba5948f7e257386c32d",
+   "near_txs": [
+    "BJe2D7x8rvHT1ztKe8KAPxxLYY82F2Lq95YHcgtf8Ddm",
+    "5Nc2gLXaMTPx29feYCfPgBec8zKwEU2RKTMYh2pmiPzD",
+    "2ZSGDRs6UvqdGj6DhTCi8Vicfqh5751hF9z1f6AKoUNo",
+    "6yXYjudpsSrNHxPLx1PFN6AHUB7oz7ssWHSTmUYqY7AC"
+   ],
+   "purpose": "NEAR for the agent's own account (gas and storage for the companion project's anchors)"
+  },
+  {
+   "date": "2026-11-09",
+   "route": "Robinhood Chain USDG -> NEAR (native)",
+   "via": "NEAR Intents 1Click",
+   "usd_in": 2,
+   "near_out": 0.569186118259695,
+   "usd_out": 1.992151413909,
+   "usd_out_note": "1Click status amountOutUsd",
+   "tx": "0xe9dada3332c792d291da437053ea5dc4743e918c89b40e23910819deeb353169",
+   "near_txs": [
+    "DK6aFVy9TbN1o7LmCCdhwV6QXANpn3nPuNUC3PyBd86n",
+    "4eoZ8Zznvs8Q8uuBVvNZSzv4ZLvXEQSDvFPA1aLSL77i",
+    "7yUSTjdpoAoyEsNTgbKdLHqjsmTdHwDJPPMTMUZduGNW",
+    "NQcfvmZKZbifdb54xyuQdNhArQPWtH1sgZ5o7ErrK4u"
+   ],
+   "purpose": "NEAR for the agent's own account (gas and storage for the companion project's anchors)"
   }
  ],
  "decisions": [

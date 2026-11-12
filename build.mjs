@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { svgBars, svgLine, svgScatter } from './lib/charts.mjs';
-import { classifyLedgerSummary, fetchNearSent, fetchNonces } from './lib/ledger.mjs';
+import { classifyLedgerSummary, fetchNearSent, fetchNonces, NONCE_RPCS } from './lib/ledger.mjs';
 import { fetchQuotes } from './lib/quotes.mjs';
 import { fetchSupply, near, BUYBACK_WALLET } from './lib/capture.mjs';
 import { fetchReceipts, receiptCount, balanceAt, reconcile, inflowsBetween } from './lib/buyback-ledger.mjs';
@@ -568,7 +568,7 @@ async function main() {
   }
   const perChain = t8.chains_with_sent_txs.map((c) => c.split(':'));
   charts.push({ id: 'c8', title: "The agent's own transactions, by chain", sentence: `${t8.sent_txs} transactions sent, ${t8.cross_chain_ops} of them cross-chain (${(100 * t8.cross_chain_share).toFixed(1)}%). Log scale (T8).`,
-    source: 'eth_getTransactionCount on 12 EVM chains; NEAR access-key nonce; data/agent-ground-truth.json', svg: svgBars({ log: true, categories: [...perChain.map(([c]) => c), 'cross-chain'],
+    source: `eth_getTransactionCount on ${Object.keys(NONCE_RPCS).length} EVM chains; NEAR access-key nonce; data/agent-ground-truth.json`, svg: svgBars({ log: true, categories: [...perChain.map(([c]) => c), 'cross-chain'],
       series: [{ name: 'transactions sent', color: '#7c3aed', values: [...perChain.map(([, n]) => Number(n)), t8.cross_chain_ops] }] }) });
   const t7 = tests.find((t) => t.id === 'T7').value;
   charts.push({ id: 'c9', title: 'Agent commerce next to Intents', sentence: `All Agent Market jobs ever, at an assumed $${t7.price_assumption_usd} each, vs one month of Intents volume: a ratio of about 1 to ${(t7.intents_volume_30d / t7.agent_market_all_time_usd_at_assumed_price / 1e6).toFixed(1)} million. Log scale (T7).`,
