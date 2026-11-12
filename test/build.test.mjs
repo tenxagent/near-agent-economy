@@ -249,5 +249,17 @@ test('golden: the T9 sentence follows the 1Click quotes (all quoted / some / non
     const none = run((rows) => rows.forEach((r) => { r.near_intents_1click = no; }));
     assert.match(none, /1Click refused all \d+ agent-size tickets \(under \$50\) on the agent's own routes \(T9\)/);
     assert.doesNotMatch(none, /do settle/);
+    // 11-12 (screen 7, TH7-3): 1Click's USD out equal to its USD in is its own pricing, not a free swap ⇒ "no cost reading", never 0.00%
+    const flat = (usd) => ({ ok: true, in_usd: usd, out_usd: usd, cost_pct: 0 });
+    const allFlat = run((rows) => rows.forEach((r) => { r.near_intents_1click = flat(r.usd); }));
+    assert.match(allFlat, /get a 1Click quote, but none of the \d+ quotes under \$50 carries a cost reading/);
+    assert.doesNotMatch(allFlat, /0\.00(–[\d.]+)?% under \$50/);
+    const mixed = run((rows) => rows.forEach((r, i) => { r.near_intents_1click = i === 0 ? flat(r.usd) : ok(0.5); }));
+    assert.match(mixed, /get a 1Click quote: 0\.50–0\.50% under \$50 \(T9, quotes of [^)]*; 1 of \d+ quotes carries no cost reading\)/);
+    const res = JSON.parse(fs.readFileSync(path.join(tmp, 'dist', 'results.json'), 'utf8')), t9 = res.tests.find((t) => t.id === 'T9');
+    const t9Into = t9.value.routes.find((rt) => rt.route === intoNear.route);
+    assert.equal(t9Into.rows.find((r) => r.usd < 50).intents, 'accepted, no cost reading');
+    assert.match(sentence(t9), /quotes? carr(y|ies) no cost reading \(1Click priced the output at exactly the input's USD value\)/);
+    assert.match(fs.readFileSync(path.join(tmp, 'dist', 'index.html'), 'utf8'), />no reading<\/text>/, 'c7 notes the flat quote instead of drawing a 0% bar');
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });

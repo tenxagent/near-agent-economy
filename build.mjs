@@ -14,7 +14,7 @@ import { fetchSupply, near, BUYBACK_WALLET } from './lib/capture.mjs';
 import { fetchReceipts, receiptCount, balanceAt, reconcile, inflowsBetween } from './lib/buyback-ledger.mjs';
 import { readRevenueWallets, crossCheck } from './lib/revenue-wallets.mjs';
 import { readProtocolFee, feeIntake } from './lib/protocol-fee.mjs';
-import { sentence, sentenceParts } from './lib/sentences.mjs';
+import { sentence, sentenceParts, NO_COST_READING } from './lib/sentences.mjs';
 import { baseFrom, summary as modelSummary, growthHistory, project, quarterLabel, HSP029 } from './lib/model.mjs';
 import { marketControlled, leadLag, ranks, residual } from './lib/market.mjs';
 import { summarizeCorridors } from './lib/corridors.mjs';
@@ -312,10 +312,14 @@ async function main() {
   // T9: cross-chain cost at agent ticket sizes, NEAR Intents (1Click) vs Relay, dry quotes on the agent's real routes
   const q = readRaw('cross-chain-quotes.json');
   const qRoutes = q.routes ?? [{ route: q.route, rows: q.rows }]; // files fetched before 2026-10-31 17:00Z hold one route
+  // 2026-11-12 (screen 7, TH7-3): on Hood USDG -> NEAR, 1Click sometimes returns amountOutUsd equal to amountInUsd to the last digit.
+  // That is its own USD pricing of the output, not a free swap, so such a quote is accepted but has no cost reading (never "0%").
+  const flatUsd = (x) => !!x?.ok && x.in_usd != null && x.in_usd === x.out_usd;
+  const costCell = (x) => (flatUsd(x) ? NO_COST_READING : `${x.cost_pct}%`);
   tests.push({ id: 'T9', half: 'agents', question: "What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent used?",
     value: { quoted_at: q.fetched_at, routes: qRoutes.map((rt) => ({ route: rt.route, rows: rt.rows.map((r) => ({ usd: r.usd,
-      intents: r.near_intents_1click.ok ? `${r.near_intents_1click.cost_pct}%` : `refused: ${r.near_intents_1click.message}`,
-      relay: !r.relay ? 'no route' : r.relay.ok ? `${r.relay.cost_pct}%` : `error: ${r.relay.message}` })) })) },
+      intents: r.near_intents_1click.ok ? costCell(r.near_intents_1click) : `refused: ${r.near_intents_1click.message}`,
+      relay: !r.relay ? 'no route' : r.relay.ok ? costCell(r.relay) : `error: ${r.relay.message}` })) })) },
     pass: null, rule: 'reported, not scored (added after the first probe on 2026-10-31; see THESIS.md)' });
 
   // C1 (post-lock, REPORT): value that reaches NEAR holders vs NEAR's issuance. Same 90 days as T3 for every revenue series;
@@ -478,9 +482,12 @@ async function main() {
   // T9 in one sentence, computed from the latest quotes (11-05: was a fixed string that went stale when Hood USDG → NEAR stopped quoting)
   const t9Sentence = (() => {
     const day = `${v.T9.quoted_at.slice(0, 16).replace('T', ' ')}Z`;
-    const rows = v.T9.routes.flatMap((rt) => rt.rows.filter((r) => r.usd < 50).map((r) => ({ into: /->\s*NEAR\b/.test(rt.route), ok: /^[\d.]+%$/.test(r.intents), pct: parseFloat(r.intents) })));
-    const into = rows.filter((r) => r.into), okInto = into.filter((r) => r.ok);
-    if (into.length && okInto.length === into.length) return `Agent-size tickets into NEAR get a 1Click quote: ${Math.min(...okInto.map((r) => r.pct)).toFixed(2)}–${Math.max(...okInto.map((r) => r.pct)).toFixed(2)}% under $50 (T9, quotes of ${day}).`;
+    const rows = v.T9.routes.flatMap((rt) => rt.rows.filter((r) => r.usd < 50).map((r) => ({ into: /->\s*NEAR\b/.test(rt.route),
+      ok: /^[\d.]+%$/.test(r.intents) || r.intents === NO_COST_READING, costed: /^[\d.]+%$/.test(r.intents), pct: parseFloat(r.intents) })));
+    const into = rows.filter((r) => r.into), okInto = into.filter((r) => r.ok), costedInto = okInto.filter((r) => r.costed);
+    const unread = okInto.length - costedInto.length;
+    if (into.length && okInto.length === into.length && !costedInto.length) return `Agent-size tickets into NEAR get a 1Click quote, but none of the ${into.length} quotes under $50 carries a cost reading: 1Click priced the output at exactly the input's USD value (T9, quotes of ${day}).`;
+    if (into.length && okInto.length === into.length) return `Agent-size tickets into NEAR get a 1Click quote: ${Math.min(...costedInto.map((r) => r.pct)).toFixed(2)}–${Math.max(...costedInto.map((r) => r.pct)).toFixed(2)}% under $50 (T9, quotes of ${day}${unread ? `; ${unread} of ${into.length} quotes ${unread === 1 ? 'carries' : 'carry'} no cost reading` : ''}).`;
     if (okInto.length) return `${okInto.length} of ${into.length} agent-size tickets into NEAR got a 1Click quote (T9, quotes of ${day}).`;
     return `But in the quotes of ${day}, 1Click refused all ${rows.length} agent-size tickets (under $50) on the agent's own routes (T9), so for now small agent tickets stay off Intents.`;
   })();
@@ -554,8 +561,9 @@ async function main() {
   if (shareDays.length >= 2) charts.push({ id: 'c6', title: "Intents' share of NEAR transactions, day by day", sentence: `Daily intents.near transactions ÷ NEAR's daily transactions, ${shareDays[0]} → ${shareDays.at(-1)}: from ${(100 * intDaily.get(shareDays[0]) / Number(nbDaily.get(shareDays[0]).txns)).toFixed(0)}% to ${(100 * intDaily.get(shareDays.at(-1)) / Number(nbDaily.get(shareDays.at(-1)).txns)).toFixed(0)}% (T5).`,
     source: 'NearBlocks /v3/accounts/intents.near/stats/txns ÷ /v1/charts txns', svg: svgLine({ pct: true, xfmt: 'day', series: [{ name: 'Intents share of NEAR txns', color: '#2563eb', points: shareDays.map((d) => [d, intDaily.get(d) / Number(nbDaily.get(d).txns)]) }] }) });
   const tickets = qRoutes[0].rows.map((r) => `$${r.usd.toLocaleString('en-US')}`);
-  const costOf = (x) => (x?.ok ? x.cost_pct : null), noteOf = (x) => (x && !x.ok ? 'refused' : null);
-  charts.push({ id: 'c7', title: 'What a cross-chain move costs, by ticket size', sentence: `Dry quotes of ${q.fetched_at.slice(0, 16).replace('T', ' ')}Z. A missing bar marked "refused" is a ticket NEAR Intents would not take (T9).`,
+  const costOf = (x) => (x?.ok && !flatUsd(x) ? x.cost_pct : null), noteOf = (x) => (x && !x.ok ? 'refused' : flatUsd(x) ? 'no reading' : null);
+  const anyFlat = qRoutes.some((rt) => rt.rows.some((r) => flatUsd(r.near_intents_1click) || flatUsd(r.relay)));
+  charts.push({ id: 'c7', title: 'What a cross-chain move costs, by ticket size', sentence: `Dry quotes of ${q.fetched_at.slice(0, 16).replace('T', ' ')}Z. A missing bar marked "refused" is a ticket NEAR Intents would not take (T9).${anyFlat ? ' "no reading": the quote was accepted, but its USD out equals its USD in to the last digit, which is 1Click\'s own pricing, not a free swap.' : ''}`,
     source: 'NEAR Intents 1Click /v0/quote (dry) and Relay /quote', svg: svgBars({ unit: '%', categories: tickets, series: [
       ...qRoutes.map((rt, i) => ({ name: `Intents: ${rt.route.replace('Robinhood Chain ', 'hood ').replace(' -> ', ' → ').replace(' (native)', '')}`, color: ['#2563eb', '#16a34a'][i] ?? '#7c3aed',
         values: rt.rows.map((r) => costOf(r.near_intents_1click)), notes: rt.rows.map((r) => noteOf(r.near_intents_1click)) })),
