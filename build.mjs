@@ -289,11 +289,15 @@ async function main() {
   // T6/T7: Agent Market
   const am = snaps.filter((s) => s.agent_market?.agents);
   const a0 = am[0]?.agent_market, a1 = am.at(-1)?.agent_market;
-  const jobsGrowth = a0 && a1 ? a1.delivered_jobs_total / a0.delivered_jobs_total - 1 : null;
+  // T6's window is 2026-10-31 -> 2026-11-12 (THESIS.md test table): its end is the last snapshot inside the window, never a later one
+  // (2026-11-12 fix, before the first scored build: am.at(-1) kept moving past the close). T7 and chart c5 still use the newest snapshot.
+  const T6_CLOSE = '2026-11-12T23:59:59Z';
+  const t6End = am.filter((s) => Date.parse(s.at) <= Date.parse(T6_CLOSE)).at(-1), a1w = t6End?.agent_market;
+  const jobsGrowth = a0 && a1w ? a1w.delivered_jobs_total / a0.delivered_jobs_total - 1 : null;
   tests.push({ id: 'T6', half: 'agents', question: 'Is agent-native demand on NEAR growing?',
-    value: { delivered_jobs_first: a0?.delivered_jobs_total, delivered_jobs_last: a1?.delivered_jobs_total, growth: jobsGrowth, window: [am[0]?.at, am.at(-1)?.at], agents_last: a1?.agents },
+    value: { delivered_jobs_first: a0?.delivered_jobs_total, delivered_jobs_last: a1w?.delivered_jobs_total, growth: jobsGrowth, window: [am[0]?.at, t6End?.at], agents_last: a1w?.agents },
     // judged only once the pre-registered window has closed; until then the value is reported but not scored
-    pass: jobsGrowth === null || Date.now() < Date.parse('2026-11-12T23:59:59Z') ? null : jobsGrowth >= 0.2,
+    pass: jobsGrowth === null || Date.now() < Date.parse(T6_CLOSE) ? null : jobsGrowth >= 0.2,
     rule: 'delivered jobs grow >= 20% over 2026-10-31 -> 2026-11-12 (scored after the window closes)' });
   const PRICE_ASSUMPTION = 5; // USD per delivered job, from the marketplace docs' examples (2.50 USDC and 5 USD); stated, not observed
   const intents30 = sumRange(intentsVol, addDays(lastDay, -29), lastDay);

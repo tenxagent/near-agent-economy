@@ -202,6 +202,34 @@ test('golden: T4 is +1 when the weekly price moves exactly with weekly volume, â
   assert.equal(down.T4.pass, false);
 });
 
+// ---------- 11-12: T6's window ends 2026-11-12 23:59:59Z; after the close its end is the last snapshot inside the window, not the newest
+test('T6 is scored on its own window: snapshots after the close are not counted (T7 still uses the newest)', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'thesis-t6-'));
+  try {
+    for (const f of ['build.mjs', 'PREREG.md', 'README.md', 'lib', 'data']) fs.cpSync(path.join(ROOT, f), path.join(tmp, f), { recursive: true });
+    const sp = path.join(tmp, 'data', 'snapshots.jsonl'), lines = fs.readFileSync(sp, 'utf8').trim().split('\n');
+    const last = JSON.parse(lines.findLast((l) => JSON.parse(l).agent_market?.agents));
+    const at = (iso, jobs) => JSON.stringify({ ...last, at: iso, agent_market: { ...last.agent_market, delivered_jobs_total: jobs } });
+    fs.appendFileSync(sp, `${at('2026-11-12T23:07:00.000Z', 1_000_001)}\n${at('2026-11-13T06:07:00.000Z', 2_000_002)}\n`);
+    const run = (clock) => {
+      const pre = clock ? ['--import', `data:text/javascript,Date.now=()=>Date.parse("${clock}")`] : [];
+      execFileSync(process.execPath, [...pre, 'build.mjs', '--offline'], { cwd: tmp, encoding: 'utf8' });
+      const r = JSON.parse(fs.readFileSync(path.join(tmp, 'dist', 'results.json'), 'utf8'));
+      return { t6: r.tests.find((t) => t.id === 'T6'), t7: r.tests.find((t) => t.id === 'T7') };
+    };
+    const after = run('2026-11-13T07:00:00Z');
+    assert.equal(after.t6.value.window[1], '2026-11-12T23:07:00.000Z');
+    assert.equal(after.t6.value.delivered_jobs_last, 1_000_001);
+    assert.equal(typeof after.t6.pass, 'boolean');
+    assert.doesNotMatch(sentence(after.t6), /Scored after/);
+    assert.match(sentence(after.t6), /window closed at 2026-11-12 23:59:59Z; later snapshots are not counted/);
+    assert.equal(after.t7.value.agent_market_all_time_usd_at_assumed_price, 2_000_002 * after.t7.value.price_assumption_usd);
+    const before = run('2026-11-12T23:30:00Z');
+    assert.equal(before.t6.pass, null);
+    assert.match(sentence(before.t6), /Scored after 2026-11-12\./);
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+});
+
 // ---------- 11-05 (re-screen 3, X-1): the T9 sentence of the investment reading is computed from the quotes, never a fixed string
 test('golden: the T9 sentence follows the 1Click quotes (all quoted / some / none)', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'thesis-t9-'));
