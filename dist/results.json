@@ -1,5 +1,5 @@
 {
- "built_at": "2026-11-12T13:09:06.413Z",
+ "built_at": "2026-11-12T13:12:52.131Z",
  "offline": true,
  "last_day": "2026-11-11",
  "conclusion": [
@@ -488,17 +488,16 @@
      "near:113"
     ],
     "nonces_read_at": "2026-11-12T06:40:47.922Z",
-    "cross_chain_ops": 8,
-    "cross_chain_share": 0.007881773399014778,
+    "cross_chain_ops": 7,
+    "cross_chain_share": 0.006896551724137931,
     "evm_sent_txs": 902,
-    "cross_chain_share_evm_only": 0.008869179600886918,
+    "cross_chain_share_evm_only": 0.007760532150776054,
     "cross_chain_cost_pct": [
      5.42,
      4.92,
      0.38,
      0.26,
      1.11,
-     0,
      0.79,
      0.39
     ],
@@ -508,7 +507,6 @@
      1,
      1.5,
      10,
-     9.5486,
      1,
      2
     ],

@@ -1,5 +1,5 @@
 {
- "note": "Ground truth about one live autonomous agent (claude-10x, wallet 0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04). Transaction counts per chain are re-read from public RPCs by build.mjs; the cross-chain operations below are every bridge the agent itself sent, each verifiable by its hash (re-checked against the agent's own ledger on 2026-11-12: the two-leg Elysium sleeve funding of 2026-11-03 and three later 1Click moves were added then; the Elysium leg is valued at the HYPE price implied by its Relay leg). Decision records are the agent's own logs (self-reported, not independently verifiable).",
+ "note": "Ground truth about one live autonomous agent (claude-10x, wallet 0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04). Transaction counts per chain are re-read from public RPCs by build.mjs; the cross-chain operations below are every bridge the agent itself sent, each verifiable by its hash (re-checked against the agent's own ledger on 2026-11-12: the Elysium sleeve funding of 2026-11-03 and three later 1Click moves were added then; that funding's second hop, a native Elysium Inbox deposit with no quoted cost, is listed inside its Relay entry and not counted separately). Decision records are the agent's own logs (self-reported, not independently verifiable).",
  "address": "0x00731cd9e0BC7CAD1b54f85187B09B942cD3be04",
  "cross_chain_ops": [
   {
@@ -60,18 +60,13 @@
    "usd_out": 9.889,
    "usd_out_note": "Relay quote USD value (1.11% cost), recorded by the operator; the HYPE amount is on-chain",
    "tx": "0x392e8616a7338ce071de3f203b1f7cfbed7ff4b78637844762af987e809d0319",
-   "purpose": "fund a coin sleeve of at most $10 on Elysium (leg 1 of 2)"
-  },
-  {
-   "date": "2026-11-03",
-   "route": "HyperEVM HYPE -> Elysium HYPE",
-   "via": "Elysium Inbox (native deposit)",
-   "hype_in": "0.112191852953875487",
-   "usd_in": 9.5486,
-   "usd_out": 9.5486,
-   "usd_out_note": "valued at the HYPE price implied by leg 1; a native deposit has no fee beyond gas, so cost 0",
-   "tx": "0xcbd25b845861041bc7c1cebb133613c7843b379d9b4fc4af632cfb9a147f6bd9",
-   "purpose": "fund a coin sleeve of at most $10 on Elysium (leg 2 of 2)"
+   "purpose": "fund a coin sleeve of at most $10 on Elysium",
+   "then": {
+    "route": "HyperEVM HYPE -> Elysium HYPE",
+    "via": "Elysium Inbox (native deposit, gas only, no quoted cost)",
+    "hype": "0.112191852953875487",
+    "tx": "0xcbd25b845861041bc7c1cebb133613c7843b379d9b4fc4af632cfb9a147f6bd9"
+   }
   },
   {
    "date": "2026-11-05",
