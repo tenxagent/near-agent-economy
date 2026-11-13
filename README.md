@@ -97,6 +97,7 @@ sha256sum PREREG.md   # must print the same sha256
 - **The first build with F1, F2 and F3 all scored is anchored once** in SocialDB under `00537bf2…6590/thesis/scored/1`. The anchor holds the SHA-256 of `dist/results.json` at that commit, the commit, and the three verdicts.
   - To check it, run the PREREG query above with the key `…/thesis/scored/1/**`.
   - Then compare with `git show <commit>:dist/results.json | sha256sum`.
+- **Anchored 2026-11-13 06:43Z** in tx [`BgtuLj7XwqdLm27LmrCFNSZer79MhngtupUm6ffFdQjY`](https://nearblocks.io/txns/BgtuLj7XwqdLm27LmrCFNSZer79MhngtupUm6ffFdQjY): SHA-256 `0299ba753d4f8b498c643439dd5408a42a8598764a2f7c734cae783adc4ec5ee` of `dist/results.json` at commit `68ac394`, with F1 PASS, F2 PASS and F3 FAIL. `git show 68ac394:dist/results.json | sha256sum` prints the same hash. Later builds refresh the data, but they do not change this anchor.
 - **11-14 23:59Z, the submission deadline:** a forward test whose inputs are still missing is reported **not scorable**, never estimated.
 
 ## What the tests say
