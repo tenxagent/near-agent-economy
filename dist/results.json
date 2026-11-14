@@ -1,28 +1,28 @@
 {
- "built_at": "2026-11-14T06:40:18.807Z",
+ "built_at": "2026-11-14T14:41:05.704Z",
  "offline": false,
  "last_day": "2026-11-13",
  "conclusion": [
   "Usage moved to NEAR Intents: it settled 83% of NEAR's DEX volume over the last 6 full months and $12.38B in the 90 days to 2026-11-13, 1.87× the 90 days before (T1, T2).",
   "Some of that value reaches NEAR holders, through buybacks rather than protocol fees. Since the fee switch of 2026-02-23, captured Intents revenue buys NEAR on the open market. In the 90 days to 2026-11-13 that was $5.2M, 27% of Intents' fees; NEAR's gas burn added $266.8K (C1). \"Buyback\" is DefiLlama's label for revenue swept as NEAR into NEAR's revenue wallets, held, not burned; on chain those wallets account for 98% of it, 33% in the front-end fund rather than the buyback multisig.",
-  "It is small next to the token. Annualized, captured value is $22.3M, 0.50% a year of NEAR's $4.43B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $108.6M a year at $3.37; the buyback is 20% of that. The bought-back NEAR is held (2.28M NEAR in buybacks.multisignature.near), not burned. If NEAR governance's HSP-029 cut (max issuance 2.5% → 1.6% over 24 months) runs its full ramp, the same buyback would cover 31% of net issuance.",
-  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 96 weeks, T4; with BTC's moves taken out, r = -0.03, p = 0.81, T4m), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1). Agent-size tickets into NEAR get a 1Click quote: 0.02–0.17% under $50 (T9, quotes of 2026-11-14 06:39Z).",
+  "It is small next to the token. Annualized, captured value is $22.3M, 0.53% a year of NEAR's $4.23B market cap. Over the same months NEAR's total supply grew 2.5% a year net of burns, about $103.8M a year at $3.22; the buyback is 20% of that. The bought-back NEAR is held (2.28M NEAR in buybacks.multisignature.near), not burned. If NEAR governance's HSP-029 cut (max issuance 2.5% → 1.6% over 24 months) runs its full ramp, the same buyback would cover 32% of net issuance.",
+  "NEAR's weekly price does not move with Intents volume (r = 0.00 over 96 weeks, T4; with BTC's moves taken out, r = -0.03, p = 0.81, T4m), and agent commerce is tiny next to Intents (T7). Small tickets are not an edge case: 48% of sampled swap legs and 47% of withdrawals were under $50 (P1). Agent-size tickets into NEAR get a 1Click quote: 0.48–0.56% under $50 (T9, quotes of 2026-11-14 14:40Z).",
   "Read as an investment case: the usage half is supported by the record so far (T1 and T2 describe the past; the forward tests F1 and F2 check it on new data), value capture exists but covers about 20% of issuance, and the agent half is still an option. The case for the token is that the captured share grows faster than supply; we would call it made when the buyback reaches half of net issuance over a 90-day window."
  ],
  "model": {
   "base": {
    "window_end": "2026-11-13",
-   "captured_usd_per_year": 21240797.833333332,
-   "captured_share": 0.2744592061185909,
-   "net_issuance_near_per_year": 32236248.411921356,
-   "burn_near_per_year": 321030.3165182987,
-   "near_price_usd": 3.37,
+   "captured_usd_per_year": 21219262.833333332,
+   "captured_share": 0.26807331865700473,
+   "net_issuance_near_per_year": 32231305.55816101,
+   "burn_near_per_year": 335985.14492753625,
+   "near_price_usd": 3.22,
    "growth_90d": 1.8736016398218496
   },
   "default": {
    "params": {
     "halfLife": 2,
-    "capture": 0.2744592061185909,
+    "capture": 0.26807331865700473,
     "priceQ": 0,
     "resold": 0,
     "quarters": 40,
@@ -30,16 +30,16 @@
     "rampStartQ": 0
    },
    "quartersToHalf": 3,
-   "quartersToFull": 8,
+   "quartersToFull": 7,
    "half_at": "2027-Q3",
-   "full_at": "2028-Q4",
-   "coverage_now": 0.19552236005883208,
-   "coverage_in_4q": 0.7247425728467037,
-   "coverage_in_8q": 1.0542725844170822
+   "full_at": "2028-Q3",
+   "coverage_now": 0.20445442913140932,
+   "coverage_in_4q": 0.7578510660060347,
+   "coverage_in_8q": 1.102435032653204
   },
   "no_growth": {
    "quartersToHalf": null,
-   "coverage": 0.19552236005883208
+   "coverage": 0.20445442913140932
   },
   "measured_growth_forever": {
    "quartersToHalf": 2,
@@ -50,7 +50,7 @@
     "halfLife": 0,
     "cells": [
      {
-      "capture": 0.2744592061185909,
+      "capture": 0.26807331865700473,
       "quartersToHalf": null,
       "quartersToFull": null
      },
@@ -70,7 +70,7 @@
     "halfLife": 1,
     "cells": [
      {
-      "capture": 0.2744592061185909,
+      "capture": 0.26807331865700473,
       "quartersToHalf": null,
       "quartersToFull": null
      },
@@ -90,9 +90,9 @@
     "halfLife": 2,
     "cells": [
      {
-      "capture": 0.2744592061185909,
+      "capture": 0.26807331865700473,
       "quartersToHalf": 3,
-      "quartersToFull": 8
+      "quartersToFull": 7
      },
      {
       "capture": 0.5,
@@ -110,14 +110,14 @@
     "halfLife": 4,
     "cells": [
      {
-      "capture": 0.2744592061185909,
+      "capture": 0.26807331865700473,
       "quartersToHalf": 2,
       "quartersToFull": 4
      },
      {
       "capture": 0.5,
       "quartersToHalf": 1,
-      "quartersToFull": 3
+      "quartersToFull": 2
      },
      {
       "capture": 1,
@@ -130,7 +130,7 @@
     "halfLife": null,
     "cells": [
      {
-      "capture": 0.2744592061185909,
+      "capture": 0.26807331865700473,
       "quartersToHalf": 2,
       "quartersToFull": 3
      },
@@ -183,11 +183,11 @@
   },
   "measured": {
    "half_life_q": 0.94,
-   "coverage_in_4q": 0.3798076469409311,
-   "coverage_in_8q": 0.3948026159670163,
+   "coverage_in_4q": 0.3971584406596068,
+   "coverage_in_8q": 0.41283842647375574,
    "quartersToHalf": null
   },
-  "sentence": "Model (`node model.mjs`, every assumption is a flag): starting from today's 20%, when the buyback reaches half of net issuance depends on how fast Intents' growth fades: in 2027-Q2 (2 quarters) if the measured 1.87× per 90 days never fades, and never with no further growth (it stays at 20%). In between: halving every 2 quarters (the default flag), in 2027-Q3 (3 quarters); halving about every 0.9 quarters (the fade a two-point fit to the measured quarters implies, see below), not within 10 years. A scenario, not a forecast. The measured quarter-on-quarter growth went 5.8× → 6.8× → 1.7× → 0.7× → 1.2× → 1.9×; fading from the oldest quarter to the latest four implies a half-life of about 0.9 quarters, but the last 2 quarters re-accelerated (0.7× → 1.2× → 1.9×), so one steady fade fits this series poorly: that half-life is a two-point fit, and the sensitivity grid (`node model.mjs`, and the dashboard's model section) shows how much the choice matters. The bought-back NEAR sits in a multisig (held, not burned); `--resold` models some of it returning to market. If HSP-029 (max issuance 2.5% → 1.6% over 24 months; House of Stake vote 99.97% for, timelock until 2026-11-16; no start date set) began its ramp now: at the 2-quarter default, in 2027-Q3 (3 quarters); at the two-point-fit fade, in 2028-Q1 (5 quarters)."
+  "sentence": "Model (`node model.mjs`, every assumption is a flag): starting from today's 20%, when the buyback reaches half of net issuance depends on how fast Intents' growth fades: in 2027-Q2 (2 quarters) if the measured 1.87× per 90 days never fades, and never with no further growth (it stays at 20%). In between: halving every 2 quarters (the default flag), in 2027-Q3 (3 quarters); halving about every 0.9 quarters (the fade a two-point fit to the measured quarters implies, see below), not within 10 years. A scenario, not a forecast. The measured quarter-on-quarter growth went 5.8× → 6.8× → 1.7× → 0.7× → 1.2× → 1.9×; fading from the oldest quarter to the latest four implies a half-life of about 0.9 quarters, but the last 2 quarters re-accelerated (0.7× → 1.2× → 1.9×), so one steady fade fits this series poorly: that half-life is a two-point fit, and the sensitivity grid (`node model.mjs`, and the dashboard's model section) shows how much the choice matters. The bought-back NEAR sits in a multisig (held, not burned); `--resold` models some of it returning to market. If HSP-029 (max issuance 2.5% → 1.6% over 24 months; House of Stake vote 99.97% for, timelock until 2026-11-16; no start date set) began its ramp now: at the 2-quarter default, in 2027-Q2 (2 quarters); at the two-point-fit fade, in 2028-Q1 (5 quarters)."
  },
  "tests": [
   {
@@ -241,8 +241,8 @@
    "question": "Does the value reach the NEAR protocol?",
    "value": {
     "near_chain_fees_90d": 381094,
-    "intents_fees_90d": 19082825,
-    "ratio": 0.01997052323227824
+    "intents_fees_90d": 19517597,
+    "ratio": 0.019525661893725954
    },
    "pass": false,
    "rule": "ratio >= 0.25 (expected FAIL)"
@@ -434,14 +434,14 @@
      "2026-11-07",
      "2026-11-13"
     ],
-    "counter_share_estimated": 0.01958504095407725,
+    "counter_share_estimated": 0.020073874659041476,
     "counter_window": [
      "2026-10-31T12:50:44.048Z",
-     "2026-11-14T06:07:00.301Z"
+     "2026-11-14T14:07:00.513Z"
     ],
-    "rpc_sample_share": 0.15910619306718837,
-    "rpc_sample_txs": 32714,
-    "rpc_samples": 334
+    "rpc_sample_share": 0.15930392215390127,
+    "rpc_sample_txs": 33502,
+    "rpc_samples": 342
    },
    "pass": null,
    "rule": "reported, no threshold (daily stats and RPC sample; the hourly counter reads an estimated count, kept for the record)"
@@ -468,7 +468,7 @@
    "half": "agents",
    "question": "How big is agent commerce next to Intents?",
    "value": {
-    "agent_market_all_time_usd_at_assumed_price": 3035,
+    "agent_market_all_time_usd_at_assumed_price": 3065,
     "price_assumption_usd": 5,
     "intents_volume_30d": 3797462047
    },
@@ -480,17 +480,17 @@
    "half": "agents",
    "question": "What share of a live agent's money flow is cross-chain?",
    "value": {
-    "sent_txs": 1051,
+    "sent_txs": 1053,
     "chains_with_sent_txs": [
      "robinhood:909",
      "bsc:4",
      "hyperevm:1",
      "elysium:11",
-     "near:126"
+     "near:128"
     ],
-    "nonces_read_at": "2026-11-14T06:39:57.399Z",
+    "nonces_read_at": "2026-11-14T14:40:44.928Z",
     "cross_chain_ops": 7,
-    "cross_chain_share": 0.006660323501427212,
+    "cross_chain_share": 0.006647673314339981,
     "evm_sent_txs": 925,
     "cross_chain_share_evm_only": 0.0075675675675675675,
     "cross_chain_cost_pct": [
@@ -512,8 +512,8 @@
      2
     ],
     "near_account_txs": {
-     "sent": 126,
-     "nearblocks_txns_only": 126,
+     "sent": 128,
+     "nearblocks_txns_only": 128,
      "what": "SocialDB set calls (receiver social.near) that anchor the companion project's records on NEAR mainnet; single-chain, not bridges"
     },
     "decisions": 2
@@ -526,35 +526,35 @@
    "half": "agents",
    "question": "What does a cross-chain move cost at agent ticket sizes, through NEAR Intents vs the route the agent used?",
    "value": {
-    "quoted_at": "2026-11-14T06:39:59.723Z",
+    "quoted_at": "2026-11-14T14:40:47.093Z",
     "routes": [
      {
       "route": "Robinhood Chain ETH -> BSC BNB",
       "rows": [
        {
         "usd": 0.47,
-        "intents": "2.603%",
-        "relay": "5.256%"
+        "intents": "2.724%",
+        "relay": "5.075%"
        },
        {
         "usd": 2,
-        "intents": "0.973%",
-        "relay": "1.754%"
+        "intents": "1.084%",
+        "relay": "1.777%"
        },
        {
         "usd": 30,
-        "intents": "0.24%",
-        "relay": "0.828%"
+        "intents": "0.534%",
+        "relay": "0.587%"
        },
        {
         "usd": 1000,
-        "intents": "0.189%",
-        "relay": "0.75%"
+        "intents": "0.464%",
+        "relay": "0.709%"
        },
        {
         "usd": 5000,
-        "intents": "0.181%",
-        "relay": "0.71%"
+        "intents": "0.471%",
+        "relay": "0.519%"
        }
       ]
      },
@@ -563,27 +563,27 @@
       "rows": [
        {
         "usd": 0.47,
-        "intents": "0.171%",
+        "intents": "0.525%",
         "relay": "no route"
        },
        {
         "usd": 2,
-        "intents": "0.172%",
+        "intents": "0.556%",
         "relay": "no route"
        },
        {
         "usd": 30,
-        "intents": "0.019%",
+        "intents": "0.478%",
         "relay": "no route"
        },
        {
         "usd": 1000,
-        "intents": "0.001%",
+        "intents": "0.502%",
         "relay": "no route"
        },
        {
         "usd": 5000,
-        "intents": "0.027%",
+        "intents": "0.525%",
         "relay": "no route"
        }
       ]
@@ -602,27 +602,27 @@
      "2026-08-16",
      "2026-11-13"
     ],
-    "buyback_90d": 5237457,
+    "buyback_90d": 5232147,
     "burn_90d": 266763,
-    "intents_fees_90d": 19082825,
-    "buyback_share_of_intents_fees": 0.2744592061185909,
-    "captured_share_of_intents_fees": 0.28843842565238637,
-    "captured_usd_per_year": 22322670,
-    "market_cap_usd": 4426711912,
-    "near_price_usd": 3.37,
-    "stats_fetched_at": "2026-11-14T06:39:01.571Z",
-    "capture_yield": 0.00504272029527997,
-    "supply_span_days": 90.20559869777185,
-    "total_supply_near": 1311650614.271288,
-    "net_issuance_near_per_year": 32236248.411921356,
-    "net_issuance_rate": 0.02457685610876705,
-    "net_issuance_usd_per_year": 108636157.14817497,
-    "buyback_vs_net_issuance": 0.19552236005883208,
-    "buyback_wallet_near": 2280159.800684,
-    "supply_read_at": "2026-11-14T06:39:01.937Z",
-    "buyback_since_switch_usd": 8203172.05,
-    "buyback_near_implied_at_daily_prices": 3339432.12045683,
-    "buyback_wallet_vs_implied": 0.6827986670895639,
+    "intents_fees_90d": 19517597,
+    "buyback_share_of_intents_fees": 0.26807331865700473,
+    "captured_share_of_intents_fees": 0.28174113852232935,
+    "captured_usd_per_year": 22301135,
+    "market_cap_usd": 4225578545,
+    "near_price_usd": 3.22,
+    "stats_fetched_at": "2026-11-14T14:38:31.504Z",
+    "capture_yield": 0.005277652459303652,
+    "supply_span_days": 90.18137978275556,
+    "total_supply_near": 1311701829.138753,
+    "net_issuance_near_per_year": 32231305.55816101,
+    "net_issuance_rate": 0.024572128239939775,
+    "net_issuance_usd_per_year": 103784803.89727846,
+    "buyback_vs_net_issuance": 0.20445442913140932,
+    "buyback_wallet_near": 2282273.111386,
+    "supply_read_at": "2026-11-14T14:38:31.815Z",
+    "buyback_since_switch_usd": 8197862.05,
+    "buyback_near_implied_at_daily_prices": 3337927.3663741774,
+    "buyback_wallet_vs_implied": 0.683739596726192,
     "ledger": {
      "receipts": 3405,
      "count_listed": 3405,
@@ -631,8 +631,8 @@
      "through": "2026-11-14T04:02:18.846Z",
      "balance_block": 224461130,
      "balance_near": 2280159.800684,
-     "implied_through_near": 3339432.12045683,
-     "received_share_of_implied_through": 0.6863995831463201,
+     "implied_through_near": 3337927.3663741774,
+     "received_share_of_implied_through": 0.6867090154561647,
      "in_near": 2292184.815427,
      "gas_refunds_near": 0.32763,
      "out_near": 12025,
@@ -860,20 +860,20 @@
       },
       {
        "month": "2026-11",
-       "implied_near": 184546.63391292436,
+       "implied_near": 183041.87983027214,
        "received_near": 135183.150848,
-       "cum_implied_near": 3339432.120456828,
+       "cum_implied_near": 3337927.3663741755,
        "cum_received_near": 2292184.8154249997
       }
      ],
      "window": {
       "from": "2026-08-16",
       "to": "2026-11-13",
-      "implied_near": 1518268.1602156446,
+      "implied_near": 1516763.4061329924,
       "received_near": 1531364.896294,
-      "received_share": 1.0086261020428007,
+      "received_share": 1.0096267421154592,
       "intents_near": 1019836.946047,
-      "intents_share_of_implied": 0.6717106850888246,
+      "intents_share_of_implied": 0.6723770773499127,
       "largest": {
        "from": "1csfundsadmin.sputnik-dao.near",
        "near": 502793,
@@ -910,22 +910,22 @@
      "gain_near": 3234699.0938492734,
      "known_out_near": 12025,
      "accounted_near": 3246724.0938492734,
-     "implied_near": 3325531.2572693513,
-     "ratio": 0.9763023837927214,
-     "frontend_share": 0.32700033952260144,
+     "implied_near": 3324538.620240314,
+     "ratio": 0.9765938870683308,
+     "frontend_share": 0.3270979749188461,
      "through_day": "2026-11-12",
      "fetched_at": "2026-11-13T22:39:43.430Z"
     },
-    "buyback_vs_net_issuance_direct": 0.13133445842530192,
+    "buyback_vs_net_issuance_direct": 0.13747047151062186,
     "hsp029": {
      "from_pct": 2.5,
      "to_pct": 1.6,
      "ramp_months": 24,
      "source": "https://gov.near.org/t/42644",
-     "gross_issuance_near_per_year": 32557278.728439655,
-     "gross_issuance_rate": 0.024821609027742088,
-     "net_issuance_near_per_year_at_target": 20515628.069683082,
-     "buyback_vs_net_issuance_at_target": 0.30722468488575044,
+     "gross_issuance_near_per_year": 32567290.703088544,
+     "gross_issuance_rate": 0.02482827269096043,
+     "net_issuance_near_per_year_at_target": 20507080.905049134,
+     "buyback_vs_net_issuance_at_target": 0.32134428144921,
      "vote": {
       "status": "Timelock",
       "for_share": 0.9996744791167009,
@@ -933,7 +933,7 @@
       "voting_ended": "2026-11-02T16:48:08.461Z",
       "timelock_ends": "2026-11-16T16:48:08.461Z",
       "actions_attached": false,
-      "read_at": "2026-11-14T06:39:56.547Z"
+      "read_at": "2026-11-14T14:40:44.186Z"
      }
     },
     "protocol_fee": {
@@ -942,53 +942,52 @@
      "collector": "7066024d3f20f94de601c003163367873cca78507eeca4df66d9be645f197f05",
      "days": [
       {
-       "from": "2026-11-06T00:00:00.507Z",
-       "to": "2026-11-07T00:00:00.214Z",
-       "intake_usd": 3.090845656234737,
-       "withdrawn_usd": 0.3687841142448328
-      },
-      {
        "from": "2026-11-07T00:00:00.214Z",
        "to": "2026-11-08T00:00:00.499Z",
-       "intake_usd": 0.4733352790444609,
+       "intake_usd": 0.467046984986279,
        "withdrawn_usd": 0
       },
       {
        "from": "2026-11-08T00:00:00.499Z",
        "to": "2026-11-09T00:00:00.359Z",
-       "intake_usd": 2.7801204059454454,
-       "withdrawn_usd": 0.37497150083172376
+       "intake_usd": 2.714434290806418,
+       "withdrawn_usd": 0.35873118096877893
       },
       {
        "from": "2026-11-09T00:00:00.359Z",
        "to": "2026-11-10T00:00:00.314Z",
-       "intake_usd": 3.5003138148771233,
+       "intake_usd": 3.4614411841195847,
        "withdrawn_usd": 0
       },
       {
        "from": "2026-11-10T00:00:00.314Z",
        "to": "2026-11-11T00:00:00.014Z",
-       "intake_usd": 13.495709957083914,
-       "withdrawn_usd": 1.472449306563
+       "intake_usd": 13.221133515199925,
+       "withdrawn_usd": 1.445885835931
       },
       {
        "from": "2026-11-11T00:00:00.014Z",
        "to": "2026-11-12T00:00:00.223Z",
-       "intake_usd": 9.720694253417347,
-       "withdrawn_usd": 3.830458322158
+       "intake_usd": 9.397862020084993,
+       "withdrawn_usd": 3.668241180091
       },
       {
        "from": "2026-11-12T00:00:00.223Z",
        "to": "2026-11-13T00:00:00.521Z",
-       "intake_usd": 2.2406784768833794,
+       "intake_usd": 2.2112699691166724,
        "withdrawn_usd": 0
+      },
+      {
+       "from": "2026-11-13T00:00:00.521Z",
+       "to": "2026-11-14T00:00:00.513Z",
+       "intake_usd": 5.953462978269786,
+       "withdrawn_usd": 0.35656140000000003
       }
      ],
-     "intake_usd": 35.30169784348641,
-     "intake_usd_per_day": 5.0430996919266295,
-     "implied_token_diff_volume_per_day": 2521549.845963315,
+     "intake_usd": 37.426650942583656,
+     "intake_usd_per_day": 5.346664420369094,
+     "implied_token_diff_volume_per_day": 2673332.210184547,
      "unpriced_tokens": [
-      "nep141:bnb-0xa9ee28c80f960b889dfbd1902055218cba016f75.omdep.near",
       "nep141:bnb-0x4553cfe1c09f37f38b12dc509f676964e392f8fc.omdep.near",
       "nep141:bnb-0xa528caaa2f96090e379d43f90834c75df54d6e74.omdep.near",
       "nep141:bnb-0x0cde6936d305d5b34667fc46425e852efd73559a.omdep.near",
@@ -996,18 +995,19 @@
       "nep141:bnb-0x992879cd8ce0c312d98648875b5a8d6d042cbf34.omdep.near",
       "nep141:bnb-0xfa9a1e901085e269f6d428f79cd5252d8b919344.omdep.near",
       "nep141:bnb-0x091fc7778e6932d4009b087b191d1ee3bac5729a.omdep.near",
+      "nep141:bnb-0xa9ee28c80f960b889dfbd1902055218cba016f75.omdep.near",
       "nep141:bnb-0x1501ec83ffef405b4331cc4f73277a40fb0c627d.omdep.near",
       "nep141:bnb-0xd7df5863a3e742f0c767768cdfcb63f09e0422f6.omdep.near",
       "nep141:bnb-0x6bfe75d1ad432050ea973c3a3dcd88f02e2444c3.omdep.near",
       "nep141:bnb-0x8b872732b07be325a8803cdb480d9d20b6f8d11b.omdep.near"
      ],
-     "through_day": "2026-11-12",
-     "fetched_at": "2026-11-13T06:41:44.774Z",
-     "per_year_usd": 1840.7313875532197,
-     "share_of_captured": 0.00008246018005701019,
-     "reported_volume_usd": 952535842,
+     "through_day": "2026-11-13",
+     "fetched_at": "2026-11-14T14:40:44.090Z",
+     "per_year_usd": 1951.5325134347192,
+     "share_of_captured": 0.00008750821487044131,
+     "reported_volume_usd": 979720637,
      "reported_days": 7,
-     "token_diff_share_of_reported": 0.01853037769653103
+     "token_diff_share_of_reported": 0.01910067499302031
     }
    },
    "pass": null,
