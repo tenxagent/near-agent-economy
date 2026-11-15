@@ -94,9 +94,18 @@ test('forward tests score on synthetic window data exactly as PREREG.md says', (
   build(tmp, '--offline');
   const f3 = JSON.parse(fs.readFileSync(path.join(tmp, 'dist', 'results.json'), 'utf8')).tests.find((t) => t.id === 'F3');
   assert.equal(f3.pass, null);
-  assert.equal(f3.value.status, 'pending');
-  assert.match(fwdBlock(), /\*\*F3\*\* \([^)]*\) \*\*pending\*\*: Agent Market jobs per day/);
-  assert.match(fwdBlock(), /^Pending tests score from 2026-11-13/m);
+  // 11-15: this check depends on the clock. Before the submission deadline a missing input is 'pending'; after it, PREREG.md's rule
+  // makes it 'not scorable' (never estimated). The old expectation hard-coded 'pending' and failed the first scheduled run after
+  // the deadline. The build is unchanged: only the test now follows the same deadline rule.
+  const afterDeadline = Date.now() > Date.parse('2026-11-14T23:59:59Z');
+  assert.equal(f3.value.status, afterDeadline ? 'not scorable' : 'pending');
+  if (afterDeadline) {
+    assert.match(fwdBlock(), /\*\*F3\*\* \([^)]*\) \*\*not scorable\*\*/);
+    assert.match(fwdBlock(), /^A forward test whose inputs were still missing at the submission deadline/m);
+  } else {
+    assert.match(fwdBlock(), /\*\*F3\*\* \([^)]*\) \*\*pending\*\*: Agent Market jobs per day/);
+    assert.match(fwdBlock(), /^Pending tests score from 2026-11-13/m);
+  }
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); } // never leave copies in the temp dir, even on failure
 });
 
