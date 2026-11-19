@@ -40,7 +40,8 @@ test('committed results hold their internal invariants', () => {
   if (v.T4m.since_fee_switch) { const f = v.T4m.since_fee_switch; assert.ok(f.from >= '2026-02-23' && f.weeks < v.T4m.weeks && f.to === v.T4m.to, 'the fee-switch window is the tail of the T4m weeks'); }
   assert.ok(Math.abs(v.T3.ratio - v.T3.near_chain_fees_90d / v.T3.intents_fees_90d) < 1e-12);
   assert.equal(v.C1.intents_fees_90d, v.T3.intents_fees_90d); // C1 and T3 cover the same 90 days
-  assert.ok(Math.abs(v.C1.burn_90d / v.T3.near_chain_fees_90d - 0.7) < 0.01); // NEAR burns 70% of gas fees
+  const burnShare = v.C1.burn_90d / v.T3.near_chain_fees_90d; // 11-19: 70% of gas fees burned before NEAR v87, 100% after (per-day test below)
+  assert.ok(burnShare > 0.69 && burnShare < 1.001, `burn share of fees ${burnShare}`);
   for (const x of [v.T1.intents_share_of_near_dex_volume_6m, v.T5.daily_stats_share_7d, v.T5.rpc_sample_share, v.C1.buyback_share_of_intents_fees]) assert.ok(x > 0 && x < 1);
   assert.equal(v.T8.sent_txs, v.T8.evm_sent_txs + v.T8.near_account_txs.sent);
   for (const k of Object.values(v.P1?.kinds ?? {})) if (k.n - k.unpriced > 0) assert.ok(k.share_under_10 <= k.share_under_50 && k.share_under_50 <= 1);
@@ -48,6 +49,25 @@ test('committed results hold their internal invariants', () => {
     assert.ok(sentence(t).length > 20, `${t.id} has a sentence`);
     assert.ok(QUERIES[t.id]?.length, `${t.id} lists its queries`);
   }
+});
+
+// 11-19: DefiLlama now books NEAR's burned gas as 70% of fees before protocol upgrade v87 and 100% after (its methodology text
+// dates v87 to 4 Nov 2026; its daily series switches on 14 Nov). Inside C1's 90 days each day must be one or the other, with a
+// single switch, so any other change in how DefiLlama counts the burn still fails the refresh. (Older history has one stray
+// 100% day, 2026-06-18, outside every window the build uses.)
+test('C1 burn: each day of its 90 days is 70% of NEAR gas fees, then 100% from one switch day on', () => {
+  const r = JSON.parse(fs.readFileSync(path.join(ROOT, 'dist', 'results.json'), 'utf8'));
+  const [from, to] = r.tests.find((t) => t.id === 'C1').value.window;
+  const daily = (f) => new Map(JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'raw', f), 'utf8')).body.totalDataChart
+    .map(([t, x]) => [new Date(t * 1000).toISOString().slice(0, 10), x]));
+  const fees = daily('defillama-near-chain-fees.json'), burn = daily('defillama-near-chain-revenue.json');
+  let switched = false, days = 0;
+  for (const [d, f] of [...fees].filter(([d]) => d >= from && d <= to).sort()) {
+    const b = burn.get(d); days++;
+    if (Math.abs(b - f) <= 1) switched = true;
+    else assert.ok(!switched && Math.abs(b - 0.7 * f) <= 1, `${d}: burn ${b} of fees ${f}`);
+  }
+  assert.equal(days, 90);
 });
 
 test('forward tests score on synthetic window data exactly as PREREG.md says', () => {
